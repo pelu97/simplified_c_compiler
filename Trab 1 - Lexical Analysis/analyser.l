@@ -7,8 +7,31 @@ IF, THEN, ELSE, ID, NUMBER, RELOP */
 #include <stdio.h>
 #include <stdlib.h>
 
+#define COLOR_RESET   "\x1B[0m"
+#define COLOR_RED     "\x1B[31m"
+#define COLOR_GREEN   "\x1B[32m"
+#define COLOR_YELLOW  "\x1B[33m"
+#define COLOR_BLUE    "\x1B[34m"
+#define COLOR_MAGENTA "\x1B[35m"
+#define COLOR_CYAN    "\x1B[36m"
+#define COLOR_WHITE   "\x1B[37m"
+
 int line = 1;
 int column = 1;
+
+void print_separator();
+void print_line(int line_number);
+void print_column(int column_number);
+void print_linebreak();
+void print_tokentype(char* text);
+void print_token();
+void print_error();
+void print_block(char* tokentype);
+void color_set(char* color);
+void color_reset();
+
+
+
 %}
 /* regular definitions */
 
@@ -67,142 +90,202 @@ FORMAT_TAB         \t
 }
 
 {INT} {
-    printf("Line: %d - Column: %d\n", line, column);
-    printf("Token type: INT\n");
-    printf("Token read: %s\n", yytext);
+    print_block("Integer");
 }
 
 {FLOAT} {
-    printf("Line: %d - Column: %d\n", line, column);
-    printf("Token type: FLOAT\n");
-    printf("Token read: %s\n", yytext);
+    print_block("Float");
 }
 
-
 {LIST} {
-    printf("Line: %d - Column: %d\n", line, column);
-    printf("Token type: LIST\n");
-    printf("Token read: %s\n", yytext);
+    print_block("List");
 }
 
 {TYPE} {
-    printf("Line: %d - Column: %d\n", line, column);
-    printf("Token type: TYPE\n");
-    printf("Token read: %s\n", yytext);
+    print_block("Type");
 }
 
 {NULL} {
-    printf("Line: %d - Column: %d\n", line, column);
-    printf("Token type: NULL\n");
-    printf("Token read: %s\n", yytext);
+    print_block("Null");
 }
 
 {ARITHMETIC_OP} {
-    printf("Line: %d - Column: %d\n", line, column);
-    printf("Token type: ARITHMETIC_OP\n");
-    printf("Token read: %s\n", yytext);
+    print_block("Arithmetic Operation");
 }
 
-
 {LOGIC_OP} {
-    printf("Line: %d - Column: %d\n", line, column);
-    printf("Token type: LOGIC_OP\n");
-    printf("Token read: %s\n", yytext);
+    print_block("Logic Operation");
 }
 
 {BINARY_OP} {
-    printf("Line: %d - Column: %d\n", line, column);
-    printf("Token type: BINARY_OP\n");
-    printf("Token read: %s\n", yytext);
+    print_block("Binary Operation");
 }
 
 {FLOW_KEY} {
-    printf("Line: %d - Column: %d\n", line, column);
-    printf("Token type: FLOW_KEY\n");
-    printf("Token read: %s\n", yytext);
+    print_block("Flow Control Keyword");
 }
 
 {INPUT_KEY} {
-    printf("Line: %d - Column: %d\n", line, column);
-    printf("Token type: INPUT_KEY\n");
-    printf("Token read: %s\n", yytext);
+    print_block("Input Keyword");
 }
 
 {OUTPUT_KEY} {
-    printf("Line: %d - Column: %d\n", line, column);
-    printf("Token type: OUTPUT_KEY\n");
-    printf("Token read: %s\n", yytext);
+    print_block("Output Keyword");
 }
 
 {ASSIGN_OP} {
-    printf("Line: %d - Column: %d\n", line, column);
-    printf("Token type: ASSIGN_OP\n");
-    printf("Token read: %s\n", yytext);
+    print_block("Assignment Operator");
 }
 
 {INTER_OP} {
-    printf("Line: %d - Column: %d\n", line, column);
-    printf("Token type: INTER_OP\n");
-    printf("Token read: %s\n", yytext);
+    print_block("Interrogation Point Operator");
 }
 
 {EXCLA_OP} {
-    printf("Line: %d - Column: %d\n", line, column);
-    printf("Token type: EXCLA_OP\n");
-    printf("Token read: %s\n", yytext);
+    print_block("Exclamation Point Operator");
 }
 
 {DELIM_PARENT} {
-    printf("Line: %d - Column: %d\n", line, column);
-    printf("Token type: DELIM_PARENT\n");
-    printf("Token read: %s\n", yytext);
+    print_block("Parenthesis Delimiter");
 }
 
 {DELIM_BRACKET} {
-    printf("Line: %d - Column: %d\n", line, column);
-    printf("Token type: DELIM_BRACKET\n");
-    printf("Token read: %s\n", yytext);
+    print_block("Bracket Delimiter");
 }
 
 {DELIM_CUR_BRACKET} {
-    printf("Line: %d - Column: %d\n", line, column);
-    printf("Token type: DELIM_CUR_BRACKET\n");
-    printf("Token read: %s\n", yytext);
+    print_block("Curly Bracket Delimiter");
 }
 
 {DELIM_COMMA} {
-    printf("Line: %d - Column: %d\n", line, column);
-    printf("Token type: DELIM_COMMA\n");
-    printf("Token read: %s\n", yytext);
+    print_block("Comma Delimiter");
 }
 
 {DELIM_SEMICOLLON} {
-    printf("Line: %d - Column: %d\n", line, column);
-    printf("Token type: DELIM_SEMICOLLON\n");
-    printf("Token read: %s\n", yytext);
+    print_block("Semicollon Delimiter");
 }
 
 {DELIM_SQUOTE} {
-    printf("Line: %d - Column: %d\n", line, column);
-    printf("Token type: DELIM_SQUOTE\n");
-    printf("Token read: %s\n", yytext);
+    print_block("Single Quote Delimiter");
 }
 
 {DELIM_DQUOTE} {
-    printf("Line: %d - Column: %d\n", line, column);
-    printf("Token type: DELIM_DQUOTE\n");
-    printf("Token read: %s\n", yytext);
+    print_block("Double Quote Delimiter");
 }
 
-
-
 {ID} {
-    printf("Line: %d - Column: %d\n", line, column);
-    printf("Token type: ID\n");
-    printf("Token read: %s\n", yytext);
+    print_block("Identifier");
+}
+
+. {
+    print_error();
 }
 
 %%
+
+void color_reset(){
+    printf(COLOR_RESET);
+}
+
+void color_set(char* color){
+    printf(color);
+}
+
+void print_separator(){
+    printf("-----------------------------------------");
+}
+
+void print_line(int line_number){
+    printf("Line: ");
+    color_set(COLOR_MAGENTA);
+    printf("%d", line_number);
+    color_reset();
+}
+
+void print_column(int column_number){
+    printf("Column: ");
+    color_set(COLOR_MAGENTA);
+    printf("%d", column_number);
+    color_reset();
+}
+
+void print_position(){
+    print_line(line);
+    printf(" - ");
+    print_column(column);
+}
+
+void print_linebreak(){
+    printf("\n");
+}
+
+void print_tokentype(char* text){
+    printf("Token type: ");
+    color_set(COLOR_BLUE);
+    printf("%s", text);
+    color_reset();
+}
+
+void print_token(){
+    printf("Token read: ");
+    color_set(COLOR_GREEN);
+    printf("%s", yytext);
+    color_reset();
+}
+
+void print_error(){
+    print_linebreak();
+
+    color_set(COLOR_RED);
+    print_separator();
+    color_reset();
+
+    print_linebreak();
+
+    print_position();
+
+    print_linebreak();
+
+    color_set(COLOR_RED);
+    printf("ERROR: Undefined token");
+    color_reset();
+
+    print_linebreak();
+
+    print_token();
+
+    print_linebreak();
+
+    color_set(COLOR_RED);
+    print_separator();
+    color_reset();
+
+    print_linebreak();
+}
+
+void print_block(char* tokentype){
+    print_linebreak();
+
+    print_separator();
+
+    print_linebreak();
+
+    print_position();
+
+    print_linebreak();
+
+    print_tokentype(tokentype);
+
+    print_linebreak();
+
+    print_token();
+
+    print_linebreak();
+
+    print_separator();
+
+    print_linebreak();
+}
 
 int main(int argc, char **argv){
     FILE *filep;
