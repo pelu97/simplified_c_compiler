@@ -16,10 +16,12 @@ IF, THEN, ELSE, ID, NUMBER, RELOP */
 #define COLOR_CYAN    "\x1B[36m"
 #define COLOR_WHITE   "\x1B[37m"
 
+int error = 0;
 int line = 1;
 int column = 1;
 
 void print_separator();
+void print_separator_big();
 void print_line(int line_number);
 void print_column(int column_number);
 void print_linebreak();
@@ -29,6 +31,10 @@ void print_error();
 void print_block(char* tokentype);
 void color_set(char* color);
 void color_reset();
+void column_count();
+void line_count();
+void print_start();
+void print_end();
 
 
 
@@ -41,9 +47,9 @@ FLOAT              {DIGIT}+[.]{DIGIT}+
 
 ID                 [a-zA-Z_][a-z0-9A-Z]*
 
-LIST               list
+/* LIST               list */
 
-TYPE               int|float
+TYPE               int|float|list
 
 NULL               nil
 
@@ -61,6 +67,9 @@ OUTPUT_KEY         write|writeln
 ASSIGN_OP          [=]
 INTER_OP           [?]
 EXCLA_OP           [!]
+PERCENT_OP         [%]
+COLON_OP           [:]
+LIST_OP            <<|>>
 
 DELIM_PARENT       [()]
 DELIM_BRACKET      [[]]
@@ -69,119 +78,179 @@ DELIM_COMMA        [,]
 DELIM_SEMICOLLON   [;]
 DELIM_SQUOTE       [']
 DELIM_DQUOTE       ["]
+DELIM_SCOMMENT     \/\/
+DELIM_MCOMMENT     \/\*|\*\/
 
 FORMAT_BLANKSPACE  [ ]
 FORMAT_NEWLINE     \n
 FORMAT_TAB         \t
+FORMAT_CODES       \\n
 
 %%
 
 {FORMAT_BLANKSPACE} {
-    column = column + yyleng;
+    column_count();
 }
 
 {FORMAT_TAB} {
-    column = column + yyleng;
+    column_count();
 }
 
 {FORMAT_NEWLINE} {
-    column = 1;
-    line = line + 1;
+    line_count();
+}
+
+{FORMAT_CODES} {
+    print_block("Formatting Code");
+    column_count();
 }
 
 {INT} {
     print_block("Integer");
+    column_count();
 }
 
 {FLOAT} {
     print_block("Float");
-}
-
-{LIST} {
-    print_block("List");
+    column_count();
 }
 
 {TYPE} {
     print_block("Type");
+    column_count();
 }
 
 {NULL} {
     print_block("Null");
+    column_count();
 }
 
 {ARITHMETIC_OP} {
     print_block("Arithmetic Operation");
+    column_count();
 }
 
 {LOGIC_OP} {
     print_block("Logic Operation");
+    column_count();
 }
 
 {BINARY_OP} {
     print_block("Binary Operation");
+    column_count();
 }
 
 {FLOW_KEY} {
     print_block("Flow Control Keyword");
+    column_count();
 }
 
 {INPUT_KEY} {
     print_block("Input Keyword");
+    column_count();
 }
 
 {OUTPUT_KEY} {
     print_block("Output Keyword");
+    column_count();
 }
 
 {ASSIGN_OP} {
     print_block("Assignment Operator");
+    column_count();
 }
 
 {INTER_OP} {
     print_block("Interrogation Point Operator");
+    column_count();
 }
 
 {EXCLA_OP} {
     print_block("Exclamation Point Operator");
+    column_count();
+}
+
+{PERCENT_OP} {
+    print_block("Percentage Operator");
+    column_count();
+}
+
+{COLON_OP} {
+    print_block("Colon Operator");
+    column_count();
+}
+
+{LIST_OP} {
+    print_block("List Operator");
+    column_count();
 }
 
 {DELIM_PARENT} {
     print_block("Parenthesis Delimiter");
+    column_count();
 }
 
 {DELIM_BRACKET} {
     print_block("Bracket Delimiter");
+    column_count();
 }
 
 {DELIM_CUR_BRACKET} {
     print_block("Curly Bracket Delimiter");
+    column_count();
 }
 
 {DELIM_COMMA} {
     print_block("Comma Delimiter");
+    column_count();
 }
 
 {DELIM_SEMICOLLON} {
     print_block("Semicollon Delimiter");
+    column_count();
 }
 
 {DELIM_SQUOTE} {
     print_block("Single Quote Delimiter");
+    column_count();
 }
 
 {DELIM_DQUOTE} {
     print_block("Double Quote Delimiter");
+    column_count();
+}
+
+{DELIM_SCOMMENT} {
+    print_block("Single Line Comment Delimiter");
+    column_count();
+}
+
+{DELIM_MCOMMENT} {
+    print_block("Multi Line Comment Delimiter");
+    column_count();
 }
 
 {ID} {
     print_block("Identifier");
+    column_count();
 }
 
 . {
     print_error();
+    column_count();
+    error = error + 1;
 }
 
 %%
+
+void column_count(){
+    column = column + yyleng;
+}
+
+void line_count(){
+    line = line + 1;
+    column = 1;
+}
 
 void color_reset(){
     printf(COLOR_RESET);
@@ -193,6 +262,10 @@ void color_set(char* color){
 
 void print_separator(){
     printf("-----------------------------------------");
+}
+
+void print_separator_big(){
+    printf("-------------------------------------------------------");
 }
 
 void print_line(int line_number){
@@ -287,6 +360,48 @@ void print_block(char* tokentype){
     print_linebreak();
 }
 
+void print_start(){
+    color_set(COLOR_YELLOW);
+    print_linebreak();
+    print_separator_big();
+    print_linebreak();
+
+    printf("---------------Starting lexical analyser---------------");
+
+    print_linebreak();
+    print_separator_big();
+    print_linebreak();
+    color_reset();
+}
+
+void print_end(){
+    color_set(COLOR_YELLOW);
+    print_linebreak();
+    print_separator_big();
+    print_linebreak();
+
+    printf("---Lexical analyser completed with ");
+
+    if(error > 0){
+        color_set(COLOR_RED);
+    }
+    else{
+        color_set(COLOR_GREEN);
+    }
+
+    printf("%02d ", error);
+
+    color_set(COLOR_YELLOW);
+
+    printf("lexical errors---");
+
+    print_linebreak();
+    print_separator_big();
+    print_linebreak();
+    color_reset();
+
+}
+
 int main(int argc, char **argv){
     FILE *filep;
 
@@ -294,17 +409,25 @@ int main(int argc, char **argv){
         filep = fopen(argv[1], "r");
 
         if(filep != NULL){
+            print_start();
+
             yyin = filep;
             yylex();
+            fclose(yyin);
+
+            print_end();
         }
         else{
-            printf("Erro ao abrir o arquivo.\n");
+            printf("Error while opening the file.\n");
+
         }
+
     }
     else{
-        printf("Nenhum arquivo foi passado.\n");
+        printf("No file has been chosen.\n");
     }
 
+    yylex_destroy();
 
     return 0;
 }
