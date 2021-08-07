@@ -354,8 +354,8 @@ static void yynoreturn yy_fatal_error ( const char* msg  );
 	(yy_hold_char) = *yy_cp; \
 	*yy_cp = '\0'; \
 	(yy_c_buf_p) = yy_cp;
-#define YY_NUM_RULES 26
-#define YY_END_OF_BUFFER 27
+#define YY_NUM_RULES 27
+#define YY_END_OF_BUFFER 28
 /* This struct is not used in this scanner,
    but its presence is necessary. */
 struct yy_trans_info
@@ -365,7 +365,7 @@ struct yy_trans_info
 	};
 static const flex_int16_t yy_accept[66] =
     {   0,
-        0,    0,   27,   26,    2,    3,    1,   17,   24,   26,
+        0,    0,   28,   26,    2,    3,    1,   17,   24,   26,
        23,   18,    9,   21,    4,   22,   11,   15,   11,   16,
        25,   26,   25,   25,   25,   25,   25,   25,   25,   20,
        26,   11,   10,    0,    4,   25,   19,   25,   25,   25,
@@ -495,11 +495,34 @@ IF, THEN, ELSE, ID, NUMBER, RELOP */
 #include <stdio.h>
 #include <stdlib.h>
 
+#define COLOR_RESET   "\x1B[0m"
+#define COLOR_RED     "\x1B[31m"
+#define COLOR_GREEN   "\x1B[32m"
+#define COLOR_YELLOW  "\x1B[33m"
+#define COLOR_BLUE    "\x1B[34m"
+#define COLOR_MAGENTA "\x1B[35m"
+#define COLOR_CYAN    "\x1B[36m"
+#define COLOR_WHITE   "\x1B[37m"
+
 int line = 1;
 int column = 1;
-#line 501 "lex.yy.c"
+
+void print_separator();
+void print_line(int line_number);
+void print_column(int column_number);
+void print_linebreak();
+void print_tokentype(char* text);
+void print_token();
+void print_error();
+void print_block(char* tokentype);
+void color_set(char* color);
+void color_reset();
+
+
+
+#line 524 "lex.yy.c"
 /* regular definitions */
-#line 503 "lex.yy.c"
+#line 526 "lex.yy.c"
 
 #define INITIAL 0
 
@@ -714,10 +737,10 @@ YY_DECL
 		}
 
 	{
-#line 54 "analyser.l"
+#line 77 "analyser.l"
 
 
-#line 721 "lex.yy.c"
+#line 744 "lex.yy.c"
 
 	while ( /*CONSTCOND*/1 )		/* loops until end-of-file is reached */
 		{
@@ -776,14 +799,14 @@ do_action:	/* This label is used only to access EOF actions. */
 
 case 1:
 YY_RULE_SETUP
-#line 56 "analyser.l"
+#line 79 "analyser.l"
 {
     column = column + yyleng;
 }
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
-#line 60 "analyser.l"
+#line 83 "analyser.l"
 {
     column = column + yyleng;
 }
@@ -791,7 +814,7 @@ YY_RULE_SETUP
 case 3:
 /* rule 3 can match eol */
 YY_RULE_SETUP
-#line 64 "analyser.l"
+#line 87 "analyser.l"
 {
     column = 1;
     line = line + 1;
@@ -799,208 +822,171 @@ YY_RULE_SETUP
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 69 "analyser.l"
+#line 92 "analyser.l"
 {
-    printf("Line: %d - Column: %d\n", line, column);
-    printf("Token type: INT\n");
-    printf("Token read: %s\n", yytext);
+    print_block("Integer");
 }
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 75 "analyser.l"
+#line 96 "analyser.l"
 {
-    printf("Line: %d - Column: %d\n", line, column);
-    printf("Token type: FLOAT\n");
-    printf("Token read: %s\n", yytext);
+    print_block("Float");
 }
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 82 "analyser.l"
+#line 100 "analyser.l"
 {
-    printf("Line: %d - Column: %d\n", line, column);
-    printf("Token type: LIST\n");
-    printf("Token read: %s\n", yytext);
+    print_block("List");
 }
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 88 "analyser.l"
+#line 104 "analyser.l"
 {
-    printf("Line: %d - Column: %d\n", line, column);
-    printf("Token type: TYPE\n");
-    printf("Token read: %s\n", yytext);
+    print_block("Type");
 }
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
-#line 94 "analyser.l"
+#line 108 "analyser.l"
 {
-    printf("Line: %d - Column: %d\n", line, column);
-    printf("Token type: NULL\n");
-    printf("Token read: %s\n", yytext);
+    print_block("Null");
 }
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
-#line 100 "analyser.l"
+#line 112 "analyser.l"
 {
-    printf("Line: %d - Column: %d\n", line, column);
-    printf("Token type: ARITHMETIC_OP\n");
-    printf("Token read: %s\n", yytext);
+    print_block("Arithmetic Operation");
 }
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
-#line 107 "analyser.l"
+#line 116 "analyser.l"
 {
-    printf("Line: %d - Column: %d\n", line, column);
-    printf("Token type: LOGIC_OP\n");
-    printf("Token read: %s\n", yytext);
+    print_block("Logic Operation");
 }
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
-#line 113 "analyser.l"
+#line 120 "analyser.l"
 {
-    printf("Line: %d - Column: %d\n", line, column);
-    printf("Token type: BINARY_OP\n");
-    printf("Token read: %s\n", yytext);
+    print_block("Binary Operation");
 }
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
-#line 119 "analyser.l"
+#line 124 "analyser.l"
 {
-    printf("Line: %d - Column: %d\n", line, column);
-    printf("Token type: FLOW_KEY\n");
-    printf("Token read: %s\n", yytext);
+    print_block("Flow Control Keyword");
 }
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
-#line 125 "analyser.l"
+#line 128 "analyser.l"
 {
-    printf("Line: %d - Column: %d\n", line, column);
-    printf("Token type: INPUT_KEY\n");
-    printf("Token read: %s\n", yytext);
+    print_block("Input Keyword");
 }
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
-#line 131 "analyser.l"
+#line 132 "analyser.l"
 {
-    printf("Line: %d - Column: %d\n", line, column);
-    printf("Token type: OUTPUT_KEY\n");
-    printf("Token read: %s\n", yytext);
+    print_block("Output Keyword");
 }
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
-#line 137 "analyser.l"
+#line 136 "analyser.l"
 {
-    printf("Line: %d - Column: %d\n", line, column);
-    printf("Token type: ASSIGN_OP\n");
-    printf("Token read: %s\n", yytext);
+    print_block("Assignment Operator");
 }
 	YY_BREAK
 case 16:
 YY_RULE_SETUP
-#line 143 "analyser.l"
+#line 140 "analyser.l"
 {
-    printf("Line: %d - Column: %d\n", line, column);
-    printf("Token type: INTER_OP\n");
-    printf("Token read: %s\n", yytext);
+    print_block("Interrogation Point Operator");
 }
 	YY_BREAK
 case 17:
 YY_RULE_SETUP
-#line 149 "analyser.l"
+#line 144 "analyser.l"
 {
-    printf("Line: %d - Column: %d\n", line, column);
-    printf("Token type: EXCLA_OP\n");
-    printf("Token read: %s\n", yytext);
+    print_block("Exclamation Point Operator");
 }
 	YY_BREAK
 case 18:
 YY_RULE_SETUP
-#line 155 "analyser.l"
+#line 148 "analyser.l"
 {
-    printf("Line: %d - Column: %d\n", line, column);
-    printf("Token type: DELIM_PARENT\n");
-    printf("Token read: %s\n", yytext);
+    print_block("Parenthesis Delimiter");
 }
 	YY_BREAK
 case 19:
 YY_RULE_SETUP
-#line 161 "analyser.l"
+#line 152 "analyser.l"
 {
-    printf("Line: %d - Column: %d\n", line, column);
-    printf("Token type: DELIM_BRACKET\n");
-    printf("Token read: %s\n", yytext);
+    print_block("Bracket Delimiter");
 }
 	YY_BREAK
 case 20:
 YY_RULE_SETUP
-#line 167 "analyser.l"
+#line 156 "analyser.l"
 {
-    printf("Line: %d - Column: %d\n", line, column);
-    printf("Token type: DELIM_CUR_BRACKET\n");
-    printf("Token read: %s\n", yytext);
+    print_block("Curly Bracket Delimiter");
 }
 	YY_BREAK
 case 21:
 YY_RULE_SETUP
-#line 173 "analyser.l"
+#line 160 "analyser.l"
 {
-    printf("Line: %d - Column: %d\n", line, column);
-    printf("Token type: DELIM_COMMA\n");
-    printf("Token read: %s\n", yytext);
+    print_block("Comma Delimiter");
 }
 	YY_BREAK
 case 22:
 YY_RULE_SETUP
-#line 179 "analyser.l"
+#line 164 "analyser.l"
 {
-    printf("Line: %d - Column: %d\n", line, column);
-    printf("Token type: DELIM_SEMICOLLON\n");
-    printf("Token read: %s\n", yytext);
+    print_block("Semicollon Delimiter");
 }
 	YY_BREAK
 case 23:
 YY_RULE_SETUP
-#line 185 "analyser.l"
+#line 168 "analyser.l"
 {
-    printf("Line: %d - Column: %d\n", line, column);
-    printf("Token type: DELIM_SQUOTE\n");
-    printf("Token read: %s\n", yytext);
+    print_block("Single Quote Delimiter");
 }
 	YY_BREAK
 case 24:
 YY_RULE_SETUP
-#line 191 "analyser.l"
+#line 172 "analyser.l"
 {
-    printf("Line: %d - Column: %d\n", line, column);
-    printf("Token type: DELIM_DQUOTE\n");
-    printf("Token read: %s\n", yytext);
+    print_block("Double Quote Delimiter");
 }
 	YY_BREAK
 case 25:
 YY_RULE_SETUP
-#line 199 "analyser.l"
+#line 176 "analyser.l"
 {
-    printf("Line: %d - Column: %d\n", line, column);
-    printf("Token type: ID\n");
-    printf("Token read: %s\n", yytext);
+    print_block("Identifier");
 }
 	YY_BREAK
 case 26:
 YY_RULE_SETUP
-#line 205 "analyser.l"
+#line 180 "analyser.l"
+{
+    print_error();
+}
+	YY_BREAK
+case 27:
+YY_RULE_SETUP
+#line 184 "analyser.l"
 ECHO;
 	YY_BREAK
-#line 1004 "lex.yy.c"
+#line 990 "lex.yy.c"
 case YY_STATE_EOF(INITIAL):
 	yyterminate();
 
@@ -1968,8 +1954,112 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 205 "analyser.l"
+#line 184 "analyser.l"
 
+
+void color_reset(){
+    printf(COLOR_RESET);
+}
+
+void color_set(char* color){
+    printf(color);
+}
+
+void print_separator(){
+    printf("-----------------------------------------");
+}
+
+void print_line(int line_number){
+    printf("Line: ");
+    color_set(COLOR_MAGENTA);
+    printf("%d", line_number);
+    color_reset();
+}
+
+void print_column(int column_number){
+    printf("Column: ");
+    color_set(COLOR_MAGENTA);
+    printf("%d", column_number);
+    color_reset();
+}
+
+void print_position(){
+    print_line(line);
+    printf(" - ");
+    print_column(column);
+}
+
+void print_linebreak(){
+    printf("\n");
+}
+
+void print_tokentype(char* text){
+    printf("Token type: ");
+    color_set(COLOR_BLUE);
+    printf("%s", text);
+    color_reset();
+}
+
+void print_token(){
+    printf("Token read: ");
+    color_set(COLOR_GREEN);
+    printf("%s", yytext);
+    color_reset();
+}
+
+void print_error(){
+    print_linebreak();
+
+    color_set(COLOR_RED);
+    print_separator();
+    color_reset();
+
+    print_linebreak();
+
+    print_position();
+
+    print_linebreak();
+
+    color_set(COLOR_RED);
+    printf("ERROR: Undefined token");
+    color_reset();
+
+    print_linebreak();
+
+    print_token();
+
+    print_linebreak();
+
+    color_set(COLOR_RED);
+    print_separator();
+    color_reset();
+
+    print_linebreak();
+}
+
+void print_block(char* tokentype){
+    print_linebreak();
+
+    print_separator();
+
+    print_linebreak();
+
+    print_position();
+
+    print_linebreak();
+
+    print_tokentype(tokentype);
+
+    print_linebreak();
+
+    print_token();
+
+    print_linebreak();
+
+    print_separator();
+
+    print_linebreak();
+}
 
 int main(int argc, char **argv){
     FILE *filep;
