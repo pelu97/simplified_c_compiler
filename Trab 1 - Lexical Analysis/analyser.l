@@ -65,11 +65,12 @@ INPUT_KEY          read
 OUTPUT_KEY         write|writeln
 
 ASSIGN_OP          [=]
-INTER_OP           [?]
-EXCLA_OP           [!]
-PERCENT_OP         [%]
-COLON_OP           [:]
-LIST_OP            <<|>>
+
+/* INTER_OP           [?] */
+/* EXCLA_OP           [!] */
+/* PERCENT_OP         [%] */
+/* COLON_OP           [:] */
+LIST_OP            <<|>>|\?|!|%|:
 
 DELIM_PARENT       [()]
 DELIM_BRACKET      [[]]
@@ -160,26 +161,6 @@ FORMAT_CODES       \\n
     column_count();
 }
 
-{INTER_OP} {
-    print_block("Interrogation Point Operator");
-    column_count();
-}
-
-{EXCLA_OP} {
-    print_block("Exclamation Point Operator");
-    column_count();
-}
-
-{PERCENT_OP} {
-    print_block("Percentage Operator");
-    column_count();
-}
-
-{COLON_OP} {
-    print_block("Colon Operator");
-    column_count();
-}
-
 {LIST_OP} {
     print_block("List Operator");
     column_count();
@@ -242,6 +223,29 @@ FORMAT_CODES       \\n
 }
 
 %%
+/*
+removed rules
+
+{INTER_OP} {
+    print_block("Interrogation Point Operator");
+    column_count();
+}
+
+{EXCLA_OP} {
+    print_block("Exclamation Point Operator");
+    column_count();
+}
+
+{PERCENT_OP} {
+    print_block("Percentage Operator");
+    column_count();
+}
+
+{COLON_OP} {
+    print_block("Colon Operator");
+    column_count();
+}
+*/
 
 void column_count(){
     column = column + yyleng;
