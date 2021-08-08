@@ -68,6 +68,8 @@ BINARY_OP          <|<=|>|>=|==|!=
 
 ASSIGN_OP          [=]
 
+EXCLA_OP           [!]
+
 /* Controle de fluxo */
 FLOW_KEY           if|else|for|return
 
@@ -77,10 +79,9 @@ OUTPUT_KEY         write|writeln
 
 /* Operadores de lista */
 /* INTER_OP           [?] */
-/* EXCLA_OP           [!] */
 /* PERCENT_OP         [%] */
 /* COLON_OP           [:] */
-LIST_OP            <<|>>|\?|!|%|:
+LIST_OP            <<|>>|\?|%|:
 
 /* Delimitadores */
 DELIM_PARENT       [()]
@@ -170,6 +171,11 @@ FORMAT_TAB         \t
     column_count();
 }
 
+{EXCLA_OP} {
+    print_block("Exclamation Point Operator");
+    column_count();
+}
+
 {LIST_OP} {
     print_block("List Operator");
     column_count();
@@ -240,10 +246,6 @@ removed rules
     column_count();
 }
 
-{EXCLA_OP} {
-    print_block("Exclamation Point Operator");
-    column_count();
-}
 
 {PERCENT_OP} {
     print_block("Percentage Operator");
