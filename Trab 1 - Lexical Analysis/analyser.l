@@ -56,6 +56,7 @@ ID                 [a-zA-Z_][a-z0-9A-Z]*
 
 /* Tipos */
 TYPE               int|float|list
+STRING             {DELIM_DQUOTE}(\\.|[^{DELIM_DQUOTE}\\])*{DELIM_DQUOTE}
 
 NULL               nil
 
@@ -128,6 +129,11 @@ FORMAT_TAB         \t
 
 {TYPE} {
     print_block("Type");
+    column_count();
+}
+
+{STRING} {
+    print_block("String");
     column_count();
 }
 
