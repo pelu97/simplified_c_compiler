@@ -97,7 +97,9 @@ DELIM_MCOMMENT     \/\*|\*\/
 FORMAT_BLANKSPACE  [ ]
 FORMAT_NEWLINE     \n
 FORMAT_TAB         \t
-FORMAT_CODES       \\n
+
+/* FORMAT_CODES       \\n */
+
 
 %%
 
@@ -111,11 +113,6 @@ FORMAT_CODES       \\n
 
 {FORMAT_NEWLINE} {
     line_count();
-}
-
-{FORMAT_CODES} {
-    print_block("Formatting Code");
-    column_count();
 }
 
 {INT} {
@@ -255,6 +252,11 @@ removed rules
 
 {COLON_OP} {
     print_block("Colon Operator");
+    column_count();
+}
+
+{FORMAT_CODES} {
+    print_block("Formatting Code");
     column_count();
 }
 */
