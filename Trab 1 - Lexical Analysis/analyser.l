@@ -7,6 +7,7 @@ IF, THEN, ELSE, ID, NUMBER, RELOP */
 #include <stdio.h>
 #include <stdlib.h>
 
+// Macros para cores
 #define COLOR_RESET   "\x1B[0m"
 #define COLOR_RED     "\x1B[31m"
 #define COLOR_GREEN   "\x1B[32m"
@@ -16,10 +17,12 @@ IF, THEN, ELSE, ID, NUMBER, RELOP */
 #define COLOR_CYAN    "\x1B[36m"
 #define COLOR_WHITE   "\x1B[37m"
 
+// Variáveis para mapeamento de posição e erros
 int error = 0;
 int line = 1;
 int column = 1;
 
+// Funções utilizadas para formatação, impressão e mapeamento
 void print_separator();
 void print_separator_big();
 void print_line(int line_number);
@@ -39,39 +42,47 @@ void print_end();
 
 
 %}
-/* regular definitions */
+/* Definições */
 
+/* Base */
 DIGIT              [0-9]
 INT                {DIGIT}+
 FLOAT              {DIGIT}+[.]{DIGIT}+
 
+/* Identificador */
 ID                 [a-zA-Z_][a-z0-9A-Z]*
 
 /* LIST               list */
 
+/* Tipos */
 TYPE               int|float|list
 
 NULL               nil
 
+/* Operadores */
 ARITHMETIC_OP      \+|\-|\/|\*
 
 LOGIC_OP           \|\||&&
 
 BINARY_OP          <|<=|>|>=|==|!=
 
+ASSIGN_OP          [=]
+
+/* Controle de fluxo */
 FLOW_KEY           if|else|for|return
 
+/* Entrada e saída */
 INPUT_KEY          read
 OUTPUT_KEY         write|writeln
 
-ASSIGN_OP          [=]
-
+/* Operadores de lista */
 /* INTER_OP           [?] */
 /* EXCLA_OP           [!] */
 /* PERCENT_OP         [%] */
 /* COLON_OP           [:] */
 LIST_OP            <<|>>|\?|!|%|:
 
+/* Delimitadores */
 DELIM_PARENT       [()]
 DELIM_BRACKET      [[]]
 DELIM_CUR_BRACKET  [{}]
@@ -82,6 +93,7 @@ DELIM_DQUOTE       ["]
 DELIM_SCOMMENT     \/\/
 DELIM_MCOMMENT     \/\*|\*\/
 
+/* Tags de formatação */
 FORMAT_BLANKSPACE  [ ]
 FORMAT_NEWLINE     \n
 FORMAT_TAB         \t
@@ -247,31 +259,48 @@ removed rules
 }
 */
 
+
+/* ------------------------ Funções para calcular o mapeamento ------------------------ */
+
+/* Mantém o mapeamento das colunas*/
 void column_count(){
     column = column + yyleng;
 }
 
+/* Mantém o mapeamento das linhas */
 void line_count(){
     line = line + 1;
     column = 1;
 }
 
+/* ------------------------ Fim das funções de mapeamento ------------------------ */
+
+
+
+
+/* ------------------------ Funções de formatação da saída ------------------------ */
+
+/* Limpa a definição de cor de volta para o padrão */
 void color_reset(){
     printf(COLOR_RESET);
 }
 
+/* Define uma cor nova - macros definidas no topo do código */
 void color_set(char* color){
     printf(color);
 }
 
+/* Imprime uma linha separadora */
 void print_separator(){
     printf("-----------------------------------------");
 }
 
+/* Imprime uma linha separadora grande */
 void print_separator_big(){
     printf("-------------------------------------------------------");
 }
 
+/* Imprime o posicionamento na linha */
 void print_line(int line_number){
     printf("Line: ");
     color_set(COLOR_MAGENTA);
@@ -279,6 +308,7 @@ void print_line(int line_number){
     color_reset();
 }
 
+/* Imprime o posicionamento na coluna */
 void print_column(int column_number){
     printf("Column: ");
     color_set(COLOR_MAGENTA);
@@ -286,16 +316,19 @@ void print_column(int column_number){
     color_reset();
 }
 
+/* Imprime uma posição completa (linha e coluna) */
 void print_position(){
     print_line(line);
     printf(" - ");
     print_column(column);
 }
 
+/* Imprime uma quebra de linha - separado em uma função apenas para ficar mais prático para montar a formatação do bloco completo */
 void print_linebreak(){
     printf("\n");
 }
 
+/* Imprime o tipo do token lido */
 void print_tokentype(char* text){
     printf("Token type: ");
     color_set(COLOR_BLUE);
@@ -303,6 +336,7 @@ void print_tokentype(char* text){
     color_reset();
 }
 
+/* Imprime o token lido */
 void print_token(){
     printf("Token read: ");
     color_set(COLOR_GREEN);
@@ -310,6 +344,7 @@ void print_token(){
     color_reset();
 }
 
+/* Imprime um bloco completo de um erro léxico */
 void print_error(){
     print_linebreak();
 
@@ -340,6 +375,7 @@ void print_error(){
     print_linebreak();
 }
 
+/* Imprime um bloco completo de um token */
 void print_block(char* tokentype){
     print_linebreak();
 
@@ -364,6 +400,7 @@ void print_block(char* tokentype){
     print_linebreak();
 }
 
+/* Imprime um cabeçalho de inicialização do analisador */
 void print_start(){
     color_set(COLOR_YELLOW);
     print_linebreak();
@@ -378,6 +415,7 @@ void print_start(){
     color_reset();
 }
 
+/* Imprime um rodapé de finalização do analisador */
 void print_end(){
     color_set(COLOR_YELLOW);
     print_linebreak();
@@ -405,6 +443,7 @@ void print_end(){
     color_reset();
 
 }
+/* ------------------------ Fim das funções de formatação ------------------------ */
 
 int main(int argc, char **argv){
     FILE *filep;
