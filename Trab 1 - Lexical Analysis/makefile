@@ -1,3 +1,3 @@
-analyser: analyser.l
-	flex analyser.l
-	gcc lex.yy.c -o analyser -ll -Wall
+tradutor: ./src/analyser.l
+	flex -o ./src/lex.yy.c ./src/analyser.l
+	gcc ./src/lex.yy.c -o tradutor -Wall
