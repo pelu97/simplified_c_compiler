@@ -52,8 +52,6 @@ FLOAT              {DIGIT}+[.]{DIGIT}+
 /* Identificador */
 ID                 [a-zA-Z_][a-z0-9A-Z]*
 
-/* LIST               list */
-
 /* Tipos */
 TYPE               int|float|list
 STRING             {DELIM_DQUOTE}(\\.|[^{DELIM_DQUOTE}\\])*{DELIM_DQUOTE}
@@ -79,9 +77,6 @@ INPUT_KEY          read
 OUTPUT_KEY         write|writeln
 
 /* Operadores de lista */
-/* INTER_OP           [?] */
-/* PERCENT_OP         [%] */
-/* COLON_OP           [:] */
 LIST_OP            <<|>>|\?|%|:
 
 /* Delimitadores */
@@ -92,15 +87,16 @@ DELIM_COMMA        [,]
 DELIM_SEMICOLLON   [;]
 DELIM_SQUOTE       [']
 DELIM_DQUOTE       ["]
-DELIM_SCOMMENT     \/\/
-DELIM_MCOMMENT     \/\*|\*\/
+
+/* Comentários */
+SINGLE_COMMENT     \/\/[^\n]*
+MULTI_COMMENT      \/\*[^(\*\/)]*\*\/
 
 /* Tags de formatação */
 FORMAT_BLANKSPACE  [ ]
 FORMAT_NEWLINE     \n
 FORMAT_TAB         \t
 
-/* FORMAT_CODES       \\n */
 
 
 %%
@@ -115,6 +111,16 @@ FORMAT_TAB         \t
 
 {FORMAT_NEWLINE} {
     line_count();
+}
+
+{SINGLE_COMMENT} {
+    print_block("Single Line Comment");
+    column_count();
+}
+
+{MULTI_COMMENT} {
+    print_block("Multiple Line Comment");
+    column_count();
 }
 
 {INT} {
@@ -222,15 +228,6 @@ FORMAT_TAB         \t
     column_count();
 }
 
-{DELIM_SCOMMENT} {
-    print_block("Single Line Comment Delimiter");
-    column_count();
-}
-
-{DELIM_MCOMMENT} {
-    print_block("Multi Line Comment Delimiter");
-    column_count();
-}
 
 {ID} {
     print_block("Identifier");
@@ -267,6 +264,17 @@ removed rules
     print_block("Formatting Code");
     column_count();
 }
+
+{DELIM_SCOMMENT} {
+    print_block("Single Line Comment Delimiter");
+    column_count();
+}
+
+{DELIM_MCOMMENT} {
+    print_block("Multi Line Comment Delimiter");
+    column_count();
+}
+
 */
 
 
@@ -329,7 +337,7 @@ void print_column(int column_number){
 /* Imprime uma posição completa (linha e coluna) */
 void print_position(){
     print_line(line);
-    printf(" - ");
+    printf("    -    ");
     print_column(column);
 }
 
@@ -365,6 +373,7 @@ void print_error(){
     print_linebreak();
 
     print_position();
+
 
     print_linebreak();
 
