@@ -1,6 +1,6 @@
 int main(){
     int @potato;
-    int list 1lista1;
+    int list lista1;
 
     potato = 2;
 
@@ -9,7 +9,7 @@ int main(){
 
     if(potato != 0){
         writeln("Potatoes in list");
-        writeln(?lista1);
+        writeln(& ?lista1);
     }
 
     return 0;
