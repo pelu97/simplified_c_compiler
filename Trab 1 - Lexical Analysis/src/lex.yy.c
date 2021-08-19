@@ -2093,7 +2093,7 @@ void color_reset(){
 
 /* Define uma cor nova - macros definidas no topo do código */
 void color_set(char* color){
-    printf(color);
+    printf("%s", color);
 }
 
 /* Imprime uma linha separadora */
