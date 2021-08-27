@@ -499,9 +499,9 @@ int yy_flex_debug = 0;
 #define YY_MORE_ADJ 0
 #define YY_RESTORE_YY_MORE_OFFSET
 char *yytext;
-#line 1 "./src/analyser.l"
+#line 1 "./src/lexical.l"
 #define YY_NO_INPUT 1
-#line 4 "./src/analyser.l"
+#line 4 "./src/lexical.l"
 /* definitions of manifest constants
 LT, LE, EQ, NE, GT, GE,
 IF, THEN, ELSE, ID, NUMBER, RELOP */
@@ -769,7 +769,7 @@ YY_DECL
 		}
 
 	{
-#line 102 "./src/analyser.l"
+#line 102 "./src/lexical.l"
 
 
 #line 776 "./src/lex.yy.c"
@@ -831,14 +831,14 @@ do_action:	/* This label is used only to access EOF actions. */
 
 case 1:
 YY_RULE_SETUP
-#line 104 "./src/analyser.l"
+#line 104 "./src/lexical.l"
 {
     column_count();
 }
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
-#line 108 "./src/analyser.l"
+#line 108 "./src/lexical.l"
 {
     column_count();
 }
@@ -846,14 +846,14 @@ YY_RULE_SETUP
 case 3:
 /* rule 3 can match eol */
 YY_RULE_SETUP
-#line 112 "./src/analyser.l"
+#line 112 "./src/lexical.l"
 {
     line_count();
 }
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 116 "./src/analyser.l"
+#line 116 "./src/lexical.l"
 {
     print_block("Single Line Comment");
     column_count();
@@ -862,7 +862,7 @@ YY_RULE_SETUP
 case 5:
 /* rule 5 can match eol */
 YY_RULE_SETUP
-#line 121 "./src/analyser.l"
+#line 121 "./src/lexical.l"
 {
     print_block("Multiple Line Comment");
     column_count();
@@ -870,7 +870,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 126 "./src/analyser.l"
+#line 126 "./src/lexical.l"
 {
     print_block("Integer");
     column_count();
@@ -878,7 +878,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 131 "./src/analyser.l"
+#line 131 "./src/lexical.l"
 {
     print_block("Float");
     column_count();
@@ -886,7 +886,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
-#line 136 "./src/analyser.l"
+#line 136 "./src/lexical.l"
 {
     print_block("Type");
     column_count();
@@ -895,7 +895,7 @@ YY_RULE_SETUP
 case 9:
 /* rule 9 can match eol */
 YY_RULE_SETUP
-#line 141 "./src/analyser.l"
+#line 141 "./src/lexical.l"
 {
     print_block("String");
     column_count();
@@ -903,7 +903,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
-#line 146 "./src/analyser.l"
+#line 146 "./src/lexical.l"
 {
     print_block("Null");
     column_count();
@@ -911,7 +911,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
-#line 151 "./src/analyser.l"
+#line 151 "./src/lexical.l"
 {
     print_block("Arithmetic Operation");
     column_count();
@@ -919,7 +919,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
-#line 156 "./src/analyser.l"
+#line 156 "./src/lexical.l"
 {
     print_block("Logic Operation");
     column_count();
@@ -927,7 +927,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
-#line 161 "./src/analyser.l"
+#line 161 "./src/lexical.l"
 {
     print_block("Binary Operation");
     column_count();
@@ -935,7 +935,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
-#line 166 "./src/analyser.l"
+#line 166 "./src/lexical.l"
 {
     print_block("Flow Control Keyword");
     column_count();
@@ -943,7 +943,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
-#line 171 "./src/analyser.l"
+#line 171 "./src/lexical.l"
 {
     print_block("Input Keyword");
     column_count();
@@ -951,7 +951,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 16:
 YY_RULE_SETUP
-#line 176 "./src/analyser.l"
+#line 176 "./src/lexical.l"
 {
     print_block("Output Keyword");
     column_count();
@@ -959,7 +959,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 17:
 YY_RULE_SETUP
-#line 181 "./src/analyser.l"
+#line 181 "./src/lexical.l"
 {
     print_block("Assignment Operator");
     column_count();
@@ -967,7 +967,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 18:
 YY_RULE_SETUP
-#line 186 "./src/analyser.l"
+#line 186 "./src/lexical.l"
 {
     print_block("Exclamation Point Operator");
     column_count();
@@ -975,7 +975,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 19:
 YY_RULE_SETUP
-#line 191 "./src/analyser.l"
+#line 191 "./src/lexical.l"
 {
     print_block("List Operator");
     column_count();
@@ -983,7 +983,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 20:
 YY_RULE_SETUP
-#line 196 "./src/analyser.l"
+#line 196 "./src/lexical.l"
 {
     print_block("Parenthesis Delimiter");
     column_count();
@@ -991,7 +991,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 21:
 YY_RULE_SETUP
-#line 201 "./src/analyser.l"
+#line 201 "./src/lexical.l"
 {
     print_block("Bracket Delimiter");
     column_count();
@@ -999,7 +999,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 22:
 YY_RULE_SETUP
-#line 206 "./src/analyser.l"
+#line 206 "./src/lexical.l"
 {
     print_block("Curly Bracket Delimiter");
     column_count();
@@ -1007,7 +1007,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 23:
 YY_RULE_SETUP
-#line 211 "./src/analyser.l"
+#line 211 "./src/lexical.l"
 {
     print_block("Comma Delimiter");
     column_count();
@@ -1015,7 +1015,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 24:
 YY_RULE_SETUP
-#line 216 "./src/analyser.l"
+#line 216 "./src/lexical.l"
 {
     print_block("Semicollon Delimiter");
     column_count();
@@ -1023,7 +1023,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 25:
 YY_RULE_SETUP
-#line 221 "./src/analyser.l"
+#line 221 "./src/lexical.l"
 {
     print_block("Single Quote Delimiter");
     column_count();
@@ -1031,7 +1031,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 26:
 YY_RULE_SETUP
-#line 226 "./src/analyser.l"
+#line 226 "./src/lexical.l"
 {
     print_block("Double Quote Delimiter");
     column_count();
@@ -1039,7 +1039,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 27:
 YY_RULE_SETUP
-#line 232 "./src/analyser.l"
+#line 232 "./src/lexical.l"
 {
     print_block("Identifier");
     column_count();
@@ -1047,7 +1047,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 28:
 YY_RULE_SETUP
-#line 237 "./src/analyser.l"
+#line 237 "./src/lexical.l"
 {
     print_error();
     column_count();
@@ -1056,7 +1056,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 29:
 YY_RULE_SETUP
-#line 243 "./src/analyser.l"
+#line 243 "./src/lexical.l"
 ECHO;
 	YY_BREAK
 #line 1063 "./src/lex.yy.c"
@@ -2027,7 +2027,7 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 243 "./src/analyser.l"
+#line 243 "./src/lexical.l"
 
 /*
 removed rules
