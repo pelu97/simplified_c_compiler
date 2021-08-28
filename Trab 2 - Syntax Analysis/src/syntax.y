@@ -47,6 +47,15 @@ extern int yyparse();
 %token FORMAT_NEWLINE
 %token FORMAT_TAB
 
+%token IF_KEYWORD
+%token ELSE_KEYWORD
+%token FOR_KEYWORD
+%token RETURN_KEYWORD
+%token WRITE_KEYWORD
+%token WRITELN_KEYWORD
+%token READ_KEYWORD
+/* %token '<<'
+%token '>>' */
 
 %%
 /* Grammar rules */
@@ -181,17 +190,17 @@ writeOp:
 ;
 
 write:
-    'write(' STRING ')' {printf('%d %d %d', $1, $2, $3);}
-    | 'write(' simpleExpression ')' {printf('%d %d %d', $1, $2, $3);}
+    WRITE_KEYWORD '(' STRING ')' {printf('%d %d %d', $1, $2, $3);}
+    | WRITE_KEYWORD '(' simpleExpression ')' {printf('%d %d %d', $1, $2, $3);}
 ;
 
 writeln:
-    'writeln(' STRING ')' {printf('%d %d %d', $1, $2, $3);}
-    | 'writeln(' simpleExpression ')' {printf('%d %d %d', $1, $2, $3);}
+    WRITELN_KEYWORD '(' STRING ')' {printf('%d %d %d', $1, $2, $3);}
+    | WRITELN_KEYWORD '(' simpleExpression ')' {printf('%d %d %d', $1, $2, $3);}
 ;
 
 read:
-    'read(' ID ')' {printf('%d %d %d', $1, $2, $3);}
+    READ_KEYWORD '(' ID ')' {printf('%d %d %d', $1, $2, $3);}
 ;
 
 listStatement:
@@ -220,11 +229,11 @@ listTailDestructor:
 ;
 
 listMap:
-    ID ASSIGN_OP ID '>>' ID {printf('%d %d %d %d %d', $1, $2, $3, $4, $5);}
+    ID ASSIGN_OP ID ">>" ID {printf('%d %d %d %d %d', $1, $2, $3, $4, $5);}
 ;
 
 listFilter:
-    ID ASSIGN_OP ID '<<' ID {printf('%d %d %d %d %d', $1, $2, $3, $4, $5);}
+    ID ASSIGN_OP ID "<<" ID {printf('%d %d %d %d %d', $1, $2, $3, $4, $5);}
 ;
 
 
