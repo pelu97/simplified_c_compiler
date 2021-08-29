@@ -59,7 +59,7 @@ TYPE               int|float|list
 /* LIST_TYPE          list */
 STRING             {DELIM_DQUOTE}(\\.|[^{DELIM_DQUOTE}\\])*{DELIM_DQUOTE}
 
-NULL               nil
+NULL_CONST         nil
 
 /* Operadores */
 /* ARITHMETIC_OP      \+|\-|\/|\* */
@@ -97,12 +97,12 @@ OUTPUT_KEY         write
 OUTPUTLN_KEY       writeln
 
 /* Operadores de lista */
-LIST_OP            <<|>>|\?|%|:
-/* ASSIGN_LISTOP      : */
-/* HEADER_LISTOP      \? */
-/* TAILDES_LISTOP     % */
-/* MAP_LISTOP         >> */
-/* FILTER_LISTOP      << */
+/* LIST_OP            <<|>>|\?|%|: */
+ASSIGN_LISTOP      :
+HEADER_LISTOP      \?
+TAILDES_LISTOP     %
+MAP_LISTOP         >>
+FILTER_LISTOP      <<
 
 /* Delimitadores */
 DELIM_PARENT       [()]
@@ -168,7 +168,7 @@ FORMAT_TAB         \t
     column_count();
 }
 
-{NULL} {
+{NULL_CONST} {
     print_block("Null");
     column_count();
 }
@@ -248,8 +248,28 @@ FORMAT_TAB         \t
     column_count();
 }
 
-{LIST_OP} {
-    print_block("List Operator");
+{ASSIGN_LISTOP} {
+    print_block("Assignment List Operator");
+    column_count();
+}
+
+{HEADER_LISTOP} {
+    print_block("Header List Operator");
+    column_count();
+}
+
+{TAILDES_LISTOP} {
+    print_block("Tail Destructor List Operator");
+    column_count();
+}
+
+{MAP_LISTOP} {
+    print_block("Map List Operator");
+    column_count();
+}
+
+{FILTER_LISTOP} {
+    print_block("Filter List Operator");
     column_count();
 }
 
@@ -638,7 +658,7 @@ void print_end(){
 }
 /* ------------------------ Fim das funções de formatação ------------------------ */
 
-int main(int argc, char **argv){
+/* int main(int argc, char **argv){
     FILE *filep;
 
     if(argc >= 2) {
@@ -666,4 +686,4 @@ int main(int argc, char **argv){
     yylex_destroy();
 
     return 0;
-}
+} */

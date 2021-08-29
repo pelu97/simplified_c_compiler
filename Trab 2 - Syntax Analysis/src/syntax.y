@@ -5,7 +5,10 @@
 #include <stdlib.h>
 
 extern int yylex();
+extern int yylex_destroy();
 extern int yyparse();
+extern void yyerror(const char* s);
+extern FILE* yyin;
 %}
 /* Yacc/Bison declarations */
 
@@ -23,7 +26,7 @@ extern int yyparse();
 %token LIST_TYPE */
 %token STRING
 
-%token NULL
+%token NULL_CONST
 
 /* Operadores */
 /* %token ARITHMETIC_OP */
@@ -61,12 +64,12 @@ extern int yyparse();
 %token OUTPUTLN_KEY
 
 /* Operadores de lista */
-%token LIST_OP
-/* %token ASSIGN_LISTOP
+/* %token LIST_OP */
+%token ASSIGN_LISTOP
 %token HEADER_LISTOP
 %token TAILDES_LISTOP
 %token MAP_LISTOP
-%token FILTER_LISTOP */
+%token FILTER_LISTOP
 
 %token DELIM_PARENT
 %token DELIM_BRACKET
@@ -96,186 +99,210 @@ extern int yyparse();
 %%
 /* Grammar rules */
 program:
-    declarationList { printf('%d', $1); }
+    declarationList { printf("%d", $1); }
 ;
 
 declarationList:
-    declarationList declaration {printf('%d %d', $1, $2);}
-    | declaration {printf('%d', $1);}
+    declarationList declaration {printf("%d %d", $1, $2);}
+    | declaration {printf("%d", $1);}
 ;
 
 declaration:
-    varDeclaration {printf('%d', $1);}
-    | funcDeclaration {printf('%d', $1);}
+    varDeclaration {printf("%d", $1);}
+    | funcDeclaration {printf("%d", $1);}
 ;
 
 varDeclaration:
-    TYPE varDeclList {printf('%d %d', $1, $2);}
+    TYPE varDeclList {printf("%d %d", $1, $2);}
 ;
 
 varDeclList:
-    varDeclList varDeclId {printf('%d %d', $1, $2);}
-    | varDeclId {printf('%d', $1);}
+    varDeclList ',' varDeclId {printf("%d %d", $1, $2);}
+    | varDeclId {printf("%d", $1);}
 ;
 
 varDeclId :
-    ID {printf('%d', $1);}
+    ID {printf("%d", $1);}
 ;
 
 funcDeclaration:
-    TYPE ID '(' parameters ')' statement {printf('%d %d %d %d %d %d', $1, $2, $3, $4, $5, $6);}
+    TYPE ID '(' parameters ')' statement {printf("%d %d %d %d %d %d", $1, $2, $3, $4, $5, $6);}
 ;
 
 parameters:
-    parameterList {printf('%d', $1);}
+    parameterList {printf("%d", $1);}
     | {}
 ;
 
 parameterList:
-    parameterList ',' TYPE ID {printf('%d %d %d', $1, $2, $3);}
-    | TYPE ID {printf('%d %d', $1, $2);}
+    parameterList ',' TYPE ID {printf("%d %d %d", $1, $2, $3);}
+    | TYPE ID {printf("%d %d", $1, $2);}
 ;
 
 statement:
-    bodyStatement {printf('%d', $1);}
-    | ifStatement {printf('%d', $1);}
-    | loopStatement {printf('%d', $1);}
-    | returnStatement {printf('%d', $1);}
-    | listStatement {printf('%d', $1);}
+    bodyStatement {printf("%d", $1);}
+    | ifStatement {printf("%d", $1);}
+    | loopStatement {printf("%d", $1);}
+    | returnStatement {printf("%d", $1);}
+    | listStatement {printf("%d", $1);}
+    | writeOp {printf("%d", $1);}
+    | readOp {printf("%d", $1);}
 ;
 
 bodyStatement:
-    '{' localDeclaration statementList '}' {printf('%d %d %d %d', $1, $2, $3, $4);}
+    '{' localDeclaration statementList '}' {printf("%d %d %d %d", $1, $2, $3, $4);}
 ;
 
 localDeclaration:
-    localDeclaration varDeclaration {printf('%d %d', $1, $2);}
+    localDeclaration varDeclaration {printf("%d %d", $1, $2);}
     | {}
 ;
 
 statementList:
-    statement statementList {printf('%d %d', $1, $2);}
+    statement statementList {printf("%d %d", $1, $2);}
     | {}
 ;
 
 ifStatement:
-    IF_KEY '(' simpleExpression ')' bodyStatement {printf('%d %d %d %d %d', $1, $2, $3, $4, $5);}
-    | IF_KEY '(' simpleExpression ')' bodyStatement ELSE_KEY bodyStatement {printf('%d %d %d %d %d %d %d', $1, $2, $3, $4, $5, $6, $7);}
+    IF_KEY '(' simpleExpression ')' bodyStatement {printf("%d %d %d %d %d", $1, $2, $3, $4, $5);}
+    | IF_KEY '(' simpleExpression ')' bodyStatement ELSE_KEY bodyStatement {printf("%d %d %d %d %d %d %d", $1, $2, $3, $4, $5, $6, $7);}
 ;
 
 loopStatement:
-    FOR_KEY '(' expression ';' simpleExpression ';' expression ')' bodyStatement {printf('%d %d %d %d %d %d %d %d %d', $1, $2, $3, $4, $5, $6, $7, $8, $9);}
+    FOR_KEY '(' expression ';' simpleExpression ';' expression ')' bodyStatement {printf("%d %d %d %d %d %d %d %d %d", $1, $2, $3, $4, $5, $6, $7, $8, $9);}
 ;
 
 returnStatement:
-    RETURN_KEY expression {printf('%d %d', $1, $2);}
+    RETURN_KEY expression {printf("%d %d", $1, $2);}
 ;
 
 expression:
-    ID ASSIGN_OP expression {printf('%d %d %d', $1, $2, $3);}
-    | simpleExpression {printf('%d', $1);}
+    ID ASSIGN_OP expression {printf("%d %d %d", $1, $2, $3);}
+    | simpleExpression {printf("%d", $1);}
 ;
+
+/* simpleExpression:
+    binExpression {printf("%d", $1);}
+    | logicBinExpression {printf("%d", $1);}
+; */
 
 simpleExpression:
-    binExpression {printf('%d', $1);}
-    | logicExpression {printf('%d', $1);}
+    logicBinExpression {printf("%d", $1);}
 ;
 
-logicExpression:
-    simpleExpression LOGIC_OP simpleExpression {printf('%d %d %d', $1, $2, $3);}
-    | EXCLA_OP simpleExpression {printf('%d %d', $1, $2);}
+/* logicExpression:
+    simpleExpression LOGIC_OP simpleExpression {printf("%d %d %d", $1, $2, $3);}
+    | EXCLA_OP simpleExpression {printf("%d %d", $1, $2);}
+; */
+
+logicBinExpression:
+    logicBinExpression LOGIC_OP logicUnExpression {printf("%d %d %d", $1, $2, $3);}
+    | logicUnExpression {printf("%d", $1);}
 ;
+
+logicUnExpression:
+    EXCLA_OP logicUnExpression {printf("%d %d", $1, $2);}
+    | binExpression {printf("%d", $1);}
+;
+
+/* logicBinExpression:
+    logicBinExpression LOGIC_OP logicBinExpression {printf("%d %d %d", $1, $2, $3);}
+    | EXCLA_OP simpleExpression {printf("%d %d", $1, $2);} */
 
 binExpression:
-    sumExpression BINARY_OP sumExpression {printf('%d %d %d', $1, $2, $3);}
-    | sumExpression {printf('%d', $1);}
+    binExpression BINARY_OP sumExpression {printf("%d %d %d", $1, $2, $3);}
+    | sumExpression {printf("%d", $1);}
 ;
 
 sumExpression:
-    sumExpression sumOP mulExpression {printf('%d %d %d', $1, $2, $3);}
-    | mulExpression {printf('%d', $1);}
+    sumExpression sumOP mulExpression {printf("%d %d %d", $1, $2, $3);}
+    | mulExpression {printf("%d", $1);}
 ;
 
 mulExpression:
-    mulExpression mulOP factor {printf('%d %d %d', $1, $2, $3);}
-    | factor {printf('%d', $1);}
+    mulExpression mulOP factor {printf("%d %d %d", $1, $2, $3);}
+    | factor {printf("%d", $1);}
 ;
 
 sumOP:
-    PLUS_OP {printf('%d', $1);}
-    | MINUS_OP {printf('%d', $1);}
+    PLUS_OP {printf("%d", $1);}
+    | MINUS_OP {printf("%d", $1);}
 ;
 
 mulOP:
-    MUL_OP {printf('%d', $1);}
-    | DIV_OP {printf('%d', $1);}
+    MUL_OP {printf("%d", $1);}
+    | DIV_OP {printf("%d", $1);}
 ;
 
 factor:
-    ID {printf('%d', $1);}
-    | functionCall {printf('%d', $1);}
-    | '(' simpleExpression ')' {printf('%d %d %d', $1, $2, $3);}
+    ID {printf("%d", $1);}
+    | functionCall {printf("%d", $1);}
+    | '(' simpleExpression ')' {printf("%d %d %d", $1, $2, $3);}
 ;
 
 functionCall:
-    ID '(' parameters ')' {printf('%d %d %d %d', $1, $2, $3, $4);}
+    ID '(' parameters ')' {printf("%d %d %d %d", $1, $2, $3, $4);}
 ;
 
 writeOp:
-    write {printf('%d', $1);}
-    | writeln {printf('%d', $1);}
+    write {printf("%d", $1);}
+    | writeln {printf("%d", $1);}
 ;
 
 write:
-    OUTPUT_KEY '(' STRING ')' {printf('%d %d %d', $1, $2, $3);}
-    | OUTPUT_KEY '(' simpleExpression ')' {printf('%d %d %d', $1, $2, $3);}
+    OUTPUT_KEY '(' STRING ')' {printf("%d %d %d", $1, $2, $3);}
+    | OUTPUT_KEY '(' simpleExpression ')' {printf("%d %d %d", $1, $2, $3);}
 ;
 
 writeln:
-    OUTPUTLN_KEY '(' STRING ')' {printf('%d %d %d', $1, $2, $3);}
-    | OUTPUTLN_KEY '(' simpleExpression ')' {printf('%d %d %d', $1, $2, $3);}
+    OUTPUTLN_KEY '(' STRING ')' {printf("%d %d %d", $1, $2, $3);}
+    | OUTPUTLN_KEY '(' simpleExpression ')' {printf("%d %d %d", $1, $2, $3);}
 ;
 
-read:
-    INPUT_KEY '(' ID ')' {printf('%d %d %d', $1, $2, $3);}
+readOp:
+    INPUT_KEY '(' ID ')' {printf("%d %d %d", $1, $2, $3);}
 ;
 
 listStatement:
-    listAssign {printf('%d', $1);}
-    | listHeader {printf('%d', $1);}
-    | listTail {printf('%d', $1);}
-    | listTailDestructor {printf('%d', $1);}
-    | listMap {printf('%d', $1);}
-    | listFilter {printf('%d', $1);}
+    listAssign {printf("%d", $1);}
+    | listHeader {printf("%d", $1);}
+    | listTail {printf("%d", $1);}
+    | listTailDestructor {printf("%d", $1);}
+    | listMap {printf("%d", $1);}
+    | listFilter {printf("%d", $1);}
 ;
 
 listAssign:
-    ID ASSIGN_OP ID ':' ID {printf('%d %d %d %d %d', $1, $2, $3, $4, $5);}
+    ID ASSIGN_OP ID ASSIGN_LISTOP ID {printf("%d %d %d %d %d", $1, $2, $3, $4, $5);}
 ;
 
 listHeader:
-    '?' ID {printf('%d %d', $1, $2);}
+    HEADER_LISTOP ID {printf("%d %d", $1, $2);}
 ;
 
 listTail:
-    '!' ID {printf('%d %d', $1, $2);}
+    EXCLA_OP ID {printf("%d %d", $1, $2);}
 ;
 
 listTailDestructor:
-    '%' ID {printf('%d %d', $1, $2);}
+    TAILDES_LISTOP ID {printf("%d %d", $1, $2);}
 ;
 
 listMap:
-    ID ASSIGN_OP ID ">>" ID {printf('%d %d %d %d %d', $1, $2, $3, $4, $5);}
+    ID ASSIGN_OP ID MAP_LISTOP ID {printf("%d %d %d %d %d", $1, $2, $3, $4, $5);}
 ;
 
 listFilter:
-    ID ASSIGN_OP ID "<<" ID {printf('%d %d %d %d %d', $1, $2, $3, $4, $5);}
+    ID ASSIGN_OP ID FILTER_LISTOP ID {printf("%d %d %d %d %d", $1, $2, $3, $4, $5);}
 ;
 
 
 %%
 /* Additional C code */
+
+void yyerror(const char* s){
+    printf("Syntax error: %s\n", s);
+}
 
 int main(int argc, char **argv){
     FILE *filep;
@@ -287,7 +314,8 @@ int main(int argc, char **argv){
             /* print_start(); */
 
             yyin = filep;
-            yylex();
+            /* yylex(); */
+            yyparse();
             fclose(yyin);
 
             /* print_end(); */

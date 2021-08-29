@@ -35,8 +35,8 @@
    especially those whose name start with YY_ or yy_.  They are
    private implementation details that can be changed or removed.  */
 
-#ifndef YY_YY_Y_TAB_H_INCLUDED
-# define YY_YY_Y_TAB_H_INCLUDED
+#ifndef YY_YY_SRC_SYNTAX_TAB_H_INCLUDED
+# define YY_YY_SRC_SYNTAX_TAB_H_INCLUDED
 /* Debug traces.  */
 #ifndef YYDEBUG
 # define YYDEBUG 0
@@ -59,7 +59,7 @@ extern int yydebug;
     ID = 260,                      /* ID  */
     TYPE = 261,                    /* TYPE  */
     STRING = 262,                  /* STRING  */
-    NULL = 263,                    /* NULL  */
+    NULL_CONST = 263,              /* NULL_CONST  */
     PLUS_OP = 264,                 /* PLUS_OP  */
     MINUS_OP = 265,                /* MINUS_OP  */
     DIV_OP = 266,                  /* DIV_OP  */
@@ -112,7 +112,7 @@ extern int yydebug;
 #define ID 260
 #define TYPE 261
 #define STRING 262
-#define NULL 263
+#define NULL_CONST 263
 #define PLUS_OP 264
 #define MINUS_OP 265
 #define DIV_OP 266
@@ -165,4 +165,4 @@ extern YYSTYPE yylval;
 
 int yyparse (void);
 
-#endif /* !YY_YY_Y_TAB_H_INCLUDED  */
+#endif /* !YY_YY_SRC_SYNTAX_TAB_H_INCLUDED  */

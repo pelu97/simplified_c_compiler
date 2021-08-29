@@ -74,9 +74,12 @@
 #include <stdlib.h>
 
 extern int yylex();
+extern int yylex_destroy();
 extern int yyparse();
+extern void yyerror(const char* s);
+extern FILE* yyin;
 
-#line 80 "y.tab.c"
+#line 83 "./src/syntax.tab.c"
 
 # ifndef YY_CAST
 #  ifdef __cplusplus
@@ -99,139 +102,7 @@ extern int yyparse();
 #  endif
 # endif
 
-/* Use api.header.include to #include this header
-   instead of duplicating it here.  */
-#ifndef YY_YY_Y_TAB_H_INCLUDED
-# define YY_YY_Y_TAB_H_INCLUDED
-/* Debug traces.  */
-#ifndef YYDEBUG
-# define YYDEBUG 0
-#endif
-#if YYDEBUG
-extern int yydebug;
-#endif
-
-/* Token kinds.  */
-#ifndef YYTOKENTYPE
-# define YYTOKENTYPE
-  enum yytokentype
-  {
-    YYEMPTY = -2,
-    YYEOF = 0,                     /* "end of file"  */
-    YYerror = 256,                 /* error  */
-    YYUNDEF = 257,                 /* "invalid token"  */
-    INT = 258,                     /* INT  */
-    FLOAT = 259,                   /* FLOAT  */
-    ID = 260,                      /* ID  */
-    TYPE = 261,                    /* TYPE  */
-    STRING = 262,                  /* STRING  */
-    NULL = 263,                    /* NULL  */
-    PLUS_OP = 264,                 /* PLUS_OP  */
-    MINUS_OP = 265,                /* MINUS_OP  */
-    DIV_OP = 266,                  /* DIV_OP  */
-    MUL_OP = 267,                  /* MUL_OP  */
-    LOGIC_OP = 268,                /* LOGIC_OP  */
-    BINARY_OP = 269,               /* BINARY_OP  */
-    ASSIGN_OP = 270,               /* ASSIGN_OP  */
-    EXCLA_OP = 271,                /* EXCLA_OP  */
-    IF_KEY = 272,                  /* IF_KEY  */
-    ELSE_KEY = 273,                /* ELSE_KEY  */
-    FOR_KEY = 274,                 /* FOR_KEY  */
-    RETURN_KEY = 275,              /* RETURN_KEY  */
-    INPUT_KEY = 276,               /* INPUT_KEY  */
-    OUTPUT_KEY = 277,              /* OUTPUT_KEY  */
-    OUTPUTLN_KEY = 278,            /* OUTPUTLN_KEY  */
-    ASSIGN_LISTOP = 279,           /* ASSIGN_LISTOP  */
-    HEADER_LISTOP = 280,           /* HEADER_LISTOP  */
-    TAILDES_LISTOP = 281,          /* TAILDES_LISTOP  */
-    MAP_LISTOP = 282,              /* MAP_LISTOP  */
-    FILTER_LISTOP = 283,           /* FILTER_LISTOP  */
-    DELIM_PARENT = 284,            /* DELIM_PARENT  */
-    DELIM_BRACKET = 285,           /* DELIM_BRACKET  */
-    DELIM_CUR_BRACKET = 286,       /* DELIM_CUR_BRACKET  */
-    DELIM_COMMA = 287,             /* DELIM_COMMA  */
-    DELIM_SEMICOLLON = 288,        /* DELIM_SEMICOLLON  */
-    DELIM_SQUOTE = 289,            /* DELIM_SQUOTE  */
-    DELIM_DQUOTE = 290,            /* DELIM_DQUOTE  */
-    SINGLE_COMMENT = 291,          /* SINGLE_COMMENT  */
-    MULTI_COMMENT = 292,           /* MULTI_COMMENT  */
-    FORMAT_BLANKSPACE = 293,       /* FORMAT_BLANKSPACE  */
-    FORMAT_NEWLINE = 294,          /* FORMAT_NEWLINE  */
-    FORMAT_TAB = 295,              /* FORMAT_TAB  */
-    IF_KEYWORD = 296,              /* IF_KEYWORD  */
-    ELSE_KEYWORD = 297,            /* ELSE_KEYWORD  */
-    FOR_KEYWORD = 298,             /* FOR_KEYWORD  */
-    RETURN_KEYWORD = 299,          /* RETURN_KEYWORD  */
-    WRITE_KEYWORD = 300,           /* WRITE_KEYWORD  */
-    WRITELN_KEYWORD = 301,         /* WRITELN_KEYWORD  */
-    READ_KEYWORD = 302             /* READ_KEYWORD  */
-  };
-  typedef enum yytokentype yytoken_kind_t;
-#endif
-/* Token kinds.  */
-#define YYEMPTY -2
-#define YYEOF 0
-#define YYerror 256
-#define YYUNDEF 257
-#define INT 258
-#define FLOAT 259
-#define ID 260
-#define TYPE 261
-#define STRING 262
-#define NULL 263
-#define PLUS_OP 264
-#define MINUS_OP 265
-#define DIV_OP 266
-#define MUL_OP 267
-#define LOGIC_OP 268
-#define BINARY_OP 269
-#define ASSIGN_OP 270
-#define EXCLA_OP 271
-#define IF_KEY 272
-#define ELSE_KEY 273
-#define FOR_KEY 274
-#define RETURN_KEY 275
-#define INPUT_KEY 276
-#define OUTPUT_KEY 277
-#define OUTPUTLN_KEY 278
-#define ASSIGN_LISTOP 279
-#define HEADER_LISTOP 280
-#define TAILDES_LISTOP 281
-#define MAP_LISTOP 282
-#define FILTER_LISTOP 283
-#define DELIM_PARENT 284
-#define DELIM_BRACKET 285
-#define DELIM_CUR_BRACKET 286
-#define DELIM_COMMA 287
-#define DELIM_SEMICOLLON 288
-#define DELIM_SQUOTE 289
-#define DELIM_DQUOTE 290
-#define SINGLE_COMMENT 291
-#define MULTI_COMMENT 292
-#define FORMAT_BLANKSPACE 293
-#define FORMAT_NEWLINE 294
-#define FORMAT_TAB 295
-#define IF_KEYWORD 296
-#define ELSE_KEYWORD 297
-#define FOR_KEYWORD 298
-#define RETURN_KEYWORD 299
-#define WRITE_KEYWORD 300
-#define WRITELN_KEYWORD 301
-#define READ_KEYWORD 302
-
-/* Value type.  */
-#if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
-typedef int YYSTYPE;
-# define YYSTYPE_IS_TRIVIAL 1
-# define YYSTYPE_IS_DECLARED 1
-#endif
-
-
-extern YYSTYPE yylval;
-
-int yyparse (void);
-
-#endif /* !YY_YY_Y_TAB_H_INCLUDED  */
+#include "syntax.tab.h"
 /* Symbol kind.  */
 enum yysymbol_kind_t
 {
@@ -244,7 +115,7 @@ enum yysymbol_kind_t
   YYSYMBOL_ID = 5,                         /* ID  */
   YYSYMBOL_TYPE = 6,                       /* TYPE  */
   YYSYMBOL_STRING = 7,                     /* STRING  */
-  YYSYMBOL_NULL = 8,                       /* NULL  */
+  YYSYMBOL_NULL_CONST = 8,                 /* NULL_CONST  */
   YYSYMBOL_PLUS_OP = 9,                    /* PLUS_OP  */
   YYSYMBOL_MINUS_OP = 10,                  /* MINUS_OP  */
   YYSYMBOL_DIV_OP = 11,                    /* DIV_OP  */
@@ -713,14 +584,14 @@ static const yytype_int8 yytranslate[] =
   /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_int16 yyrline[] =
 {
-       0,    99,    99,   103,   104,   108,   109,   113,   117,   118,
-     122,   126,   130,   131,   135,   136,   140,   141,   142,   143,
-     144,   145,   146,   150,   154,   155,   159,   160,   164,   165,
-     169,   173,   177,   178,   187,   196,   197,   201,   202,   210,
-     211,   215,   216,   220,   221,   225,   226,   230,   231,   235,
-     236,   237,   241,   245,   246,   250,   251,   255,   256,   260,
-     264,   265,   266,   267,   268,   269,   273,   277,   281,   285,
-     289,   293
+       0,   102,   102,   106,   107,   111,   112,   116,   120,   121,
+     125,   129,   133,   134,   138,   139,   143,   144,   145,   146,
+     147,   148,   149,   153,   157,   158,   162,   163,   167,   168,
+     172,   176,   180,   181,   190,   199,   200,   204,   205,   213,
+     214,   218,   219,   223,   224,   228,   229,   233,   234,   238,
+     239,   240,   244,   248,   249,   253,   254,   258,   259,   263,
+     267,   268,   269,   270,   271,   272,   276,   280,   284,   288,
+     292,   296
 };
 #endif
 
@@ -737,25 +608,25 @@ static const char *yysymbol_name (yysymbol_kind_t yysymbol) YY_ATTRIBUTE_UNUSED;
 static const char *const yytname[] =
 {
   "\"end of file\"", "error", "\"invalid token\"", "INT", "FLOAT", "ID",
-  "TYPE", "STRING", "NULL", "PLUS_OP", "MINUS_OP", "DIV_OP", "MUL_OP",
-  "LOGIC_OP", "BINARY_OP", "ASSIGN_OP", "EXCLA_OP", "IF_KEY", "ELSE_KEY",
-  "FOR_KEY", "RETURN_KEY", "INPUT_KEY", "OUTPUT_KEY", "OUTPUTLN_KEY",
-  "ASSIGN_LISTOP", "HEADER_LISTOP", "TAILDES_LISTOP", "MAP_LISTOP",
-  "FILTER_LISTOP", "DELIM_PARENT", "DELIM_BRACKET", "DELIM_CUR_BRACKET",
-  "DELIM_COMMA", "DELIM_SEMICOLLON", "DELIM_SQUOTE", "DELIM_DQUOTE",
-  "SINGLE_COMMENT", "MULTI_COMMENT", "FORMAT_BLANKSPACE", "FORMAT_NEWLINE",
-  "FORMAT_TAB", "IF_KEYWORD", "ELSE_KEYWORD", "FOR_KEYWORD",
-  "RETURN_KEYWORD", "WRITE_KEYWORD", "WRITELN_KEYWORD", "READ_KEYWORD",
-  "','", "'('", "')'", "'{'", "'}'", "';'", "$accept", "program",
-  "declarationList", "declaration", "varDeclaration", "varDeclList",
-  "varDeclId", "funcDeclaration", "parameters", "parameterList",
-  "statement", "bodyStatement", "localDeclaration", "statementList",
-  "ifStatement", "loopStatement", "returnStatement", "expression",
-  "simpleExpression", "logicBinExpression", "logicUnExpression",
-  "binExpression", "sumExpression", "mulExpression", "sumOP", "mulOP",
-  "factor", "functionCall", "writeOp", "write", "writeln", "readOp",
-  "listStatement", "listAssign", "listHeader", "listTail",
-  "listTailDestructor", "listMap", "listFilter", YY_NULLPTR
+  "TYPE", "STRING", "NULL_CONST", "PLUS_OP", "MINUS_OP", "DIV_OP",
+  "MUL_OP", "LOGIC_OP", "BINARY_OP", "ASSIGN_OP", "EXCLA_OP", "IF_KEY",
+  "ELSE_KEY", "FOR_KEY", "RETURN_KEY", "INPUT_KEY", "OUTPUT_KEY",
+  "OUTPUTLN_KEY", "ASSIGN_LISTOP", "HEADER_LISTOP", "TAILDES_LISTOP",
+  "MAP_LISTOP", "FILTER_LISTOP", "DELIM_PARENT", "DELIM_BRACKET",
+  "DELIM_CUR_BRACKET", "DELIM_COMMA", "DELIM_SEMICOLLON", "DELIM_SQUOTE",
+  "DELIM_DQUOTE", "SINGLE_COMMENT", "MULTI_COMMENT", "FORMAT_BLANKSPACE",
+  "FORMAT_NEWLINE", "FORMAT_TAB", "IF_KEYWORD", "ELSE_KEYWORD",
+  "FOR_KEYWORD", "RETURN_KEYWORD", "WRITE_KEYWORD", "WRITELN_KEYWORD",
+  "READ_KEYWORD", "','", "'('", "')'", "'{'", "'}'", "';'", "$accept",
+  "program", "declarationList", "declaration", "varDeclaration",
+  "varDeclList", "varDeclId", "funcDeclaration", "parameters",
+  "parameterList", "statement", "bodyStatement", "localDeclaration",
+  "statementList", "ifStatement", "loopStatement", "returnStatement",
+  "expression", "simpleExpression", "logicBinExpression",
+  "logicUnExpression", "binExpression", "sumExpression", "mulExpression",
+  "sumOP", "mulOP", "factor", "functionCall", "writeOp", "write",
+  "writeln", "readOp", "listStatement", "listAssign", "listHeader",
+  "listTail", "listTailDestructor", "listMap", "listFilter", YY_NULLPTR
 };
 
 static const char *
@@ -1794,427 +1665,427 @@ yyreduce:
   switch (yyn)
     {
   case 2: /* program: declarationList  */
-#line 99 "./src/syntax.y"
+#line 102 "./src/syntax.y"
                     { printf("%d", yyvsp[0]); }
-#line 1800 "y.tab.c"
+#line 1671 "./src/syntax.tab.c"
     break;
 
   case 3: /* declarationList: declarationList declaration  */
-#line 103 "./src/syntax.y"
+#line 106 "./src/syntax.y"
                                 {printf("%d %d", yyvsp[-1], yyvsp[0]);}
-#line 1806 "y.tab.c"
+#line 1677 "./src/syntax.tab.c"
     break;
 
   case 4: /* declarationList: declaration  */
-#line 104 "./src/syntax.y"
+#line 107 "./src/syntax.y"
                   {printf("%d", yyvsp[0]);}
-#line 1812 "y.tab.c"
+#line 1683 "./src/syntax.tab.c"
     break;
 
   case 5: /* declaration: varDeclaration  */
-#line 108 "./src/syntax.y"
+#line 111 "./src/syntax.y"
                    {printf("%d", yyvsp[0]);}
-#line 1818 "y.tab.c"
+#line 1689 "./src/syntax.tab.c"
     break;
 
   case 6: /* declaration: funcDeclaration  */
-#line 109 "./src/syntax.y"
+#line 112 "./src/syntax.y"
                       {printf("%d", yyvsp[0]);}
-#line 1824 "y.tab.c"
+#line 1695 "./src/syntax.tab.c"
     break;
 
   case 7: /* varDeclaration: TYPE varDeclList  */
-#line 113 "./src/syntax.y"
+#line 116 "./src/syntax.y"
                      {printf("%d %d", yyvsp[-1], yyvsp[0]);}
-#line 1830 "y.tab.c"
+#line 1701 "./src/syntax.tab.c"
     break;
 
   case 8: /* varDeclList: varDeclList ',' varDeclId  */
-#line 117 "./src/syntax.y"
+#line 120 "./src/syntax.y"
                               {printf("%d %d", yyvsp[-2], yyvsp[-1]);}
-#line 1836 "y.tab.c"
+#line 1707 "./src/syntax.tab.c"
     break;
 
   case 9: /* varDeclList: varDeclId  */
-#line 118 "./src/syntax.y"
+#line 121 "./src/syntax.y"
                 {printf("%d", yyvsp[0]);}
-#line 1842 "y.tab.c"
+#line 1713 "./src/syntax.tab.c"
     break;
 
   case 10: /* varDeclId: ID  */
-#line 122 "./src/syntax.y"
+#line 125 "./src/syntax.y"
        {printf("%d", yyvsp[0]);}
-#line 1848 "y.tab.c"
+#line 1719 "./src/syntax.tab.c"
     break;
 
   case 11: /* funcDeclaration: TYPE ID '(' parameters ')' statement  */
-#line 126 "./src/syntax.y"
+#line 129 "./src/syntax.y"
                                          {printf("%d %d %d %d %d %d", yyvsp[-5], yyvsp[-4], yyvsp[-3], yyvsp[-2], yyvsp[-1], yyvsp[0]);}
-#line 1854 "y.tab.c"
+#line 1725 "./src/syntax.tab.c"
     break;
 
   case 12: /* parameters: parameterList  */
-#line 130 "./src/syntax.y"
+#line 133 "./src/syntax.y"
                   {printf("%d", yyvsp[0]);}
-#line 1860 "y.tab.c"
+#line 1731 "./src/syntax.tab.c"
     break;
 
   case 13: /* parameters: %empty  */
-#line 131 "./src/syntax.y"
+#line 134 "./src/syntax.y"
       {}
-#line 1866 "y.tab.c"
+#line 1737 "./src/syntax.tab.c"
     break;
 
   case 14: /* parameterList: parameterList ',' TYPE ID  */
-#line 135 "./src/syntax.y"
+#line 138 "./src/syntax.y"
                               {printf("%d %d %d", yyvsp[-3], yyvsp[-2], yyvsp[-1]);}
-#line 1872 "y.tab.c"
+#line 1743 "./src/syntax.tab.c"
     break;
 
   case 15: /* parameterList: TYPE ID  */
-#line 136 "./src/syntax.y"
+#line 139 "./src/syntax.y"
               {printf("%d %d", yyvsp[-1], yyvsp[0]);}
-#line 1878 "y.tab.c"
+#line 1749 "./src/syntax.tab.c"
     break;
 
   case 16: /* statement: bodyStatement  */
-#line 140 "./src/syntax.y"
+#line 143 "./src/syntax.y"
                   {printf("%d", yyvsp[0]);}
-#line 1884 "y.tab.c"
+#line 1755 "./src/syntax.tab.c"
     break;
 
   case 17: /* statement: ifStatement  */
-#line 141 "./src/syntax.y"
+#line 144 "./src/syntax.y"
                   {printf("%d", yyvsp[0]);}
-#line 1890 "y.tab.c"
+#line 1761 "./src/syntax.tab.c"
     break;
 
   case 18: /* statement: loopStatement  */
-#line 142 "./src/syntax.y"
+#line 145 "./src/syntax.y"
                     {printf("%d", yyvsp[0]);}
-#line 1896 "y.tab.c"
+#line 1767 "./src/syntax.tab.c"
     break;
 
   case 19: /* statement: returnStatement  */
-#line 143 "./src/syntax.y"
+#line 146 "./src/syntax.y"
                       {printf("%d", yyvsp[0]);}
-#line 1902 "y.tab.c"
+#line 1773 "./src/syntax.tab.c"
     break;
 
   case 20: /* statement: listStatement  */
-#line 144 "./src/syntax.y"
+#line 147 "./src/syntax.y"
                     {printf("%d", yyvsp[0]);}
-#line 1908 "y.tab.c"
+#line 1779 "./src/syntax.tab.c"
     break;
 
   case 21: /* statement: writeOp  */
-#line 145 "./src/syntax.y"
+#line 148 "./src/syntax.y"
               {printf("%d", yyvsp[0]);}
-#line 1914 "y.tab.c"
+#line 1785 "./src/syntax.tab.c"
     break;
 
   case 22: /* statement: readOp  */
-#line 146 "./src/syntax.y"
+#line 149 "./src/syntax.y"
              {printf("%d", yyvsp[0]);}
-#line 1920 "y.tab.c"
+#line 1791 "./src/syntax.tab.c"
     break;
 
   case 23: /* bodyStatement: '{' localDeclaration statementList '}'  */
-#line 150 "./src/syntax.y"
+#line 153 "./src/syntax.y"
                                            {printf("%d %d %d %d", yyvsp[-3], yyvsp[-2], yyvsp[-1], yyvsp[0]);}
-#line 1926 "y.tab.c"
+#line 1797 "./src/syntax.tab.c"
     break;
 
   case 24: /* localDeclaration: localDeclaration varDeclaration  */
-#line 154 "./src/syntax.y"
+#line 157 "./src/syntax.y"
                                     {printf("%d %d", yyvsp[-1], yyvsp[0]);}
-#line 1932 "y.tab.c"
+#line 1803 "./src/syntax.tab.c"
     break;
 
   case 25: /* localDeclaration: %empty  */
-#line 155 "./src/syntax.y"
+#line 158 "./src/syntax.y"
       {}
-#line 1938 "y.tab.c"
+#line 1809 "./src/syntax.tab.c"
     break;
 
   case 26: /* statementList: statement statementList  */
-#line 159 "./src/syntax.y"
+#line 162 "./src/syntax.y"
                             {printf("%d %d", yyvsp[-1], yyvsp[0]);}
-#line 1944 "y.tab.c"
+#line 1815 "./src/syntax.tab.c"
     break;
 
   case 27: /* statementList: %empty  */
-#line 160 "./src/syntax.y"
+#line 163 "./src/syntax.y"
       {}
-#line 1950 "y.tab.c"
+#line 1821 "./src/syntax.tab.c"
     break;
 
   case 28: /* ifStatement: IF_KEY '(' simpleExpression ')' bodyStatement  */
-#line 164 "./src/syntax.y"
+#line 167 "./src/syntax.y"
                                                   {printf("%d %d %d %d %d", yyvsp[-4], yyvsp[-3], yyvsp[-2], yyvsp[-1], yyvsp[0]);}
-#line 1956 "y.tab.c"
+#line 1827 "./src/syntax.tab.c"
     break;
 
   case 29: /* ifStatement: IF_KEY '(' simpleExpression ')' bodyStatement ELSE_KEY bodyStatement  */
-#line 165 "./src/syntax.y"
+#line 168 "./src/syntax.y"
                                                                            {printf("%d %d %d %d %d %d %d", yyvsp[-6], yyvsp[-5], yyvsp[-4], yyvsp[-3], yyvsp[-2], yyvsp[-1], yyvsp[0]);}
-#line 1962 "y.tab.c"
+#line 1833 "./src/syntax.tab.c"
     break;
 
   case 30: /* loopStatement: FOR_KEY '(' expression ';' simpleExpression ';' expression ')' bodyStatement  */
-#line 169 "./src/syntax.y"
+#line 172 "./src/syntax.y"
                                                                                  {printf("%d %d %d %d %d %d %d %d %d", yyvsp[-8], yyvsp[-7], yyvsp[-6], yyvsp[-5], yyvsp[-4], yyvsp[-3], yyvsp[-2], yyvsp[-1], yyvsp[0]);}
-#line 1968 "y.tab.c"
+#line 1839 "./src/syntax.tab.c"
     break;
 
   case 31: /* returnStatement: RETURN_KEY expression  */
-#line 173 "./src/syntax.y"
+#line 176 "./src/syntax.y"
                           {printf("%d %d", yyvsp[-1], yyvsp[0]);}
-#line 1974 "y.tab.c"
+#line 1845 "./src/syntax.tab.c"
     break;
 
   case 32: /* expression: ID ASSIGN_OP expression  */
-#line 177 "./src/syntax.y"
+#line 180 "./src/syntax.y"
                             {printf("%d %d %d", yyvsp[-2], yyvsp[-1], yyvsp[0]);}
-#line 1980 "y.tab.c"
+#line 1851 "./src/syntax.tab.c"
     break;
 
   case 33: /* expression: simpleExpression  */
-#line 178 "./src/syntax.y"
+#line 181 "./src/syntax.y"
                        {printf("%d", yyvsp[0]);}
-#line 1986 "y.tab.c"
+#line 1857 "./src/syntax.tab.c"
     break;
 
   case 34: /* simpleExpression: logicBinExpression  */
-#line 187 "./src/syntax.y"
+#line 190 "./src/syntax.y"
                        {printf("%d", yyvsp[0]);}
-#line 1992 "y.tab.c"
+#line 1863 "./src/syntax.tab.c"
     break;
 
   case 35: /* logicBinExpression: logicBinExpression LOGIC_OP logicUnExpression  */
-#line 196 "./src/syntax.y"
+#line 199 "./src/syntax.y"
                                                   {printf("%d %d %d", yyvsp[-2], yyvsp[-1], yyvsp[0]);}
-#line 1998 "y.tab.c"
+#line 1869 "./src/syntax.tab.c"
     break;
 
   case 36: /* logicBinExpression: logicUnExpression  */
-#line 197 "./src/syntax.y"
+#line 200 "./src/syntax.y"
                         {printf("%d", yyvsp[0]);}
-#line 2004 "y.tab.c"
+#line 1875 "./src/syntax.tab.c"
     break;
 
   case 37: /* logicUnExpression: EXCLA_OP logicUnExpression  */
-#line 201 "./src/syntax.y"
+#line 204 "./src/syntax.y"
                                {printf("%d %d", yyvsp[-1], yyvsp[0]);}
-#line 2010 "y.tab.c"
+#line 1881 "./src/syntax.tab.c"
     break;
 
   case 38: /* logicUnExpression: binExpression  */
-#line 202 "./src/syntax.y"
+#line 205 "./src/syntax.y"
                     {printf("%d", yyvsp[0]);}
-#line 2016 "y.tab.c"
+#line 1887 "./src/syntax.tab.c"
     break;
 
   case 39: /* binExpression: binExpression BINARY_OP sumExpression  */
-#line 210 "./src/syntax.y"
+#line 213 "./src/syntax.y"
                                           {printf("%d %d %d", yyvsp[-2], yyvsp[-1], yyvsp[0]);}
-#line 2022 "y.tab.c"
+#line 1893 "./src/syntax.tab.c"
     break;
 
   case 40: /* binExpression: sumExpression  */
-#line 211 "./src/syntax.y"
+#line 214 "./src/syntax.y"
                     {printf("%d", yyvsp[0]);}
-#line 2028 "y.tab.c"
+#line 1899 "./src/syntax.tab.c"
     break;
 
   case 41: /* sumExpression: sumExpression sumOP mulExpression  */
-#line 215 "./src/syntax.y"
+#line 218 "./src/syntax.y"
                                       {printf("%d %d %d", yyvsp[-2], yyvsp[-1], yyvsp[0]);}
-#line 2034 "y.tab.c"
+#line 1905 "./src/syntax.tab.c"
     break;
 
   case 42: /* sumExpression: mulExpression  */
-#line 216 "./src/syntax.y"
+#line 219 "./src/syntax.y"
                     {printf("%d", yyvsp[0]);}
-#line 2040 "y.tab.c"
+#line 1911 "./src/syntax.tab.c"
     break;
 
   case 43: /* mulExpression: mulExpression mulOP factor  */
-#line 220 "./src/syntax.y"
+#line 223 "./src/syntax.y"
                                {printf("%d %d %d", yyvsp[-2], yyvsp[-1], yyvsp[0]);}
-#line 2046 "y.tab.c"
+#line 1917 "./src/syntax.tab.c"
     break;
 
   case 44: /* mulExpression: factor  */
-#line 221 "./src/syntax.y"
+#line 224 "./src/syntax.y"
              {printf("%d", yyvsp[0]);}
-#line 2052 "y.tab.c"
+#line 1923 "./src/syntax.tab.c"
     break;
 
   case 45: /* sumOP: PLUS_OP  */
-#line 225 "./src/syntax.y"
+#line 228 "./src/syntax.y"
             {printf("%d", yyvsp[0]);}
-#line 2058 "y.tab.c"
+#line 1929 "./src/syntax.tab.c"
     break;
 
   case 46: /* sumOP: MINUS_OP  */
-#line 226 "./src/syntax.y"
+#line 229 "./src/syntax.y"
                {printf("%d", yyvsp[0]);}
-#line 2064 "y.tab.c"
+#line 1935 "./src/syntax.tab.c"
     break;
 
   case 47: /* mulOP: MUL_OP  */
-#line 230 "./src/syntax.y"
+#line 233 "./src/syntax.y"
            {printf("%d", yyvsp[0]);}
-#line 2070 "y.tab.c"
+#line 1941 "./src/syntax.tab.c"
     break;
 
   case 48: /* mulOP: DIV_OP  */
-#line 231 "./src/syntax.y"
+#line 234 "./src/syntax.y"
              {printf("%d", yyvsp[0]);}
-#line 2076 "y.tab.c"
+#line 1947 "./src/syntax.tab.c"
     break;
 
   case 49: /* factor: ID  */
-#line 235 "./src/syntax.y"
+#line 238 "./src/syntax.y"
        {printf("%d", yyvsp[0]);}
-#line 2082 "y.tab.c"
+#line 1953 "./src/syntax.tab.c"
     break;
 
   case 50: /* factor: functionCall  */
-#line 236 "./src/syntax.y"
+#line 239 "./src/syntax.y"
                    {printf("%d", yyvsp[0]);}
-#line 2088 "y.tab.c"
+#line 1959 "./src/syntax.tab.c"
     break;
 
   case 51: /* factor: '(' simpleExpression ')'  */
-#line 237 "./src/syntax.y"
+#line 240 "./src/syntax.y"
                                {printf("%d %d %d", yyvsp[-2], yyvsp[-1], yyvsp[0]);}
-#line 2094 "y.tab.c"
+#line 1965 "./src/syntax.tab.c"
     break;
 
   case 52: /* functionCall: ID '(' parameters ')'  */
-#line 241 "./src/syntax.y"
+#line 244 "./src/syntax.y"
                           {printf("%d %d %d %d", yyvsp[-3], yyvsp[-2], yyvsp[-1], yyvsp[0]);}
-#line 2100 "y.tab.c"
+#line 1971 "./src/syntax.tab.c"
     break;
 
   case 53: /* writeOp: write  */
-#line 245 "./src/syntax.y"
+#line 248 "./src/syntax.y"
           {printf("%d", yyvsp[0]);}
-#line 2106 "y.tab.c"
+#line 1977 "./src/syntax.tab.c"
     break;
 
   case 54: /* writeOp: writeln  */
-#line 246 "./src/syntax.y"
+#line 249 "./src/syntax.y"
               {printf("%d", yyvsp[0]);}
-#line 2112 "y.tab.c"
+#line 1983 "./src/syntax.tab.c"
     break;
 
   case 55: /* write: OUTPUT_KEY '(' STRING ')'  */
-#line 250 "./src/syntax.y"
+#line 253 "./src/syntax.y"
                               {printf("%d %d %d", yyvsp[-3], yyvsp[-2], yyvsp[-1]);}
-#line 2118 "y.tab.c"
+#line 1989 "./src/syntax.tab.c"
     break;
 
   case 56: /* write: OUTPUT_KEY '(' simpleExpression ')'  */
-#line 251 "./src/syntax.y"
+#line 254 "./src/syntax.y"
                                           {printf("%d %d %d", yyvsp[-3], yyvsp[-2], yyvsp[-1]);}
-#line 2124 "y.tab.c"
+#line 1995 "./src/syntax.tab.c"
     break;
 
   case 57: /* writeln: OUTPUTLN_KEY '(' STRING ')'  */
-#line 255 "./src/syntax.y"
+#line 258 "./src/syntax.y"
                                 {printf("%d %d %d", yyvsp[-3], yyvsp[-2], yyvsp[-1]);}
-#line 2130 "y.tab.c"
+#line 2001 "./src/syntax.tab.c"
     break;
 
   case 58: /* writeln: OUTPUTLN_KEY '(' simpleExpression ')'  */
-#line 256 "./src/syntax.y"
+#line 259 "./src/syntax.y"
                                             {printf("%d %d %d", yyvsp[-3], yyvsp[-2], yyvsp[-1]);}
-#line 2136 "y.tab.c"
+#line 2007 "./src/syntax.tab.c"
     break;
 
   case 59: /* readOp: INPUT_KEY '(' ID ')'  */
-#line 260 "./src/syntax.y"
+#line 263 "./src/syntax.y"
                          {printf("%d %d %d", yyvsp[-3], yyvsp[-2], yyvsp[-1]);}
-#line 2142 "y.tab.c"
+#line 2013 "./src/syntax.tab.c"
     break;
 
   case 60: /* listStatement: listAssign  */
-#line 264 "./src/syntax.y"
+#line 267 "./src/syntax.y"
                {printf("%d", yyvsp[0]);}
-#line 2148 "y.tab.c"
+#line 2019 "./src/syntax.tab.c"
     break;
 
   case 61: /* listStatement: listHeader  */
-#line 265 "./src/syntax.y"
+#line 268 "./src/syntax.y"
                  {printf("%d", yyvsp[0]);}
-#line 2154 "y.tab.c"
+#line 2025 "./src/syntax.tab.c"
     break;
 
   case 62: /* listStatement: listTail  */
-#line 266 "./src/syntax.y"
+#line 269 "./src/syntax.y"
                {printf("%d", yyvsp[0]);}
-#line 2160 "y.tab.c"
+#line 2031 "./src/syntax.tab.c"
     break;
 
   case 63: /* listStatement: listTailDestructor  */
-#line 267 "./src/syntax.y"
+#line 270 "./src/syntax.y"
                          {printf("%d", yyvsp[0]);}
-#line 2166 "y.tab.c"
+#line 2037 "./src/syntax.tab.c"
     break;
 
   case 64: /* listStatement: listMap  */
-#line 268 "./src/syntax.y"
+#line 271 "./src/syntax.y"
               {printf("%d", yyvsp[0]);}
-#line 2172 "y.tab.c"
+#line 2043 "./src/syntax.tab.c"
     break;
 
   case 65: /* listStatement: listFilter  */
-#line 269 "./src/syntax.y"
+#line 272 "./src/syntax.y"
                  {printf("%d", yyvsp[0]);}
-#line 2178 "y.tab.c"
+#line 2049 "./src/syntax.tab.c"
     break;
 
   case 66: /* listAssign: ID ASSIGN_OP ID ASSIGN_LISTOP ID  */
-#line 273 "./src/syntax.y"
+#line 276 "./src/syntax.y"
                                      {printf("%d %d %d %d %d", yyvsp[-4], yyvsp[-3], yyvsp[-2], yyvsp[-1], yyvsp[0]);}
-#line 2184 "y.tab.c"
+#line 2055 "./src/syntax.tab.c"
     break;
 
   case 67: /* listHeader: HEADER_LISTOP ID  */
-#line 277 "./src/syntax.y"
+#line 280 "./src/syntax.y"
                      {printf("%d %d", yyvsp[-1], yyvsp[0]);}
-#line 2190 "y.tab.c"
+#line 2061 "./src/syntax.tab.c"
     break;
 
   case 68: /* listTail: EXCLA_OP ID  */
-#line 281 "./src/syntax.y"
+#line 284 "./src/syntax.y"
                 {printf("%d %d", yyvsp[-1], yyvsp[0]);}
-#line 2196 "y.tab.c"
+#line 2067 "./src/syntax.tab.c"
     break;
 
   case 69: /* listTailDestructor: TAILDES_LISTOP ID  */
-#line 285 "./src/syntax.y"
+#line 288 "./src/syntax.y"
                       {printf("%d %d", yyvsp[-1], yyvsp[0]);}
-#line 2202 "y.tab.c"
+#line 2073 "./src/syntax.tab.c"
     break;
 
   case 70: /* listMap: ID ASSIGN_OP ID MAP_LISTOP ID  */
-#line 289 "./src/syntax.y"
+#line 292 "./src/syntax.y"
                                   {printf("%d %d %d %d %d", yyvsp[-4], yyvsp[-3], yyvsp[-2], yyvsp[-1], yyvsp[0]);}
-#line 2208 "y.tab.c"
+#line 2079 "./src/syntax.tab.c"
     break;
 
   case 71: /* listFilter: ID ASSIGN_OP ID FILTER_LISTOP ID  */
-#line 293 "./src/syntax.y"
+#line 296 "./src/syntax.y"
                                      {printf("%d %d %d %d %d", yyvsp[-4], yyvsp[-3], yyvsp[-2], yyvsp[-1], yyvsp[0]);}
-#line 2214 "y.tab.c"
+#line 2085 "./src/syntax.tab.c"
     break;
 
 
-#line 2218 "y.tab.c"
+#line 2089 "./src/syntax.tab.c"
 
       default: break;
     }
@@ -2408,9 +2279,13 @@ yyreturn:
   return yyresult;
 }
 
-#line 297 "./src/syntax.y"
+#line 300 "./src/syntax.y"
 
 /* Additional C code */
+
+void yyerror(const char* s){
+    printf("Syntax error: %s\n", s);
+}
 
 int main(int argc, char **argv){
     FILE *filep;
@@ -2422,7 +2297,8 @@ int main(int argc, char **argv){
             /* print_start(); */
 
             yyin = filep;
-            yylex();
+            /* yylex(); */
+            yyparse();
             fclose(yyin);
 
             /* print_end(); */
