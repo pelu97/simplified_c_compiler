@@ -9,28 +9,64 @@ extern int yyparse();
 %}
 /* Yacc/Bison declarations */
 
+/* Base */
 %token INT
 %token FLOAT
 
+/* Identificador */
 %token ID
 
+/* Tipos */
 %token TYPE
+/* %token INT_TYPE
+%token FLOAT_TYPE
+%token LIST_TYPE */
 %token STRING
 
 %token NULL
 
-%token ARITHMETIC_OP
+/* Operadores */
+/* %token ARITHMETIC_OP */
+%token PLUS_OP
+%token MINUS_OP
+%token DIV_OP
+%token MUL_OP
+
 %token LOGIC_OP
+/* %token OR_OP
+%token AND_OP */
+
 %token BINARY_OP
+/* %token LT_OP
+%token LE_OP
+%token GT_OP
+%token GE_OP
+%token EQ_OP
+%token NE_OP */
+
 %token ASSIGN_OP
+
 %token EXCLA_OP
 
-%token FLOW_KEY
+/* Controle de fluxo */
+/* %token FLOW_KEY */
+%token IF_KEY
+%token ELSE_KEY
+%token FOR_KEY
+%token RETURN_KEY
 
+/* Entrada e saída */
 %token INPUT_KEY
 %token OUTPUT_KEY
+%token OUTPUTLN_KEY
 
+/* Operadores de lista */
 %token LIST_OP
+/* %token ASSIGN_LISTOP
+%token HEADER_LISTOP
+%token TAILDES_LISTOP
+%token MAP_LISTOP
+%token FILTER_LISTOP */
 
 %token DELIM_PARENT
 %token DELIM_BRACKET
@@ -104,6 +140,7 @@ statement:
     bodyStatement {printf('%d', $1);}
     | ifStatement {printf('%d', $1);}
     | loopStatement {printf('%d', $1);}
+    | returnStatement {printf('%d', $1);}
     | listStatement {printf('%d', $1);}
 ;
 
@@ -117,21 +154,21 @@ localDeclaration:
 ;
 
 statementList:
-    statementList statementList {printf('%d %d', $1, $2);}
+    statement statementList {printf('%d %d', $1, $2);}
     | {}
 ;
 
 ifStatement:
-    IF_KEYWORD '(' simpleExpression ')' bodyStatement {printf('%d %d %d %d %d', $1, $2, $3, $4, $5);}
-    | IF_KEYWORD '(' simpleExpression ')' bodyStatement ELSE_KEYWORD bodyStatement {printf('%d %d %d %d %d %d %d', $1, $2, $3, $4, $5, $6, $7);}
+    IF_KEY '(' simpleExpression ')' bodyStatement {printf('%d %d %d %d %d', $1, $2, $3, $4, $5);}
+    | IF_KEY '(' simpleExpression ')' bodyStatement ELSE_KEY bodyStatement {printf('%d %d %d %d %d %d %d', $1, $2, $3, $4, $5, $6, $7);}
 ;
 
 loopStatement:
-    FOR_KEYWORD '(' expression ';' simpleExpression ';' expression ')' bodyStatement {printf('%d %d %d %d %d %d %d %d %d', $1, $2, $3, $4, $5, $6, $7, $8, $9);}
+    FOR_KEY '(' expression ';' simpleExpression ';' expression ')' bodyStatement {printf('%d %d %d %d %d %d %d %d %d', $1, $2, $3, $4, $5, $6, $7, $8, $9);}
 ;
 
 returnStatement:
-    RETURN_KEYWORD expression {printf('%d %d', $1, $2);}
+    RETURN_KEY expression {printf('%d %d', $1, $2);}
 ;
 
 expression:
@@ -165,13 +202,13 @@ mulExpression:
 ;
 
 sumOP:
-    '+' {printf('%d', $1);}
-    | '-' {printf('%d', $1);}
+    PLUS_OP {printf('%d', $1);}
+    | MINUS_OP {printf('%d', $1);}
 ;
 
 mulOP:
-    '*' {printf('%d', $1);}
-    | '/' {printf('%d', $1);}
+    MUL_OP {printf('%d', $1);}
+    | DIV_OP {printf('%d', $1);}
 ;
 
 factor:
@@ -190,17 +227,17 @@ writeOp:
 ;
 
 write:
-    WRITE_KEYWORD '(' STRING ')' {printf('%d %d %d', $1, $2, $3);}
-    | WRITE_KEYWORD '(' simpleExpression ')' {printf('%d %d %d', $1, $2, $3);}
+    OUTPUT_KEY '(' STRING ')' {printf('%d %d %d', $1, $2, $3);}
+    | OUTPUT_KEY '(' simpleExpression ')' {printf('%d %d %d', $1, $2, $3);}
 ;
 
 writeln:
-    WRITELN_KEYWORD '(' STRING ')' {printf('%d %d %d', $1, $2, $3);}
-    | WRITELN_KEYWORD '(' simpleExpression ')' {printf('%d %d %d', $1, $2, $3);}
+    OUTPUTLN_KEY '(' STRING ')' {printf('%d %d %d', $1, $2, $3);}
+    | OUTPUTLN_KEY '(' simpleExpression ')' {printf('%d %d %d', $1, $2, $3);}
 ;
 
 read:
-    READ_KEYWORD '(' ID ')' {printf('%d %d %d', $1, $2, $3);}
+    INPUT_KEY '(' ID ')' {printf('%d %d %d', $1, $2, $3);}
 ;
 
 listStatement:

@@ -54,30 +54,55 @@ ID                 [a-zA-Z_][a-z0-9A-Z]*
 
 /* Tipos */
 TYPE               int|float|list
+/* INT_TYPE           int */
+/* FLOAT_TYPE         float */
+/* LIST_TYPE          list */
 STRING             {DELIM_DQUOTE}(\\.|[^{DELIM_DQUOTE}\\])*{DELIM_DQUOTE}
 
 NULL               nil
 
 /* Operadores */
-ARITHMETIC_OP      \+|\-|\/|\*
+/* ARITHMETIC_OP      \+|\-|\/|\* */
+PLUS_OP            \+
+MINUS_OP           \-
+DIV_OP             \/
+MUL_OP             \*
 
 LOGIC_OP           \|\||&&
+/* OR_OP              \|\| */
+/* AND_OP             && */
 
 BINARY_OP          <|<=|>|>=|==|!=
+/* LT_OP              < */
+/* LE_OP              <= */
+/* GT_OP              > */
+/* GE_OP              >= */
+/* EQ_OP              == */
+/* NE_OP              != */
 
 ASSIGN_OP          [=]
 
 EXCLA_OP           [!]
 
 /* Controle de fluxo */
-FLOW_KEY           if|else|for|return
+/* FLOW_KEY           if|else|for|return */
+IF_KEY             if
+ELSE_KEY           else
+FOR_KEY            for
+RETURN_KEY         return
 
 /* Entrada e saída */
 INPUT_KEY          read
-OUTPUT_KEY         write|writeln
+OUTPUT_KEY         write
+OUTPUTLN_KEY       writeln
 
 /* Operadores de lista */
 LIST_OP            <<|>>|\?|%|:
+/* ASSIGN_LISTOP      : */
+/* HEADER_LISTOP      \? */
+/* TAILDES_LISTOP     % */
+/* MAP_LISTOP         >> */
+/* FILTER_LISTOP      << */
 
 /* Delimitadores */
 DELIM_PARENT       [()]
@@ -148,8 +173,23 @@ FORMAT_TAB         \t
     column_count();
 }
 
-{ARITHMETIC_OP} {
-    print_block("Arithmetic Operation");
+{PLUS_OP} {
+    print_block("Plus Operation");
+    column_count();
+}
+
+{MINUS_OP} {
+    print_block("Minus Operation");
+    column_count();
+}
+
+{DIV_OP} {
+    print_block("Div Operation");
+    column_count();
+}
+
+{MUL_OP} {
+    print_block("Mul Operation");
     column_count();
 }
 
@@ -163,8 +203,23 @@ FORMAT_TAB         \t
     column_count();
 }
 
-{FLOW_KEY} {
-    print_block("Flow Control Keyword");
+{IF_KEY} {
+    print_block("If Keyword");
+    column_count();
+}
+
+{ELSE_KEY} {
+    print_block("Else Keyword");
+    column_count();
+}
+
+{FOR_KEY} {
+    print_block("For Keyword");
+    column_count();
+}
+
+{RETURN_KEY} {
+    print_block("Return Keyword");
     column_count();
 }
 
@@ -175,6 +230,11 @@ FORMAT_TAB         \t
 
 {OUTPUT_KEY} {
     print_block("Output Keyword");
+    column_count();
+}
+
+{OUTPUTLN_KEY} {
+    print_block("Output with line break Keyword");
     column_count();
 }
 
@@ -274,6 +334,120 @@ removed rules
     print_block("Multi Line Comment Delimiter");
     column_count();
 }
+
+{TYPE} {
+    print_block("Type");
+    column_count();
+}
+
+
+{INT_TYPE} {
+    print_block("Int Type");
+    column_count();
+}
+
+{FLOAT_TYPE} {
+    print_block("Float Type");
+    column_count();
+}
+
+{LIST_TYPE} {
+    print_block("List Type");
+    column_count();
+}
+
+{ARITHMETIC_OP} {
+    print_block("Arithmetic Operation");
+    column_count();
+}
+
+
+{OR_OP} {
+    print_block("Or Operation");
+    column_count();
+}
+
+{AND_OP} {
+    print_block("And Operation");
+    column_count();
+}
+
+{LOGIC_OP} {
+    print_block("Logic Operation");
+    column_count();
+}
+
+{BINARY_OP} {
+    print_block("Binary Operation");
+    column_count();
+}
+
+{LT_OP} {
+    print_block("Less than Operation");
+    column_count();
+}
+
+{LE_OP} {
+    print_block("Less or equal Operation");
+    column_count();
+}
+
+{GT_OP} {
+    print_block("Greater than Operation");
+    column_count();
+}
+
+{GE_OP} {
+    print_block("Greater or equal Operation");
+    column_count();
+}
+
+{EQ_OP} {
+    print_block("Equal Operation");
+    column_count();
+}
+
+{NE_OP} {
+    print_block("Not equal Operation");
+    column_count();
+}
+
+{FLOW_KEY} {
+    print_block("Flow Control Keyword");
+    column_count();
+}
+
+{LIST_OP} {
+    print_block("List Operator");
+    column_count();
+}
+
+
+{ASSIGN_LISTOP} {
+    print_block("Assignment List Operator");
+    column_count();
+}
+
+{HEADER_LISTOP} {
+    print_block("Header List Operator");
+    column_count();
+}
+
+{TAILDES_LISTOP} {
+    print_block("Tail Destructor List Operator");
+    column_count();
+}
+
+{MAP_LISTOP} {
+    print_block("Map List Operator");
+    column_count();
+}
+
+{FILTER_LISTOP} {
+    print_block("Filter List Operator");
+    column_count();
+}
+
 
 */
 
