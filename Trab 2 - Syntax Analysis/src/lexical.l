@@ -6,38 +6,41 @@ LT, LE, EQ, NE, GT, GE,
 IF, THEN, ELSE, ID, NUMBER, RELOP */
 #include <stdio.h>
 #include <stdlib.h>
+#include "format.h"
+
+#include "syntax.tab.h"
 
 // Macros para cores
-#define COLOR_RESET   "\x1B[0m"
-#define COLOR_RED     "\x1B[31m"
-#define COLOR_GREEN   "\x1B[32m"
-#define COLOR_YELLOW  "\x1B[33m"
-#define COLOR_BLUE    "\x1B[34m"
-#define COLOR_MAGENTA "\x1B[35m"
-#define COLOR_CYAN    "\x1B[36m"
-#define COLOR_WHITE   "\x1B[37m"
+// #define COLOR_RESET   "\x1B[0m"
+// #define COLOR_RED     "\x1B[31m"
+// #define COLOR_GREEN   "\x1B[32m"
+// #define COLOR_YELLOW  "\x1B[33m"
+// #define COLOR_BLUE    "\x1B[34m"
+// #define COLOR_MAGENTA "\x1B[35m"
+// #define COLOR_CYAN    "\x1B[36m"
+// #define COLOR_WHITE   "\x1B[37m"
 
-// Variáveis para mapeamento de posição e erros
-int error = 0;
-int line = 1;
-int column = 1;
+// // Variáveis para mapeamento de posição e erros
+// int error = 0;
+// int line = 1;
+// int column = 1;
 
 // Funções utilizadas para formatação, impressão e mapeamento
-void print_separator();
-void print_separator_big();
-void print_line(int line_number);
-void print_column(int column_number);
-void print_linebreak();
-void print_tokentype(char* text);
-void print_token();
-void print_error();
-void print_block(char* tokentype);
-void color_set(char* color);
-void color_reset();
+// void print_separator();
+// void print_separator_big();
+// void print_line(int line_number);
+// void print_column(int column_number);
+// void print_linebreak();
+// void print_tokentype(char* text);
+// void print_token();
+// void print_error();
+// void print_block(char* tokentype);
+// void color_set(char* color);
+// void color_reset();
 void column_count();
 void line_count();
-void print_start();
-void print_end();
+// void print_start();
+// void print_end();
 
 
 
@@ -53,10 +56,11 @@ FLOAT              {DIGIT}+[.]{DIGIT}+
 ID                 [a-zA-Z_][a-z0-9A-Z]*
 
 /* Tipos */
-TYPE               int|float|list
+/* TYPE               int|float|list */
+TYPE               int|float
 /* INT_TYPE           int */
 /* FLOAT_TYPE         float */
-/* LIST_TYPE          list */
+LIST_TYPE          list
 STRING             {DELIM_DQUOTE}(\\.|[^{DELIM_DQUOTE}\\])*{DELIM_DQUOTE}
 
 NULL_CONST         nil
@@ -105,13 +109,19 @@ MAP_LISTOP         >>
 FILTER_LISTOP      <<
 
 /* Delimitadores */
-DELIM_PARENT       [()]
-DELIM_BRACKET      [[]]
-DELIM_CUR_BRACKET  [{}]
-DELIM_COMMA        [,]
-DELIM_SEMICOLLON   [;]
-DELIM_SQUOTE       [']
-DELIM_DQUOTE       ["]
+/* DELIM_PARENT       [()] */
+/* DELIM_BRACKET      [[]] */
+/* DELIM_CUR_BRACKET  [{}] */
+DELIM_PARENT_L      \(
+DELIM_PARENT_R      \)
+DELIM_BRACKET_L     \[
+DELIM_BRACKET_R     \]
+DELIM_CUR_BRACKET_L \{
+DELIM_CUR_BRACKET_R \}
+DELIM_COMMA         [,]
+DELIM_SEMICOLLON    [;]
+DELIM_SQUOTE        [']
+DELIM_DQUOTE        ["]
 
 /* Comentários */
 SINGLE_COMMENT     \/\/[^\n]*
@@ -139,183 +149,240 @@ FORMAT_TAB         \t
 }
 
 {SINGLE_COMMENT} {
-    print_block("Single Line Comment");
+    /* print_block("Single Line Comment"); */
     column_count();
 }
 
 {MULTI_COMMENT} {
-    print_block("Multiple Line Comment");
+    /* print_block("Multiple Line Comment"); */
     column_count();
 }
 
 {INT} {
-    print_block("Integer");
+    /* print_block("Integer"); */
     column_count();
+    return INT;
 }
 
 {FLOAT} {
-    print_block("Float");
+    /* print_block("Float"); */
     column_count();
+    return FLOAT;
 }
 
 {TYPE} {
-    print_block("Type");
+    /* print_block("Type"); */
     column_count();
+    return TYPE;
+}
+
+{LIST_TYPE} {
+    /* print_block("List Type"); */
+    column_count();
+    return LIST_TYPE;
 }
 
 {STRING} {
-    print_block("String");
+    /* print_block("String"); */
     column_count();
+    return STRING;
 }
 
 {NULL_CONST} {
-    print_block("Null");
+    /* print_block("Null"); */
     column_count();
+    return NULL_CONST;
 }
 
 {PLUS_OP} {
-    print_block("Plus Operation");
+    /* print_block("Plus Operation"); */
     column_count();
+    return PLUS_OP;
 }
 
 {MINUS_OP} {
-    print_block("Minus Operation");
+    /* print_block("Minus Operation"); */
     column_count();
+    return MINUS_OP;
 }
 
 {DIV_OP} {
-    print_block("Div Operation");
+    /* print_block("Div Operation"); */
     column_count();
+    return DIV_OP;
 }
 
 {MUL_OP} {
-    print_block("Mul Operation");
+    /* print_block("Mul Operation"); */
     column_count();
+    return MUL_OP;
 }
 
 {LOGIC_OP} {
-    print_block("Logic Operation");
+    /* print_block("Logic Operation"); */
     column_count();
+    return LOGIC_OP;
 }
 
 {BINARY_OP} {
-    print_block("Binary Operation");
+    /* print_block("Binary Operation"); */
     column_count();
+    return BINARY_OP;
 }
 
 {IF_KEY} {
-    print_block("If Keyword");
+    /* print_block("If Keyword"); */
     column_count();
+    return IF_KEY;
 }
 
 {ELSE_KEY} {
-    print_block("Else Keyword");
+    /* print_block("Else Keyword"); */
     column_count();
+    return ELSE_KEY;
 }
 
 {FOR_KEY} {
-    print_block("For Keyword");
+    /* print_block("For Keyword"); */
     column_count();
+    return FOR_KEY;
 }
 
 {RETURN_KEY} {
-    print_block("Return Keyword");
+    /* print_block("Return Keyword"); */
     column_count();
+    return RETURN_KEY;
 }
 
 {INPUT_KEY} {
-    print_block("Input Keyword");
+    /* print_block("Input Keyword"); */
     column_count();
+    return INPUT_KEY;
 }
 
 {OUTPUT_KEY} {
-    print_block("Output Keyword");
+    /* print_block("Output Keyword"); */
     column_count();
+    return OUTPUT_KEY;
 }
 
 {OUTPUTLN_KEY} {
-    print_block("Output with line break Keyword");
+    /* print_block("Output with line break Keyword"); */
     column_count();
+    return OUTPUTLN_KEY;
 }
 
 {ASSIGN_OP} {
-    print_block("Assignment Operator");
+    /* print_block("Assignment Operator"); */
     column_count();
+    return ASSIGN_OP;
 }
 
 {EXCLA_OP} {
-    print_block("Exclamation Point Operator");
+    /* print_block("Exclamation Point Operator"); */
     column_count();
+    return EXCLA_OP;
 }
 
 {ASSIGN_LISTOP} {
-    print_block("Assignment List Operator");
+    /* print_block("Assignment List Operator"); */
     column_count();
+    return ASSIGN_LISTOP;
 }
 
 {HEADER_LISTOP} {
-    print_block("Header List Operator");
+    /* print_block("Header List Operator"); */
     column_count();
+    return HEADER_LISTOP;
 }
 
 {TAILDES_LISTOP} {
-    print_block("Tail Destructor List Operator");
+    /* print_block("Tail Destructor List Operator"); */
     column_count();
+    return TAILDES_LISTOP;
 }
 
 {MAP_LISTOP} {
-    print_block("Map List Operator");
+    /* print_block("Map List Operator"); */
     column_count();
+    return MAP_LISTOP;
 }
 
 {FILTER_LISTOP} {
-    print_block("Filter List Operator");
+    /* print_block("Filter List Operator"); */
     column_count();
+    return FILTER_LISTOP;
 }
 
-{DELIM_PARENT} {
-    print_block("Parenthesis Delimiter");
+{DELIM_PARENT_L} {
+    /* print_block("Parenthesis Delimiter"); */
     column_count();
+    return DELIM_PARENT_L;
 }
 
-{DELIM_BRACKET} {
-    print_block("Bracket Delimiter");
+{DELIM_PARENT_R} {
+    /* print_block("Parenthesis Delimiter"); */
     column_count();
+    return DELIM_PARENT_R;
 }
 
-{DELIM_CUR_BRACKET} {
-    print_block("Curly Bracket Delimiter");
+{DELIM_BRACKET_L} {
+    /* print_block("Bracket Delimiter"); */
     column_count();
+    return DELIM_BRACKET_L;
+}
+
+{DELIM_BRACKET_R} {
+    /* print_block("Bracket Delimiter"); */
+    column_count();
+    return DELIM_BRACKET_R;
+}
+
+{DELIM_CUR_BRACKET_L} {
+    /* print_block("Curly Bracket Delimiter"); */
+    column_count();
+    return DELIM_CUR_BRACKET_L;
+}
+
+{DELIM_CUR_BRACKET_R} {
+    /* print_block("Curly Bracket Delimiter"); */
+    column_count();
+    return DELIM_CUR_BRACKET_R;
 }
 
 {DELIM_COMMA} {
-    print_block("Comma Delimiter");
+    /* print_block("Comma Delimiter"); */
     column_count();
+    return DELIM_COMMA;
 }
 
 {DELIM_SEMICOLLON} {
-    print_block("Semicollon Delimiter");
+    /* print_block("Semicollon Delimiter"); */
     column_count();
+    return DELIM_SEMICOLLON;
 }
 
 {DELIM_SQUOTE} {
-    print_block("Single Quote Delimiter");
+    /* print_block("Single Quote Delimiter"); */
     column_count();
+    return DELIM_SQUOTE;
 }
 
 {DELIM_DQUOTE} {
-    print_block("Double Quote Delimiter");
+    /* print_block("Double Quote Delimiter"); */
     column_count();
+    return DELIM_DQUOTE;
 }
 
 
 {ID} {
-    print_block("Identifier");
+    /* print_block("Identifier"); */
     column_count();
+    return ID;
 }
 
 . {
-    print_error();
+    print_error(yytext);
     column_count();
     error = error + 1;
 }
@@ -468,6 +535,24 @@ removed rules
     column_count();
 }
 
+{DELIM_PARENT} {
+    print_block("Parenthesis Delimiter");
+    column_count();
+    return DELIM_PARENT;
+}
+
+{DELIM_BRACKET} {
+    print_block("Bracket Delimiter");
+    column_count();
+    return DELIM_BRACKET;
+}
+
+{DELIM_CUR_BRACKET} {
+    print_block("Curly Bracket Delimiter");
+    column_count();
+    return DELIM_CUR_BRACKET;
+}
+
 
 */
 
@@ -490,173 +575,7 @@ void line_count(){
 
 
 
-/* ------------------------ Funções de formatação da saída ------------------------ */
 
-/* Limpa a definição de cor de volta para o padrão */
-void color_reset(){
-    printf(COLOR_RESET);
-}
-
-/* Define uma cor nova - macros definidas no topo do código */
-void color_set(char* color){
-    printf("%s", color);
-}
-
-/* Imprime uma linha separadora */
-void print_separator(){
-    printf("-----------------------------------------");
-}
-
-/* Imprime uma linha separadora grande */
-void print_separator_big(){
-    printf("-------------------------------------------------------");
-}
-
-/* Imprime o posicionamento na linha */
-void print_line(int line_number){
-    printf("Line: ");
-    color_set(COLOR_MAGENTA);
-    printf("%d", line_number);
-    color_reset();
-}
-
-/* Imprime o posicionamento na coluna */
-void print_column(int column_number){
-    printf("Column: ");
-    color_set(COLOR_MAGENTA);
-    printf("%d", column_number);
-    color_reset();
-}
-
-/* Imprime uma posição completa (linha e coluna) */
-void print_position(){
-    print_line(line);
-    printf("    -    ");
-    print_column(column);
-}
-
-/* Imprime uma quebra de linha - separado em uma função apenas para ficar mais prático para montar a formatação do bloco completo */
-void print_linebreak(){
-    printf("\n");
-}
-
-/* Imprime o tipo do token lido */
-void print_tokentype(char* text){
-    printf("Token type: ");
-    color_set(COLOR_BLUE);
-    printf("%s", text);
-    color_reset();
-}
-
-/* Imprime o token lido */
-void print_token(){
-    printf("Token read: ");
-    color_set(COLOR_GREEN);
-    printf("%s", yytext);
-    color_reset();
-}
-
-/* Imprime um bloco completo de um erro léxico */
-void print_error(){
-    print_linebreak();
-
-    color_set(COLOR_RED);
-    print_separator();
-    color_reset();
-
-    print_linebreak();
-
-    print_position();
-
-
-    print_linebreak();
-
-    color_set(COLOR_RED);
-    printf("ERROR: Undefined token");
-    color_reset();
-
-    print_linebreak();
-
-    print_token();
-
-    print_linebreak();
-
-    color_set(COLOR_RED);
-    print_separator();
-    color_reset();
-
-    print_linebreak();
-}
-
-/* Imprime um bloco completo de um token */
-void print_block(char* tokentype){
-    print_linebreak();
-
-    print_separator();
-
-    print_linebreak();
-
-    print_position();
-
-    print_linebreak();
-
-    print_tokentype(tokentype);
-
-    print_linebreak();
-
-    print_token();
-
-    print_linebreak();
-
-    print_separator();
-
-    print_linebreak();
-}
-
-/* Imprime um cabeçalho de inicialização do analisador */
-void print_start(){
-    color_set(COLOR_YELLOW);
-    print_linebreak();
-    print_separator_big();
-    print_linebreak();
-
-    printf("---------------Starting lexical analyser---------------");
-
-    print_linebreak();
-    print_separator_big();
-    print_linebreak();
-    color_reset();
-}
-
-/* Imprime um rodapé de finalização do analisador */
-void print_end(){
-    color_set(COLOR_YELLOW);
-    print_linebreak();
-    print_separator_big();
-    print_linebreak();
-
-    printf("---Lexical analyser completed with ");
-
-    if(error > 0){
-        color_set(COLOR_RED);
-    }
-    else{
-        color_set(COLOR_GREEN);
-    }
-
-    printf("%02d ", error);
-
-    color_set(COLOR_YELLOW);
-
-    printf("lexical errors---");
-
-    print_linebreak();
-    print_separator_big();
-    print_linebreak();
-    color_reset();
-
-}
-/* ------------------------ Fim das funções de formatação ------------------------ */
 
 /* int main(int argc, char **argv){
     FILE *filep;

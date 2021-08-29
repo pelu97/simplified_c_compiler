@@ -58,47 +58,44 @@ extern int yydebug;
     FLOAT = 259,                   /* FLOAT  */
     ID = 260,                      /* ID  */
     TYPE = 261,                    /* TYPE  */
-    STRING = 262,                  /* STRING  */
-    NULL_CONST = 263,              /* NULL_CONST  */
-    PLUS_OP = 264,                 /* PLUS_OP  */
-    MINUS_OP = 265,                /* MINUS_OP  */
-    DIV_OP = 266,                  /* DIV_OP  */
-    MUL_OP = 267,                  /* MUL_OP  */
-    LOGIC_OP = 268,                /* LOGIC_OP  */
-    BINARY_OP = 269,               /* BINARY_OP  */
-    ASSIGN_OP = 270,               /* ASSIGN_OP  */
-    EXCLA_OP = 271,                /* EXCLA_OP  */
-    IF_KEY = 272,                  /* IF_KEY  */
-    ELSE_KEY = 273,                /* ELSE_KEY  */
-    FOR_KEY = 274,                 /* FOR_KEY  */
-    RETURN_KEY = 275,              /* RETURN_KEY  */
-    INPUT_KEY = 276,               /* INPUT_KEY  */
-    OUTPUT_KEY = 277,              /* OUTPUT_KEY  */
-    OUTPUTLN_KEY = 278,            /* OUTPUTLN_KEY  */
-    ASSIGN_LISTOP = 279,           /* ASSIGN_LISTOP  */
-    HEADER_LISTOP = 280,           /* HEADER_LISTOP  */
-    TAILDES_LISTOP = 281,          /* TAILDES_LISTOP  */
-    MAP_LISTOP = 282,              /* MAP_LISTOP  */
-    FILTER_LISTOP = 283,           /* FILTER_LISTOP  */
-    DELIM_PARENT = 284,            /* DELIM_PARENT  */
-    DELIM_BRACKET = 285,           /* DELIM_BRACKET  */
-    DELIM_CUR_BRACKET = 286,       /* DELIM_CUR_BRACKET  */
-    DELIM_COMMA = 287,             /* DELIM_COMMA  */
-    DELIM_SEMICOLLON = 288,        /* DELIM_SEMICOLLON  */
-    DELIM_SQUOTE = 289,            /* DELIM_SQUOTE  */
-    DELIM_DQUOTE = 290,            /* DELIM_DQUOTE  */
-    SINGLE_COMMENT = 291,          /* SINGLE_COMMENT  */
-    MULTI_COMMENT = 292,           /* MULTI_COMMENT  */
-    FORMAT_BLANKSPACE = 293,       /* FORMAT_BLANKSPACE  */
-    FORMAT_NEWLINE = 294,          /* FORMAT_NEWLINE  */
-    FORMAT_TAB = 295,              /* FORMAT_TAB  */
-    IF_KEYWORD = 296,              /* IF_KEYWORD  */
-    ELSE_KEYWORD = 297,            /* ELSE_KEYWORD  */
-    FOR_KEYWORD = 298,             /* FOR_KEYWORD  */
-    RETURN_KEYWORD = 299,          /* RETURN_KEYWORD  */
-    WRITE_KEYWORD = 300,           /* WRITE_KEYWORD  */
-    WRITELN_KEYWORD = 301,         /* WRITELN_KEYWORD  */
-    READ_KEYWORD = 302             /* READ_KEYWORD  */
+    LIST_TYPE = 262,               /* LIST_TYPE  */
+    STRING = 263,                  /* STRING  */
+    NULL_CONST = 264,              /* NULL_CONST  */
+    PLUS_OP = 265,                 /* PLUS_OP  */
+    MINUS_OP = 266,                /* MINUS_OP  */
+    DIV_OP = 267,                  /* DIV_OP  */
+    MUL_OP = 268,                  /* MUL_OP  */
+    LOGIC_OP = 269,                /* LOGIC_OP  */
+    BINARY_OP = 270,               /* BINARY_OP  */
+    ASSIGN_OP = 271,               /* ASSIGN_OP  */
+    EXCLA_OP = 272,                /* EXCLA_OP  */
+    IF_KEY = 273,                  /* IF_KEY  */
+    ELSE_KEY = 274,                /* ELSE_KEY  */
+    FOR_KEY = 275,                 /* FOR_KEY  */
+    RETURN_KEY = 276,              /* RETURN_KEY  */
+    INPUT_KEY = 277,               /* INPUT_KEY  */
+    OUTPUT_KEY = 278,              /* OUTPUT_KEY  */
+    OUTPUTLN_KEY = 279,            /* OUTPUTLN_KEY  */
+    ASSIGN_LISTOP = 280,           /* ASSIGN_LISTOP  */
+    HEADER_LISTOP = 281,           /* HEADER_LISTOP  */
+    TAILDES_LISTOP = 282,          /* TAILDES_LISTOP  */
+    MAP_LISTOP = 283,              /* MAP_LISTOP  */
+    FILTER_LISTOP = 284,           /* FILTER_LISTOP  */
+    DELIM_PARENT_L = 285,          /* DELIM_PARENT_L  */
+    DELIM_PARENT_R = 286,          /* DELIM_PARENT_R  */
+    DELIM_BRACKET_L = 287,         /* DELIM_BRACKET_L  */
+    DELIM_BRACKET_R = 288,         /* DELIM_BRACKET_R  */
+    DELIM_CUR_BRACKET_L = 289,     /* DELIM_CUR_BRACKET_L  */
+    DELIM_CUR_BRACKET_R = 290,     /* DELIM_CUR_BRACKET_R  */
+    DELIM_COMMA = 291,             /* DELIM_COMMA  */
+    DELIM_SEMICOLLON = 292,        /* DELIM_SEMICOLLON  */
+    DELIM_SQUOTE = 293,            /* DELIM_SQUOTE  */
+    DELIM_DQUOTE = 294,            /* DELIM_DQUOTE  */
+    SINGLE_COMMENT = 295,          /* SINGLE_COMMENT  */
+    MULTI_COMMENT = 296,           /* MULTI_COMMENT  */
+    FORMAT_BLANKSPACE = 297,       /* FORMAT_BLANKSPACE  */
+    FORMAT_NEWLINE = 298,          /* FORMAT_NEWLINE  */
+    FORMAT_TAB = 299               /* FORMAT_TAB  */
   };
   typedef enum yytokentype yytoken_kind_t;
 #endif
@@ -111,47 +108,44 @@ extern int yydebug;
 #define FLOAT 259
 #define ID 260
 #define TYPE 261
-#define STRING 262
-#define NULL_CONST 263
-#define PLUS_OP 264
-#define MINUS_OP 265
-#define DIV_OP 266
-#define MUL_OP 267
-#define LOGIC_OP 268
-#define BINARY_OP 269
-#define ASSIGN_OP 270
-#define EXCLA_OP 271
-#define IF_KEY 272
-#define ELSE_KEY 273
-#define FOR_KEY 274
-#define RETURN_KEY 275
-#define INPUT_KEY 276
-#define OUTPUT_KEY 277
-#define OUTPUTLN_KEY 278
-#define ASSIGN_LISTOP 279
-#define HEADER_LISTOP 280
-#define TAILDES_LISTOP 281
-#define MAP_LISTOP 282
-#define FILTER_LISTOP 283
-#define DELIM_PARENT 284
-#define DELIM_BRACKET 285
-#define DELIM_CUR_BRACKET 286
-#define DELIM_COMMA 287
-#define DELIM_SEMICOLLON 288
-#define DELIM_SQUOTE 289
-#define DELIM_DQUOTE 290
-#define SINGLE_COMMENT 291
-#define MULTI_COMMENT 292
-#define FORMAT_BLANKSPACE 293
-#define FORMAT_NEWLINE 294
-#define FORMAT_TAB 295
-#define IF_KEYWORD 296
-#define ELSE_KEYWORD 297
-#define FOR_KEYWORD 298
-#define RETURN_KEYWORD 299
-#define WRITE_KEYWORD 300
-#define WRITELN_KEYWORD 301
-#define READ_KEYWORD 302
+#define LIST_TYPE 262
+#define STRING 263
+#define NULL_CONST 264
+#define PLUS_OP 265
+#define MINUS_OP 266
+#define DIV_OP 267
+#define MUL_OP 268
+#define LOGIC_OP 269
+#define BINARY_OP 270
+#define ASSIGN_OP 271
+#define EXCLA_OP 272
+#define IF_KEY 273
+#define ELSE_KEY 274
+#define FOR_KEY 275
+#define RETURN_KEY 276
+#define INPUT_KEY 277
+#define OUTPUT_KEY 278
+#define OUTPUTLN_KEY 279
+#define ASSIGN_LISTOP 280
+#define HEADER_LISTOP 281
+#define TAILDES_LISTOP 282
+#define MAP_LISTOP 283
+#define FILTER_LISTOP 284
+#define DELIM_PARENT_L 285
+#define DELIM_PARENT_R 286
+#define DELIM_BRACKET_L 287
+#define DELIM_BRACKET_R 288
+#define DELIM_CUR_BRACKET_L 289
+#define DELIM_CUR_BRACKET_R 290
+#define DELIM_COMMA 291
+#define DELIM_SEMICOLLON 292
+#define DELIM_SQUOTE 293
+#define DELIM_DQUOTE 294
+#define SINGLE_COMMENT 295
+#define MULTI_COMMENT 296
+#define FORMAT_BLANKSPACE 297
+#define FORMAT_NEWLINE 298
+#define FORMAT_TAB 299
 
 /* Value type.  */
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
