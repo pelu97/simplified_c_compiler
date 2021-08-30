@@ -6,7 +6,8 @@ LT, LE, EQ, NE, GT, GE,
 IF, THEN, ELSE, ID, NUMBER, RELOP */
 #include <stdio.h>
 #include <stdlib.h>
-#include "format.h"
+#include <string.h>
+#include "base.h"
 
 #include "syntax.tab.h"
 
@@ -161,216 +162,252 @@ FORMAT_TAB         \t
 {INT} {
     /* print_block("Integer"); */
     column_count();
+    strcpy(yylval.t_token.text, yytext);
     return INT;
 }
 
 {FLOAT} {
     /* print_block("Float"); */
     column_count();
+    strcpy(yylval.t_token.text, yytext);
     return FLOAT;
 }
 
 {TYPE} {
     /* print_block("Type"); */
     column_count();
+    strcpy(yylval.t_token.text, yytext);
     return TYPE;
 }
 
 {LIST_TYPE} {
     /* print_block("List Type"); */
     column_count();
+    strcpy(yylval.t_token.text, yytext);
     return LIST_TYPE;
 }
 
 {STRING} {
     /* print_block("String"); */
     column_count();
+    strcpy(yylval.t_token.text, yytext);
     return STRING;
 }
 
 {NULL_CONST} {
     /* print_block("Null"); */
     column_count();
+    strcpy(yylval.t_token.text, yytext);
     return NULL_CONST;
 }
 
 {PLUS_OP} {
     /* print_block("Plus Operation"); */
     column_count();
+    strcpy(yylval.t_token.text, yytext);
     return PLUS_OP;
 }
 
 {MINUS_OP} {
     /* print_block("Minus Operation"); */
     column_count();
+    strcpy(yylval.t_token.text, yytext);
     return MINUS_OP;
 }
 
 {DIV_OP} {
     /* print_block("Div Operation"); */
     column_count();
+    strcpy(yylval.t_token.text, yytext);
     return DIV_OP;
 }
 
 {MUL_OP} {
     /* print_block("Mul Operation"); */
     column_count();
+    strcpy(yylval.t_token.text, yytext);
     return MUL_OP;
 }
 
 {LOGIC_OP} {
     /* print_block("Logic Operation"); */
     column_count();
+    strcpy(yylval.t_token.text, yytext);
     return LOGIC_OP;
 }
 
 {BINARY_OP} {
     /* print_block("Binary Operation"); */
     column_count();
+    strcpy(yylval.t_token.text, yytext);
     return BINARY_OP;
 }
 
 {IF_KEY} {
     /* print_block("If Keyword"); */
     column_count();
+    strcpy(yylval.t_token.text, yytext);
     return IF_KEY;
 }
 
 {ELSE_KEY} {
     /* print_block("Else Keyword"); */
     column_count();
+    strcpy(yylval.t_token.text, yytext);
     return ELSE_KEY;
 }
 
 {FOR_KEY} {
     /* print_block("For Keyword"); */
     column_count();
+    strcpy(yylval.t_token.text, yytext);
     return FOR_KEY;
 }
 
 {RETURN_KEY} {
     /* print_block("Return Keyword"); */
     column_count();
+    strcpy(yylval.t_token.text, yytext);
     return RETURN_KEY;
 }
 
 {INPUT_KEY} {
     /* print_block("Input Keyword"); */
     column_count();
+    strcpy(yylval.t_token.text, yytext);
     return INPUT_KEY;
 }
 
 {OUTPUT_KEY} {
     /* print_block("Output Keyword"); */
     column_count();
+    strcpy(yylval.t_token.text, yytext);
     return OUTPUT_KEY;
 }
 
 {OUTPUTLN_KEY} {
     /* print_block("Output with line break Keyword"); */
     column_count();
+    strcpy(yylval.t_token.text, yytext);
     return OUTPUTLN_KEY;
 }
 
 {ASSIGN_OP} {
     /* print_block("Assignment Operator"); */
     column_count();
+    strcpy(yylval.t_token.text, yytext);
     return ASSIGN_OP;
 }
 
 {EXCLA_OP} {
     /* print_block("Exclamation Point Operator"); */
     column_count();
+    strcpy(yylval.t_token.text, yytext);
     return EXCLA_OP;
 }
 
 {ASSIGN_LISTOP} {
     /* print_block("Assignment List Operator"); */
     column_count();
+    strcpy(yylval.t_token.text, yytext);
     return ASSIGN_LISTOP;
 }
 
 {HEADER_LISTOP} {
     /* print_block("Header List Operator"); */
     column_count();
+    strcpy(yylval.t_token.text, yytext);
     return HEADER_LISTOP;
 }
 
 {TAILDES_LISTOP} {
     /* print_block("Tail Destructor List Operator"); */
     column_count();
+    strcpy(yylval.t_token.text, yytext);
     return TAILDES_LISTOP;
 }
 
 {MAP_LISTOP} {
     /* print_block("Map List Operator"); */
     column_count();
+    strcpy(yylval.t_token.text, yytext);
     return MAP_LISTOP;
 }
 
 {FILTER_LISTOP} {
     /* print_block("Filter List Operator"); */
     column_count();
+    strcpy(yylval.t_token.text, yytext);
     return FILTER_LISTOP;
 }
 
 {DELIM_PARENT_L} {
     /* print_block("Parenthesis Delimiter"); */
     column_count();
+    strcpy(yylval.t_token.text, yytext);
     return DELIM_PARENT_L;
 }
 
 {DELIM_PARENT_R} {
     /* print_block("Parenthesis Delimiter"); */
     column_count();
+    strcpy(yylval.t_token.text, yytext);
     return DELIM_PARENT_R;
 }
 
 {DELIM_BRACKET_L} {
     /* print_block("Bracket Delimiter"); */
     column_count();
+    strcpy(yylval.t_token.text, yytext);
     return DELIM_BRACKET_L;
 }
 
 {DELIM_BRACKET_R} {
     /* print_block("Bracket Delimiter"); */
     column_count();
+    strcpy(yylval.t_token.text, yytext);
     return DELIM_BRACKET_R;
 }
 
 {DELIM_CUR_BRACKET_L} {
     /* print_block("Curly Bracket Delimiter"); */
     column_count();
+    strcpy(yylval.t_token.text, yytext);
     return DELIM_CUR_BRACKET_L;
 }
 
 {DELIM_CUR_BRACKET_R} {
     /* print_block("Curly Bracket Delimiter"); */
     column_count();
+    strcpy(yylval.t_token.text, yytext);
     return DELIM_CUR_BRACKET_R;
 }
 
 {DELIM_COMMA} {
     /* print_block("Comma Delimiter"); */
     column_count();
+    strcpy(yylval.t_token.text, yytext);
     return DELIM_COMMA;
 }
 
 {DELIM_SEMICOLLON} {
     /* print_block("Semicollon Delimiter"); */
     column_count();
+    strcpy(yylval.t_token.text, yytext);
     return DELIM_SEMICOLLON;
 }
 
 {DELIM_SQUOTE} {
     /* print_block("Single Quote Delimiter"); */
     column_count();
+    strcpy(yylval.t_token.text, yytext);
     return DELIM_SQUOTE;
 }
 
 {DELIM_DQUOTE} {
     /* print_block("Double Quote Delimiter"); */
     column_count();
+    strcpy(yylval.t_token.text, yytext);
     return DELIM_DQUOTE;
 }
 
@@ -378,6 +415,7 @@ FORMAT_TAB         \t
 {ID} {
     /* print_block("Identifier"); */
     column_count();
+    strcpy(yylval.t_token.text, yytext);
     return ID;
 }
 
