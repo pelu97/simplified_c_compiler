@@ -4,7 +4,8 @@
 /* C declarations */
 #include <stdio.h>
 #include <stdlib.h>
-#include "format.h"
+#include "base.h"
+#include "symbol_table.h"
 
 extern int yylex();
 extern int yylex_destroy();
@@ -12,37 +13,59 @@ extern int yyparse();
 extern void yyerror(const char* s);
 extern FILE* yyin;
 
+//yynerrs //global variable counting errors
+
 %}
 /* Yacc/Bison declarations */
 
+//Mudando o formato do token retornado pelo lexico
+%union{
+    struct Tokens{
+        char text[150];
+        int line;
+        int column;
+    } t_token;
+
+    struct Nodes{
+        int temp;
+    } t_node;
+}
+
+/* %left PLUS_OP MINUS_OP
+%left MUL_OP DIV_OP
+%left LOGIC_OP
+%left BINARY_OP
+%right EXCLA_OP */
+
+
 /* Base */
-%token INT
-%token FLOAT
+%token <t_token> INT
+%token <t_token> FLOAT
 
 /* Identificador */
-%token ID
+%token <t_token> ID
 
 /* Tipos */
-%token TYPE
+%token <t_token> TYPE
 /* %token INT_TYPE */
 /* %token FLOAT_TYPE */
-%token LIST_TYPE
-%token STRING
+%token <t_token> LIST_TYPE
+%token <t_token> STRING
 
-%token NULL_CONST
+%token <t_token> NULL_CONST
 
 /* Operadores */
 /* %token ARITHMETIC_OP */
-%token PLUS_OP
-%token MINUS_OP
-%token DIV_OP
-%token MUL_OP
+%left <t_token> PLUS_OP
+%left <t_token> MINUS_OP
+%left <t_token> DIV_OP
+%left <t_token> MUL_OP
 
-%token LOGIC_OP
+%left <t_token> LOGIC_OP
 /* %token OR_OP
 %token AND_OP */
 
-%token BINARY_OP
+%left <t_token> BINARY_OP
 /* %token LT_OP
 %token LE_OP
 %token GT_OP
@@ -50,140 +73,189 @@ extern FILE* yyin;
 %token EQ_OP
 %token NE_OP */
 
-%token ASSIGN_OP
+%token <t_token> ASSIGN_OP
 
-%token EXCLA_OP
+%right <t_token> EXCLA_OP
 
 /* Controle de fluxo */
 /* %token FLOW_KEY */
-%token IF_KEY
-%token ELSE_KEY
-%token FOR_KEY
-%token RETURN_KEY
+%token <t_token> IF_KEY
+%token <t_token> ELSE_KEY
+%token <t_token> FOR_KEY
+%token <t_token> RETURN_KEY
 
 /* Entrada e saída */
-%token INPUT_KEY
-%token OUTPUT_KEY
-%token OUTPUTLN_KEY
+%token <t_token> INPUT_KEY
+%token <t_token> OUTPUT_KEY
+%token <t_token> OUTPUTLN_KEY
 
 /* Operadores de lista */
 /* %token LIST_OP */
-%token ASSIGN_LISTOP
-%token HEADER_LISTOP
-%token TAILDES_LISTOP
-%token MAP_LISTOP
-%token FILTER_LISTOP
+%token <t_token> ASSIGN_LISTOP
+%token <t_token> HEADER_LISTOP
+%token <t_token> TAILDES_LISTOP
+%token <t_token> MAP_LISTOP
+%token <t_token> FILTER_LISTOP
 
 /* %token DELIM_PARENT */
-%token DELIM_PARENT_L
-%token DELIM_PARENT_R
+%token <t_token> DELIM_PARENT_L
+%token <t_token> DELIM_PARENT_R
 /* %token DELIM_BRACKET */
-%token DELIM_BRACKET_L
-%token DELIM_BRACKET_R
+%token <t_token> DELIM_BRACKET_L
+%token <t_token> DELIM_BRACKET_R
 /* %token DELIM_CUR_BRACKET */
-%token DELIM_CUR_BRACKET_L
-%token DELIM_CUR_BRACKET_R
-%token DELIM_COMMA
-%token DELIM_SEMICOLLON
-%token DELIM_SQUOTE
-%token DELIM_DQUOTE
+%token <t_token> DELIM_CUR_BRACKET_L
+%token <t_token> DELIM_CUR_BRACKET_R
+%token <t_token> DELIM_COMMA
+%token <t_token> DELIM_SEMICOLLON
+%token <t_token> DELIM_SQUOTE
+%token <t_token> DELIM_DQUOTE
 
-%token SINGLE_COMMENT
-%token MULTI_COMMENT
+%token <t_token> SINGLE_COMMENT
+%token <t_token> MULTI_COMMENT
 
-%token FORMAT_BLANKSPACE
-%token FORMAT_NEWLINE
-%token FORMAT_TAB
+%token <t_token> FORMAT_BLANKSPACE
+%token <t_token> FORMAT_NEWLINE
+%token <t_token> FORMAT_TAB
 
+%type <t_node> program
+%type <t_node> declarationList
+%type <t_node> declaration
+%type <t_node> varDeclaration
+%type <t_node> funcDeclaration
+%type <t_node> parameters
+%type <t_node> parameterList
+%type <t_node> statement
+%type <t_node> bodyStatement
+%type <t_node> localDeclaration
+%type <t_node> statementList
+%type <t_node> ifStatement
+%type <t_node> loopStatement
+%type <t_node> returnStatement
+%type <t_node> expression
+%type <t_node> simpleExpression
+%type <t_node> logicBinExpression
+%type <t_node> logicUnExpression
+%type <t_node> binExpression
+%type <t_node> sumExpression
+%type <t_node> mulExpression
+%type <t_node> sumOP
+%type <t_node> mulOP
+%type <t_node> factor
+%type <t_node> constant
+%type <t_node> functionCall
+%type <t_node> parametersPass
+%type <t_node> writeOp
+%type <t_node> write
+%type <t_node> writeln
+%type <t_node> readOp
+%type <t_node> expressionStatement
+%type <t_node> listStatement
+%type <t_node> listExpression
+%type <t_node> listAssign
+%type <t_node> listHeader
+%type <t_node> listTailDestructor
+%type <t_node> listMap
+%type <t_node> listFilter
 
 /* %token '<<'
 %token '>>' */
 
 %%
 /* Grammar rules */
+/* \{printf[^\}]*\} */
 program:
-    declarationList { printf("%d\n", $1); }
+    declarationList {}
 ;
 
 declarationList:
-    declarationList declaration {printf("%d %d\n", $1, $2);}
-    | declaration {printf("%d\n", $1);}
+    declarationList declaration {}
+    | declaration {}
 ;
 
 declaration:
-    varDeclaration {printf("%d\n", $1);}
-    | funcDeclaration {printf("%d\n", $1);}
+    varDeclaration {}
+    | funcDeclaration {}
 ;
 
 varDeclaration:
+    TYPE ID DELIM_SEMICOLLON {
+        printf("%s %s %s\n", $1.text, $2.text, $3.text);
+    }
+    | TYPE LIST_TYPE ID DELIM_SEMICOLLON {}
+;
+
+/* varDeclaration:
     TYPE varDeclList DELIM_SEMICOLLON {printf("%d %d %d\n", $1, $2, $3);}
     | TYPE LIST_TYPE varDeclList DELIM_SEMICOLLON {printf("%d %d %d %d\n", $1, $2, $3, $4);}
-;
+; */
 
-varDeclList:
+/* varDeclList:
     varDeclList DELIM_COMMA varDeclId {printf("%d %d\n", $1, $2);}
     | varDeclId {printf("%d\n", $1);}
-;
+; */
 
-varDeclId :
+/* varDeclId :
     ID {printf("%d\n", $1);}
-;
+; */
 
 funcDeclaration:
-    TYPE ID DELIM_PARENT_L parameters DELIM_PARENT_R statement {printf("%d %d %d %d %d %d\n", $1, $2, $3, $4, $5, $6);}
+    TYPE ID DELIM_PARENT_L parameters DELIM_PARENT_R statement {}
 ;
 
 parameters:
-    parameterList {printf("%d\n", $1);}
+    parameterList {}
     | {}
 ;
 
 parameterList:
-    parameterList DELIM_COMMA TYPE ID {printf("%d %d %d\n", $1, $2, $3);}
-    | TYPE ID {printf("%d %d\n", $1, $2);}
+    parameterList DELIM_COMMA TYPE ID {}
+    | parameterList DELIM_COMMA TYPE LIST_TYPE ID {}
+    | TYPE ID {}
+    | TYPE LIST_TYPE ID {}
 ;
 
 statement:
-    bodyStatement {printf("%d\n", $1);}
-    | ifStatement {printf("%d\n", $1);}
-    | loopStatement {printf("%d\n", $1);}
-    | returnStatement {printf("%d\n", $1);}
-    | listStatement DELIM_SEMICOLLON {printf("%d\n", $1);}
-    | writeOp DELIM_SEMICOLLON {printf("%d\n", $1);}
-    | readOp DELIM_SEMICOLLON {printf("%d\n", $1);}
-    | expressionStatement {printf("%d\n", $1);}
+    bodyStatement {}
+    | ifStatement {}
+    | loopStatement {}
+    | returnStatement {}
+    | listStatement DELIM_SEMICOLLON {}
+    | writeOp DELIM_SEMICOLLON {}
+    | readOp DELIM_SEMICOLLON {}
+    | expressionStatement {}
 ;
 
 bodyStatement:
-    DELIM_CUR_BRACKET_L localDeclaration statementList DELIM_CUR_BRACKET_R {printf("%d %d %d %d\n", $1, $2, $3, $4);}
+    DELIM_CUR_BRACKET_L localDeclaration statementList DELIM_CUR_BRACKET_R {}
 ;
 
 localDeclaration:
-    localDeclaration varDeclaration {printf("%d %d\n", $1, $2);}
+    localDeclaration varDeclaration {}
     | {}
 ;
 
 statementList:
-    statement statementList {printf("%d %d\n", $1, $2);}
+    statement statementList {}
     | {}
 ;
 
 ifStatement:
-    IF_KEY DELIM_PARENT_L simpleExpression DELIM_PARENT_R bodyStatement {printf("%d %d %d %d %d\n", $1, $2, $3, $4, $5);}
-    | IF_KEY DELIM_PARENT_L simpleExpression DELIM_PARENT_R bodyStatement ELSE_KEY bodyStatement {printf("%d %d %d %d %d %d %d\n", $1, $2, $3, $4, $5, $6, $7);}
+    IF_KEY DELIM_PARENT_L simpleExpression DELIM_PARENT_R bodyStatement {}
+    | IF_KEY DELIM_PARENT_L simpleExpression DELIM_PARENT_R bodyStatement ELSE_KEY bodyStatement {}
 ;
 
 loopStatement:
-    FOR_KEY DELIM_PARENT_L expression DELIM_SEMICOLLON simpleExpression DELIM_SEMICOLLON expression DELIM_PARENT_R bodyStatement {printf("%d %d %d %d %d %d %d %d %d\n", $1, $2, $3, $4, $5, $6, $7, $8, $9);}
+    FOR_KEY DELIM_PARENT_L expression DELIM_SEMICOLLON simpleExpression DELIM_SEMICOLLON expression DELIM_PARENT_R bodyStatement {}
 ;
 
 returnStatement:
-    RETURN_KEY expression DELIM_SEMICOLLON {printf("%d %d\n", $1, $2);}
+    RETURN_KEY expression DELIM_SEMICOLLON {}
 ;
 
 expression:
-    ID ASSIGN_OP expression {printf("%d %d %d\n", $1, $2, $3);}
-    | simpleExpression {printf("%d\n", $1);}
+    ID ASSIGN_OP expression {}
+    | simpleExpression {}
 ;
 
 /* simpleExpression:
@@ -192,7 +264,7 @@ expression:
 ; */
 
 simpleExpression:
-    logicBinExpression {printf("%d\n", $1);}
+    logicBinExpression {}
 ;
 
 /* logicExpression:
@@ -201,13 +273,13 @@ simpleExpression:
 ; */
 
 logicBinExpression:
-    logicBinExpression LOGIC_OP logicUnExpression {printf("%d %d %d\n", $1, $2, $3);}
-    | logicUnExpression {printf("%d\n", $1);}
+    logicBinExpression LOGIC_OP logicUnExpression {}
+    | logicUnExpression {}
 ;
 
 logicUnExpression:
-    EXCLA_OP logicUnExpression {printf("%d %d\n", $1, $2);}
-    | binExpression {printf("%d\n", $1);}
+    EXCLA_OP logicUnExpression {}
+    | binExpression {}
 ;
 
 /* logicBinExpression:
@@ -215,94 +287,94 @@ logicUnExpression:
     | EXCLA_OP simpleExpression {printf("%d %d\n", $1, $2);} */
 
 binExpression:
-    binExpression BINARY_OP sumExpression {printf("%d %d %d\n", $1, $2, $3);}
-    | sumExpression {printf("%d\n", $1);}
+    binExpression BINARY_OP sumExpression {}
+    | sumExpression {}
 ;
 
 sumExpression:
-    sumExpression sumOP mulExpression {printf("%d %d %d\n", $1, $2, $3);}
-    | mulExpression {printf("%d\n", $1);}
+    sumExpression sumOP mulExpression {}
+    | mulExpression {}
 ;
 
 mulExpression:
-    mulExpression mulOP factor {printf("%d %d %d\n", $1, $2, $3);}
-    | factor {printf("%d\n", $1);}
+    mulExpression mulOP factor {}
+    | factor {}
 ;
 
 sumOP:
-    PLUS_OP {printf("%d\n", $1);}
-    | MINUS_OP {printf("%d\n", $1);}
+    PLUS_OP {}
+    | MINUS_OP {}
 ;
 
 mulOP:
-    MUL_OP {printf("%d\n", $1);}
-    | DIV_OP {printf("%d\n", $1);}
+    MUL_OP {}
+    | DIV_OP {}
 ;
 
 factor:
-    ID {printf("%d\n", $1);}
-    | constant {printf("%d\n", $1);}
-    | DELIM_PARENT_L simpleExpression DELIM_PARENT_R {printf("%d %d %d\n", $1, $2, $3);}
-    | functionCall {printf("%d\n", $1);}
-    | listExpression {printf("%d\n", $1);}
+    ID {}
+    | constant {}
+    | DELIM_PARENT_L simpleExpression DELIM_PARENT_R {}
+    | functionCall {}
+    | listExpression {}
 ;
 
 constant:
-    INT {printf("%d\n", $1);}
-    | FLOAT {printf("%d\n", $1);}
+    INT {}
+    | FLOAT {}
 ;
 
 functionCall:
-    ID DELIM_PARENT_L parametersPass DELIM_PARENT_R {printf("%d %d %d %d\n", $1, $2, $3, $4);}
+    ID DELIM_PARENT_L parametersPass DELIM_PARENT_R {}
 ;
 
 parametersPass:
-    parametersPass DELIM_COMMA simpleExpression {printf("%d %d %d\n", $1, $2, $3);}
-    | simpleExpression {printf("%d\n", $1);}
+    parametersPass DELIM_COMMA simpleExpression {}
+    | simpleExpression {}
     | {}
 ;
 
 writeOp:
-    write {printf("%d\n", $1);}
-    | writeln {printf("%d\n", $1);}
+    write {}
+    | writeln {}
 ;
 
 write:
-    OUTPUT_KEY DELIM_PARENT_L STRING DELIM_PARENT_R {printf("%d %d %d\n", $1, $2, $3);}
-    | OUTPUT_KEY DELIM_PARENT_L simpleExpression DELIM_PARENT_R {printf("%d %d %d\n", $1, $2, $3);}
+    OUTPUT_KEY DELIM_PARENT_L STRING DELIM_PARENT_R {}
+    | OUTPUT_KEY DELIM_PARENT_L simpleExpression DELIM_PARENT_R {}
 ;
 
 writeln:
-    OUTPUTLN_KEY DELIM_PARENT_L STRING DELIM_PARENT_R {printf("%d %d %d\n", $1, $2, $3);}
-    | OUTPUTLN_KEY DELIM_PARENT_L simpleExpression DELIM_PARENT_R {printf("%d %d %d\n", $1, $2, $3);}
+    OUTPUTLN_KEY DELIM_PARENT_L STRING DELIM_PARENT_R {}
+    | OUTPUTLN_KEY DELIM_PARENT_L simpleExpression DELIM_PARENT_R {}
 ;
 
 readOp:
-    INPUT_KEY DELIM_PARENT_L ID DELIM_PARENT_R {printf("%d %d %d\n", $1, $2, $3);}
+    INPUT_KEY DELIM_PARENT_L ID DELIM_PARENT_R {}
 ;
 
 expressionStatement:
-    expression DELIM_SEMICOLLON {printf("%d\n", $1);}
+    expression DELIM_SEMICOLLON {}
 ;
 
 listStatement:
-    listAssign {printf("%d\n", $1);}
-    | listMap {printf("%d\n", $1);}
-    | listFilter {printf("%d\n", $1);}
+    listAssign {}
+    | listMap {}
+    | listFilter {}
 ;
 
 listExpression:
-    listHeader {printf("%d\n", $1);}
+    listHeader {}
     /* | listTail {printf("%d\n", $1);} */
-    | listTailDestructor {printf("%d\n", $1);}
+    | listTailDestructor {}
 ;
 
 listAssign:
-    ID ASSIGN_OP ID ASSIGN_LISTOP ID {printf("%d %d %d %d %d\n", $1, $2, $3, $4, $5);}
+    ID ASSIGN_OP ID ASSIGN_LISTOP ID {}
 ;
 
 listHeader:
-    HEADER_LISTOP ID {printf("%d %d\n", $1, $2);}
+    HEADER_LISTOP ID {}
 ;
 
 /* listTail:
@@ -310,15 +382,15 @@ listHeader:
 ; */
 
 listTailDestructor:
-    TAILDES_LISTOP ID {printf("%d %d\n", $1, $2);}
+    TAILDES_LISTOP ID {}
 ;
 
 listMap:
-    ID ASSIGN_OP ID MAP_LISTOP ID {printf("%d %d %d %d %d\n", $1, $2, $3, $4, $5);}
+    ID ASSIGN_OP ID MAP_LISTOP ID {}
 ;
 
 listFilter:
-    ID ASSIGN_OP ID FILTER_LISTOP ID {printf("%d %d %d %d %d\n", $1, $2, $3, $4, $5);}
+    ID ASSIGN_OP ID FILTER_LISTOP ID {}
 ;
 
 
@@ -336,6 +408,10 @@ int main(int argc, char **argv){
     line = 1;
     column = 1;
     error = 0;
+
+    /* createSymbol("Teste");
+    printTable(); */
+
 
     if(argc >= 2) {
         filep = fopen(argv[1], "r");
