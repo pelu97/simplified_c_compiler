@@ -73,29 +73,30 @@ extern int yydebug;
     ELSE_KEY = 274,                /* ELSE_KEY  */
     FOR_KEY = 275,                 /* FOR_KEY  */
     RETURN_KEY = 276,              /* RETURN_KEY  */
-    INPUT_KEY = 277,               /* INPUT_KEY  */
-    OUTPUT_KEY = 278,              /* OUTPUT_KEY  */
-    OUTPUTLN_KEY = 279,            /* OUTPUTLN_KEY  */
-    ASSIGN_LISTOP = 280,           /* ASSIGN_LISTOP  */
-    HEADER_LISTOP = 281,           /* HEADER_LISTOP  */
-    TAILDES_LISTOP = 282,          /* TAILDES_LISTOP  */
-    MAP_LISTOP = 283,              /* MAP_LISTOP  */
-    FILTER_LISTOP = 284,           /* FILTER_LISTOP  */
-    DELIM_PARENT_L = 285,          /* DELIM_PARENT_L  */
-    DELIM_PARENT_R = 286,          /* DELIM_PARENT_R  */
-    DELIM_BRACKET_L = 287,         /* DELIM_BRACKET_L  */
-    DELIM_BRACKET_R = 288,         /* DELIM_BRACKET_R  */
-    DELIM_CUR_BRACKET_L = 289,     /* DELIM_CUR_BRACKET_L  */
-    DELIM_CUR_BRACKET_R = 290,     /* DELIM_CUR_BRACKET_R  */
-    DELIM_COMMA = 291,             /* DELIM_COMMA  */
-    DELIM_SEMICOLLON = 292,        /* DELIM_SEMICOLLON  */
-    DELIM_SQUOTE = 293,            /* DELIM_SQUOTE  */
-    DELIM_DQUOTE = 294,            /* DELIM_DQUOTE  */
-    SINGLE_COMMENT = 295,          /* SINGLE_COMMENT  */
-    MULTI_COMMENT = 296,           /* MULTI_COMMENT  */
-    FORMAT_BLANKSPACE = 297,       /* FORMAT_BLANKSPACE  */
-    FORMAT_NEWLINE = 298,          /* FORMAT_NEWLINE  */
-    FORMAT_TAB = 299               /* FORMAT_TAB  */
+    THEN_PREC = 277,               /* THEN_PREC  */
+    INPUT_KEY = 278,               /* INPUT_KEY  */
+    OUTPUT_KEY = 279,              /* OUTPUT_KEY  */
+    OUTPUTLN_KEY = 280,            /* OUTPUTLN_KEY  */
+    ASSIGN_LISTOP = 281,           /* ASSIGN_LISTOP  */
+    HEADER_LISTOP = 282,           /* HEADER_LISTOP  */
+    TAILDES_LISTOP = 283,          /* TAILDES_LISTOP  */
+    MAP_LISTOP = 284,              /* MAP_LISTOP  */
+    FILTER_LISTOP = 285,           /* FILTER_LISTOP  */
+    DELIM_PARENT_L = 286,          /* DELIM_PARENT_L  */
+    DELIM_PARENT_R = 287,          /* DELIM_PARENT_R  */
+    DELIM_BRACKET_L = 288,         /* DELIM_BRACKET_L  */
+    DELIM_BRACKET_R = 289,         /* DELIM_BRACKET_R  */
+    DELIM_CUR_BRACKET_L = 290,     /* DELIM_CUR_BRACKET_L  */
+    DELIM_CUR_BRACKET_R = 291,     /* DELIM_CUR_BRACKET_R  */
+    DELIM_COMMA = 292,             /* DELIM_COMMA  */
+    DELIM_SEMICOLLON = 293,        /* DELIM_SEMICOLLON  */
+    DELIM_SQUOTE = 294,            /* DELIM_SQUOTE  */
+    DELIM_DQUOTE = 295,            /* DELIM_DQUOTE  */
+    SINGLE_COMMENT = 296,          /* SINGLE_COMMENT  */
+    MULTI_COMMENT = 297,           /* MULTI_COMMENT  */
+    FORMAT_BLANKSPACE = 298,       /* FORMAT_BLANKSPACE  */
+    FORMAT_NEWLINE = 299,          /* FORMAT_NEWLINE  */
+    FORMAT_TAB = 300               /* FORMAT_TAB  */
   };
   typedef enum yytokentype yytoken_kind_t;
 #endif
@@ -123,35 +124,36 @@ extern int yydebug;
 #define ELSE_KEY 274
 #define FOR_KEY 275
 #define RETURN_KEY 276
-#define INPUT_KEY 277
-#define OUTPUT_KEY 278
-#define OUTPUTLN_KEY 279
-#define ASSIGN_LISTOP 280
-#define HEADER_LISTOP 281
-#define TAILDES_LISTOP 282
-#define MAP_LISTOP 283
-#define FILTER_LISTOP 284
-#define DELIM_PARENT_L 285
-#define DELIM_PARENT_R 286
-#define DELIM_BRACKET_L 287
-#define DELIM_BRACKET_R 288
-#define DELIM_CUR_BRACKET_L 289
-#define DELIM_CUR_BRACKET_R 290
-#define DELIM_COMMA 291
-#define DELIM_SEMICOLLON 292
-#define DELIM_SQUOTE 293
-#define DELIM_DQUOTE 294
-#define SINGLE_COMMENT 295
-#define MULTI_COMMENT 296
-#define FORMAT_BLANKSPACE 297
-#define FORMAT_NEWLINE 298
-#define FORMAT_TAB 299
+#define THEN_PREC 277
+#define INPUT_KEY 278
+#define OUTPUT_KEY 279
+#define OUTPUTLN_KEY 280
+#define ASSIGN_LISTOP 281
+#define HEADER_LISTOP 282
+#define TAILDES_LISTOP 283
+#define MAP_LISTOP 284
+#define FILTER_LISTOP 285
+#define DELIM_PARENT_L 286
+#define DELIM_PARENT_R 287
+#define DELIM_BRACKET_L 288
+#define DELIM_BRACKET_R 289
+#define DELIM_CUR_BRACKET_L 290
+#define DELIM_CUR_BRACKET_R 291
+#define DELIM_COMMA 292
+#define DELIM_SEMICOLLON 293
+#define DELIM_SQUOTE 294
+#define DELIM_DQUOTE 295
+#define SINGLE_COMMENT 296
+#define MULTI_COMMENT 297
+#define FORMAT_BLANKSPACE 298
+#define FORMAT_NEWLINE 299
+#define FORMAT_TAB 300
 
 /* Value type.  */
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 union YYSTYPE
 {
-#line 22 "./src/syntax.y"
+#line 23 "./src/syntax.y"
 
     struct Tokens{
         char text[150];
@@ -163,7 +165,7 @@ union YYSTYPE
         int temp;
     } t_node;
 
-#line 167 "./src/syntax.tab.h"
+#line 169 "./src/syntax.tab.h"
 
 };
 typedef union YYSTYPE YYSTYPE;

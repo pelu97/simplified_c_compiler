@@ -4,6 +4,7 @@
 /* C declarations */
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include "base.h"
 #include "symbol_table.h"
 
@@ -83,6 +84,8 @@ extern FILE* yyin;
 %token <t_token> ELSE_KEY
 %token <t_token> FOR_KEY
 %token <t_token> RETURN_KEY
+
+%right THEN_PREC ELSE_KEY
 
 /* Entrada e saída */
 %token <t_token> INPUT_KEY
@@ -181,8 +184,17 @@ declaration:
 varDeclaration:
     TYPE ID DELIM_SEMICOLLON {
         printf("%s %s %s\n", $1.text, $2.text, $3.text);
+        createSymbol($2.text, $1.text, $2.line, $2.column); //line and column still not working
     }
-    | TYPE LIST_TYPE ID DELIM_SEMICOLLON {}
+    | TYPE LIST_TYPE ID DELIM_SEMICOLLON {
+        char* temp;
+        temp = (char*) malloc(sizeof($1.text) + sizeof($2.text) + 3);
+        strcpy(temp, $1.text);
+        strcat(temp, " ");
+        strcat(temp, $2.text);
+        printf("%s %s %s %s - %s\n", $1.text, $2.text, $3.text, $4.text, temp);
+        createSymbol($3.text, temp, $3.line, $3.column); //line and column still not working
+    }
 ;
 
 /* varDeclaration:
@@ -200,7 +212,19 @@ varDeclaration:
 ; */
 
 funcDeclaration:
-    TYPE ID DELIM_PARENT_L parameters DELIM_PARENT_R statement {}
+    TYPE ID DELIM_PARENT_L parameters DELIM_PARENT_R bodyStatement {
+        printf("%s %s %s %s \n", $1.text, $2.text, $3.text, $5.text);
+        createSymbol($2.text, $1.text, $2.line, $2.column); //line and column still not working
+    }
+    | TYPE LIST_TYPE ID DELIM_PARENT_L parameters DELIM_PARENT_R bodyStatement {
+        char* temp;
+        temp = (char*) malloc(sizeof($1.text) + sizeof($2.text) + 3);
+        strcpy(temp, $1.text);
+        strcat(temp, " ");
+        strcat(temp, $2.text);
+        printf("%s %s %s %s %s - %s\n", $1.text, $2.text, $3.text, $4.text, $6.text, temp);
+        createSymbol($3.text, temp, $3.line, $3.column); //line and column still not working
+    }
 ;
 
 parameters:
@@ -224,11 +248,16 @@ statement:
     | writeOp DELIM_SEMICOLLON {}
     | readOp DELIM_SEMICOLLON {}
     | expressionStatement {}
+    | error {}
 ;
 
 bodyStatement:
-    DELIM_CUR_BRACKET_L localDeclaration statementList DELIM_CUR_BRACKET_R {}
+    DELIM_CUR_BRACKET_L statementList DELIM_CUR_BRACKET_R {}
 ;
+
+/* body:
+    statementList {}
+; */
 
 localDeclaration:
     localDeclaration varDeclaration {}
@@ -236,17 +265,17 @@ localDeclaration:
 ;
 
 statementList:
-    statement statementList {}
+    statementList localDeclaration statement {}
     | {}
 ;
 
 ifStatement:
-    IF_KEY DELIM_PARENT_L simpleExpression DELIM_PARENT_R bodyStatement {}
-    | IF_KEY DELIM_PARENT_L simpleExpression DELIM_PARENT_R bodyStatement ELSE_KEY bodyStatement {}
+    IF_KEY DELIM_PARENT_L simpleExpression DELIM_PARENT_R statement %prec THEN_PREC {}
+    | IF_KEY DELIM_PARENT_L simpleExpression DELIM_PARENT_R statement ELSE_KEY statement {}
 ;
 
 loopStatement:
-    FOR_KEY DELIM_PARENT_L expression DELIM_SEMICOLLON simpleExpression DELIM_SEMICOLLON expression DELIM_PARENT_R bodyStatement {}
+    FOR_KEY DELIM_PARENT_L expression DELIM_SEMICOLLON simpleExpression DELIM_SEMICOLLON expression DELIM_PARENT_R statement {}
 ;
 
 returnStatement:
@@ -321,7 +350,10 @@ factor:
 
 constant:
     INT {}
+    | MINUS_OP INT {}
     | FLOAT {}
+    | MINUS_OP FLOAT {}
+    | NULL_CONST {}
 ;
 
 functionCall:
@@ -435,6 +467,8 @@ int main(int argc, char **argv){
     else{
         printf("No file has been chosen.\n");
     }
+
+    printTable();
 
     yylex_destroy();
 
