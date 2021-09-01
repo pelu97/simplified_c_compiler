@@ -8,13 +8,15 @@
 t_symbol *SymbolTable = NULL;
 t_symbol *lastSymbol = NULL;
 
-void createSymbol(char* symbolName, int line, int column){
+void createSymbol(char* symbolName, char* type, int line, int column){
     t_symbol *symbol;
 
     symbol = (t_symbol*) malloc(sizeof(t_symbol));
     symbol->name = (char*) malloc(sizeof(symbolName) + 1);
+    symbol->type = (char*) malloc(sizeof(type) + 1);
 
     strcpy(symbol->name, symbolName);
+    strcpy(symbol->type, type);
 
     symbol->next = NULL;
 
@@ -61,12 +63,19 @@ t_symbol* getSymbol(char* symbolName){
 void printTable(){
     t_symbol *pointer;
 
-    printf("-------Printing table------\n");
-
+    printf("|------------------------------SYMBOL TABLE-------------------------------|\n");
+    printf("|_________________________________________________________________________|\n");
+    printf("|------------NAME------------|-----TYPE-----|-----LINE-----|----COLUMN----|\n");
     // printf("%s\n", SymbolTable->name);
     for(pointer = SymbolTable; pointer != NULL; pointer = pointer->next){
-        printf("Symbol read from table: %s\n", pointer->name);
+        // printf("|%28.28s|", "123456789012345678901234567890123456789012345678901234567890");
+        printf("|%-28.28s|", pointer->name);
+        printf("%-14s|", pointer->type);
+        printf("%-14d|", pointer->line);
+        printf("%-14d|\n", pointer->column);
+        // printf("Symbol read from table: %s\n", pointer->name);
     }
 
-    printf("-------End table------\n");
-}
+    printf("|_________________________________________________________________________|\n");
+    printf("|--------------------------------END TABLE--------------------------------|\n");
+}                                                    
