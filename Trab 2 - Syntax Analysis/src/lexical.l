@@ -54,7 +54,7 @@ INT                {DIGIT}+
 FLOAT              {DIGIT}+[.]{DIGIT}+
 
 /* Identificador */
-ID                 [a-zA-Z_][a-z0-9A-Z]*
+ID                 [a-zA-Z_][a-z0-9A-Z_]*
 
 /* Tipos */
 /* TYPE               int|float|list */
@@ -62,7 +62,7 @@ TYPE               int|float
 /* INT_TYPE           int */
 /* FLOAT_TYPE         float */
 LIST_TYPE          list
-STRING             {DELIM_DQUOTE}(\\.|[^{DELIM_DQUOTE}\\])*{DELIM_DQUOTE}
+STRING             \"(\\.|[^"\\])*\"
 
 NULL_CONST         nil
 
@@ -151,18 +151,20 @@ FORMAT_TAB         \t
 
 {SINGLE_COMMENT} {
     /* print_block("Single Line Comment"); */
-    column_count();
+    /* column_count(); */
 }
 
 {MULTI_COMMENT} {
     /* print_block("Multiple Line Comment"); */
-    column_count();
+    /* column_count(); */
 }
 
 {INT} {
     /* print_block("Integer"); */
     column_count();
     strcpy(yylval.t_token.text, yytext);
+    yylval.t_token.line = line;
+    yylval.t_token.column = column;
     return INT;
 }
 
@@ -170,6 +172,8 @@ FORMAT_TAB         \t
     /* print_block("Float"); */
     column_count();
     strcpy(yylval.t_token.text, yytext);
+    yylval.t_token.line = line;
+    yylval.t_token.column = column;
     return FLOAT;
 }
 
@@ -177,6 +181,8 @@ FORMAT_TAB         \t
     /* print_block("Type"); */
     column_count();
     strcpy(yylval.t_token.text, yytext);
+    yylval.t_token.line = line;
+    yylval.t_token.column = column;
     return TYPE;
 }
 
@@ -184,6 +190,8 @@ FORMAT_TAB         \t
     /* print_block("List Type"); */
     column_count();
     strcpy(yylval.t_token.text, yytext);
+    yylval.t_token.line = line;
+    yylval.t_token.column = column;
     return LIST_TYPE;
 }
 
@@ -191,6 +199,8 @@ FORMAT_TAB         \t
     /* print_block("String"); */
     column_count();
     strcpy(yylval.t_token.text, yytext);
+    yylval.t_token.line = line;
+    yylval.t_token.column = column;
     return STRING;
 }
 
@@ -198,6 +208,8 @@ FORMAT_TAB         \t
     /* print_block("Null"); */
     column_count();
     strcpy(yylval.t_token.text, yytext);
+    yylval.t_token.line = line;
+    yylval.t_token.column = column;
     return NULL_CONST;
 }
 
@@ -205,6 +217,8 @@ FORMAT_TAB         \t
     /* print_block("Plus Operation"); */
     column_count();
     strcpy(yylval.t_token.text, yytext);
+    yylval.t_token.line = line;
+    yylval.t_token.column = column;
     return PLUS_OP;
 }
 
@@ -212,6 +226,8 @@ FORMAT_TAB         \t
     /* print_block("Minus Operation"); */
     column_count();
     strcpy(yylval.t_token.text, yytext);
+    yylval.t_token.line = line;
+    yylval.t_token.column = column;
     return MINUS_OP;
 }
 
@@ -219,6 +235,8 @@ FORMAT_TAB         \t
     /* print_block("Div Operation"); */
     column_count();
     strcpy(yylval.t_token.text, yytext);
+    yylval.t_token.line = line;
+    yylval.t_token.column = column;
     return DIV_OP;
 }
 
@@ -226,6 +244,8 @@ FORMAT_TAB         \t
     /* print_block("Mul Operation"); */
     column_count();
     strcpy(yylval.t_token.text, yytext);
+    yylval.t_token.line = line;
+    yylval.t_token.column = column;
     return MUL_OP;
 }
 
@@ -233,6 +253,8 @@ FORMAT_TAB         \t
     /* print_block("Logic Operation"); */
     column_count();
     strcpy(yylval.t_token.text, yytext);
+    yylval.t_token.line = line;
+    yylval.t_token.column = column;
     return LOGIC_OP;
 }
 
@@ -240,6 +262,8 @@ FORMAT_TAB         \t
     /* print_block("Binary Operation"); */
     column_count();
     strcpy(yylval.t_token.text, yytext);
+    yylval.t_token.line = line;
+    yylval.t_token.column = column;
     return BINARY_OP;
 }
 
@@ -247,6 +271,8 @@ FORMAT_TAB         \t
     /* print_block("If Keyword"); */
     column_count();
     strcpy(yylval.t_token.text, yytext);
+    yylval.t_token.line = line;
+    yylval.t_token.column = column;
     return IF_KEY;
 }
 
@@ -254,6 +280,8 @@ FORMAT_TAB         \t
     /* print_block("Else Keyword"); */
     column_count();
     strcpy(yylval.t_token.text, yytext);
+    yylval.t_token.line = line;
+    yylval.t_token.column = column;
     return ELSE_KEY;
 }
 
@@ -261,6 +289,8 @@ FORMAT_TAB         \t
     /* print_block("For Keyword"); */
     column_count();
     strcpy(yylval.t_token.text, yytext);
+    yylval.t_token.line = line;
+    yylval.t_token.column = column;
     return FOR_KEY;
 }
 
@@ -268,6 +298,8 @@ FORMAT_TAB         \t
     /* print_block("Return Keyword"); */
     column_count();
     strcpy(yylval.t_token.text, yytext);
+    yylval.t_token.line = line;
+    yylval.t_token.column = column;
     return RETURN_KEY;
 }
 
@@ -275,6 +307,8 @@ FORMAT_TAB         \t
     /* print_block("Input Keyword"); */
     column_count();
     strcpy(yylval.t_token.text, yytext);
+    yylval.t_token.line = line;
+    yylval.t_token.column = column;
     return INPUT_KEY;
 }
 
@@ -282,6 +316,8 @@ FORMAT_TAB         \t
     /* print_block("Output Keyword"); */
     column_count();
     strcpy(yylval.t_token.text, yytext);
+    yylval.t_token.line = line;
+    yylval.t_token.column = column;
     return OUTPUT_KEY;
 }
 
@@ -289,6 +325,8 @@ FORMAT_TAB         \t
     /* print_block("Output with line break Keyword"); */
     column_count();
     strcpy(yylval.t_token.text, yytext);
+    yylval.t_token.line = line;
+    yylval.t_token.column = column;
     return OUTPUTLN_KEY;
 }
 
@@ -296,6 +334,8 @@ FORMAT_TAB         \t
     /* print_block("Assignment Operator"); */
     column_count();
     strcpy(yylval.t_token.text, yytext);
+    yylval.t_token.line = line;
+    yylval.t_token.column = column;
     return ASSIGN_OP;
 }
 
@@ -303,6 +343,8 @@ FORMAT_TAB         \t
     /* print_block("Exclamation Point Operator"); */
     column_count();
     strcpy(yylval.t_token.text, yytext);
+    yylval.t_token.line = line;
+    yylval.t_token.column = column;
     return EXCLA_OP;
 }
 
@@ -310,6 +352,8 @@ FORMAT_TAB         \t
     /* print_block("Assignment List Operator"); */
     column_count();
     strcpy(yylval.t_token.text, yytext);
+    yylval.t_token.line = line;
+    yylval.t_token.column = column;
     return ASSIGN_LISTOP;
 }
 
@@ -317,6 +361,8 @@ FORMAT_TAB         \t
     /* print_block("Header List Operator"); */
     column_count();
     strcpy(yylval.t_token.text, yytext);
+    yylval.t_token.line = line;
+    yylval.t_token.column = column;
     return HEADER_LISTOP;
 }
 
@@ -324,6 +370,8 @@ FORMAT_TAB         \t
     /* print_block("Tail Destructor List Operator"); */
     column_count();
     strcpy(yylval.t_token.text, yytext);
+    yylval.t_token.line = line;
+    yylval.t_token.column = column;
     return TAILDES_LISTOP;
 }
 
@@ -331,6 +379,8 @@ FORMAT_TAB         \t
     /* print_block("Map List Operator"); */
     column_count();
     strcpy(yylval.t_token.text, yytext);
+    yylval.t_token.line = line;
+    yylval.t_token.column = column;
     return MAP_LISTOP;
 }
 
@@ -338,6 +388,8 @@ FORMAT_TAB         \t
     /* print_block("Filter List Operator"); */
     column_count();
     strcpy(yylval.t_token.text, yytext);
+    yylval.t_token.line = line;
+    yylval.t_token.column = column;
     return FILTER_LISTOP;
 }
 
@@ -345,6 +397,8 @@ FORMAT_TAB         \t
     /* print_block("Parenthesis Delimiter"); */
     column_count();
     strcpy(yylval.t_token.text, yytext);
+    yylval.t_token.line = line;
+    yylval.t_token.column = column;
     return DELIM_PARENT_L;
 }
 
@@ -352,6 +406,8 @@ FORMAT_TAB         \t
     /* print_block("Parenthesis Delimiter"); */
     column_count();
     strcpy(yylval.t_token.text, yytext);
+    yylval.t_token.line = line;
+    yylval.t_token.column = column;
     return DELIM_PARENT_R;
 }
 
@@ -359,6 +415,8 @@ FORMAT_TAB         \t
     /* print_block("Bracket Delimiter"); */
     column_count();
     strcpy(yylval.t_token.text, yytext);
+    yylval.t_token.line = line;
+    yylval.t_token.column = column;
     return DELIM_BRACKET_L;
 }
 
@@ -366,6 +424,8 @@ FORMAT_TAB         \t
     /* print_block("Bracket Delimiter"); */
     column_count();
     strcpy(yylval.t_token.text, yytext);
+    yylval.t_token.line = line;
+    yylval.t_token.column = column;
     return DELIM_BRACKET_R;
 }
 
@@ -373,6 +433,8 @@ FORMAT_TAB         \t
     /* print_block("Curly Bracket Delimiter"); */
     column_count();
     strcpy(yylval.t_token.text, yytext);
+    yylval.t_token.line = line;
+    yylval.t_token.column = column;
     return DELIM_CUR_BRACKET_L;
 }
 
@@ -380,6 +442,8 @@ FORMAT_TAB         \t
     /* print_block("Curly Bracket Delimiter"); */
     column_count();
     strcpy(yylval.t_token.text, yytext);
+    yylval.t_token.line = line;
+    yylval.t_token.column = column;
     return DELIM_CUR_BRACKET_R;
 }
 
@@ -387,6 +451,8 @@ FORMAT_TAB         \t
     /* print_block("Comma Delimiter"); */
     column_count();
     strcpy(yylval.t_token.text, yytext);
+    yylval.t_token.line = line;
+    yylval.t_token.column = column;
     return DELIM_COMMA;
 }
 
@@ -394,6 +460,8 @@ FORMAT_TAB         \t
     /* print_block("Semicollon Delimiter"); */
     column_count();
     strcpy(yylval.t_token.text, yytext);
+    yylval.t_token.line = line;
+    yylval.t_token.column = column;
     return DELIM_SEMICOLLON;
 }
 
@@ -401,6 +469,8 @@ FORMAT_TAB         \t
     /* print_block("Single Quote Delimiter"); */
     column_count();
     strcpy(yylval.t_token.text, yytext);
+    yylval.t_token.line = line;
+    yylval.t_token.column = column;
     return DELIM_SQUOTE;
 }
 
@@ -408,6 +478,8 @@ FORMAT_TAB         \t
     /* print_block("Double Quote Delimiter"); */
     column_count();
     strcpy(yylval.t_token.text, yytext);
+    yylval.t_token.line = line;
+    yylval.t_token.column = column;
     return DELIM_DQUOTE;
 }
 
@@ -416,6 +488,8 @@ FORMAT_TAB         \t
     /* print_block("Identifier"); */
     column_count();
     strcpy(yylval.t_token.text, yytext);
+    yylval.t_token.line = line;
+    yylval.t_token.column = column;
     return ID;
 }
 
