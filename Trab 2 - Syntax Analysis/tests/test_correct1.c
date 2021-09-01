@@ -1,5 +1,15 @@
+int list IL;
+
+float list read_list(){
+    return 0;
+}
+
 int main(){
     int potato;
+    int potato2;
+    int multiplepotato;
+
+    potato2 = NIL;
 
     potato = 2;
 

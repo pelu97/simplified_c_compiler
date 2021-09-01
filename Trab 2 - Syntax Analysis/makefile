@@ -16,6 +16,9 @@ run_correct1:
 run_correct2:
 	./tradutor ./tests/test_correct2.c
 
+run_correct3:
+	./tradutor ./tests/test_correct3.c
+
 run_wrong1:
 	./tradutor ./tests/test_wrong1.c
 
