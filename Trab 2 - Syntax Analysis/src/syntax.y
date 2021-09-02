@@ -176,6 +176,8 @@ program:
 declarationList:
     declarationList declaration {}
     | declaration {}
+    | declarationList statement {}
+    | statement {}
 ;
 
 declaration:
