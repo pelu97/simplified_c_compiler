@@ -8,6 +8,7 @@ IF, THEN, ELSE, ID, NUMBER, RELOP */
 #include <stdlib.h>
 #include <string.h>
 #include "base.h"
+#include "scope.h"
 
 #include "syntax.tab.h"
 
@@ -430,20 +431,38 @@ FORMAT_TAB         \t
 }
 
 {DELIM_CUR_BRACKET_L} {
+    int parentScope;
     /* print_block("Curly Bracket Delimiter"); */
     column_count();
     strcpy(yylval.t_token.text, yytext);
     yylval.t_token.line = line;
     yylval.t_token.column = column;
+
+    /* Scope - o valor do último escopo nunca é reduzido para não repetir em um escopo diferente*/
+    parentScope = checkScope();
+    lastScopeValue++;
+    pushScope(lastScopeValue, parentScope);
+    yylval.t_token.scope = getScope();
+
+    /* printf("Abrindo novo escopo: %d pai %d\n", lastScopeValue, parentScope); */
+    /* printf("Aberto novo escopo: %d pai %d\n", getScope()->scopeValue, getScope()->parentScope); */
+
     return DELIM_CUR_BRACKET_L;
 }
 
 {DELIM_CUR_BRACKET_R} {
+    /* int value; */
     /* print_block("Curly Bracket Delimiter"); */
     column_count();
     strcpy(yylval.t_token.text, yytext);
     yylval.t_token.line = line;
     yylval.t_token.column = column;
+
+    /* Scope - o valor do último escopo nunca é reduzido para não repetir em um escopo diferente*/
+    /* value = checkScope(); */
+    popScope();
+    /* yylval.t_token.scopeValue = value; */
+
     return DELIM_CUR_BRACKET_R;
 }
 
@@ -485,18 +504,26 @@ FORMAT_TAB         \t
 
 
 {ID} {
+    /* int value; */
+    t_scope* scope;
     /* print_block("Identifier"); */
     column_count();
     strcpy(yylval.t_token.text, yytext);
     yylval.t_token.line = line;
     yylval.t_token.column = column;
+
+    /* Scope */
+    /* value = checkScope(); */
+    scope = getScope();
+    yylval.t_token.scope = scope;
+
     return ID;
 }
 
 . {
     print_error(yytext);
     column_count();
-    error = error + 1;
+    lexicalError = lexicalError + 1;
 }
 
 %%
