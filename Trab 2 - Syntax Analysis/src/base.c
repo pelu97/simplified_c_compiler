@@ -10,7 +10,8 @@
 #define COLOR_WHITE   "\x1B[37m"
 
 
-int error;
+int lexicalError;
+int syntaticError;
 int line;
 int column;
 
@@ -163,14 +164,14 @@ void print_end(){
 
     printf("---Lexical analyser completed with ");
 
-    if(error > 0){
+    if(lexicalError > 0){
         color_set(COLOR_RED);
     }
     else{
         color_set(COLOR_GREEN);
     }
 
-    printf("%02d ", error);
+    printf("%02d ", lexicalError);
 
     color_set(COLOR_YELLOW);
 

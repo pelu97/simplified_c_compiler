@@ -10,7 +10,8 @@
 #define COLOR_WHITE   "\x1B[37m"
 
 
-extern int error;
+extern int lexicalError;
+extern int syntaticError;
 extern int line;
 extern int column;
 
