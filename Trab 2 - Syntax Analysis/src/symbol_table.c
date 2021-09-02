@@ -3,12 +3,13 @@
 #include <string.h>
 #include "symbol_table.h"
 #include "base.h"
+// #include "scope.h"
 
-
+// ainda não limpa a tabela da memória, ainda é necessário tratar isso
 t_symbol *SymbolTable = NULL;
 t_symbol *lastSymbol = NULL;
 
-void createSymbol(char* symbolName, char* type, int line, int column){
+void createSymbol(char* symbolName, char* type, int line, int column, int scopeValue, int parentScope, int varFunc){
     t_symbol *symbol;
 
     symbol = (t_symbol*) malloc(sizeof(t_symbol));
@@ -22,6 +23,10 @@ void createSymbol(char* symbolName, char* type, int line, int column){
 
     symbol->line = line;
     symbol->column = column;
+
+    symbol->scopeValue = scopeValue;
+    symbol->parentScope = parentScope;
+    symbol->varFunc = varFunc;
 
     // lastSymbol->next = symbol;
 
@@ -63,19 +68,169 @@ t_symbol* getSymbol(char* symbolName){
 void printTable(){
     t_symbol *pointer;
 
-    printf("|------------------------------SYMBOL TABLE-------------------------------|\n");
-    printf("|_________________________________________________________________________|\n");
-    printf("|------------NAME------------|-----TYPE-----|-----LINE-----|----COLUMN----|\n");
+    printf("|-------------------------------------SYMBOL TABLE--------------------------------------|\n");
+    printf("|_______________________________________________________________________________________|\n");
+    printf("|------------NAME------------|-----TYPE-----|----SCOPE----|-----LINE-----|----COLUMN----|\n");
     // printf("%s\n", SymbolTable->name);
     for(pointer = SymbolTable; pointer != NULL; pointer = pointer->next){
         // printf("|%28.28s|", "123456789012345678901234567890123456789012345678901234567890");
         printf("|%-28.28s|", pointer->name);
         printf("%-14s|", pointer->type);
+        printf("%-5d - %-5d|", pointer->scopeValue, pointer->parentScope);
         printf("%-14d|", pointer->line);
         printf("%-14d|\n", pointer->column);
         // printf("Symbol read from table: %s\n", pointer->name);
     }
 
-    printf("|_________________________________________________________________________|\n");
-    printf("|--------------------------------END TABLE--------------------------------|\n");
-}                                                    
+    printf("|_______________________________________________________________________________________|\n");
+    printf("|---------------------------------------END TABLE---------------------------------------|\n");
+}
+
+
+
+
+void printTable2(){
+    t_symbol *pointer;
+    int currentScope = 0;
+
+    printf("|---------------------------------------SYMBOL TABLE-----------------------------------------|\n");
+    printf("|____________________________________________________________________________________________|\n");
+    printf("|------------NAME------------|-----TYPE-----|--SCOPE--|----LINE----|---COLUMN---|--VAR/FUNC--|\n");
+    // printf("%s\n", SymbolTable->name);
+    for(pointer = SymbolTable; pointer != NULL; pointer = pointer->next){
+        // printf("|%28.28s|", "123456789012345678901234567890123456789012345678901234567890");
+        if(pointer->scopeValue > currentScope){
+            pointer = printChildren(pointer, 1);
+        }
+        else{
+            printf("|%-28.28s|", pointer->name);
+            printf("%-14s|", pointer->type);
+            printf("%-9d|", pointer->scopeValue);
+            // printf("%-16d|", pointer->parentScope);
+            printf("%-12d|", pointer->line);
+            printf("%-12d|", pointer->column);
+            if(pointer->varFunc == 1){
+                printf("%-12s|\n", "var");
+            }
+            else{
+                printf("%-12s|\n", "func");
+            }
+            // printf("Symbol read from table: %s\n", pointer->name);
+        }
+        currentScope = pointer->scopeValue;
+    }
+
+    printf("|____________________________________________________________________________________________|\n");
+    printf("|-----------------------------------------END TABLE------------------------------------------|\n");
+}
+
+t_symbol* printChildren(t_symbol* fixedSymbol, int level){
+    t_symbol* pointer;
+    t_symbol* parentPointer;
+    int flag = 0;
+    int found = 0;
+
+    // printf("printing children of %d\n", fixedSymbol->scopeValue);
+
+    parentPointer = fixedSymbol;
+    while((parentPointer != NULL) && (parentPointer->scopeValue >= fixedSymbol->parentScope) && (found == 0)){
+        if((parentPointer->scopeValue == fixedSymbol->parentScope)){
+            found = 1;
+        }
+        else{
+            parentPointer = parentPointer->next;
+            // printf("parent not found yet, getting next symbol %d\n", parentPointer);
+
+            // if(parentPointer == NULL){
+            //     found = -1;
+            //     // printf("Table ended before finding parent\n");
+            // }
+        }
+    }
+
+
+
+    // parent scope found in table
+    if(found == 1){
+        // printf("parent found: %d - %d\n", found, parentPointer->scopeValue);
+
+        if(level > 1){
+            printf("|%*s%-*.*s|", ((level-1)*2), " ", (28-((level-1)*2)), (28-((level-1)*2)), parentPointer->name);
+        }
+        else{
+            printf("|%-*.*s|", (28-((level-1)*2)), (28-((level-1)*2)), parentPointer->name);
+        }
+        printf("%-14s|", parentPointer->type);
+        printf("%-9d|", parentPointer->scopeValue);
+        // printf("%-16d|", parentPointer->parentScope);
+        printf("%-12d|", parentPointer->line);
+        printf("%-12d|", parentPointer->column);
+        if(pointer->varFunc == 1){
+            printf("%-12s|\n", "var");
+        }
+        else{
+            printf("%-12s|\n", "func");
+        }
+    }
+    else if(fixedSymbol->parentScope > -1){
+
+        if(level > 1){
+            printf("|%*s%-*.*s|", ((level-1)*2), " ", (28-((level-1)*2)), (28-((level-1)*2)), "--New scope without ID--");
+        }
+        else{
+            printf("|%-*.*s|", (28-((level-1)*2)), (28-((level-1)*2)), "--New scope without ID--");
+        }
+        printf("%-14s|", " ");
+        printf("%-9d|", -1);
+        // printf("%-16d|", -1);
+        printf("%-12d|", -1);
+        printf("%-12d|", -1);
+        printf("%-12s|\n", " ");
+        // if(pointer->varFunc == 1){
+        //     printf("%-12s|\n", "var");
+        // }
+        // else{
+        //     printf("%-12s|\n", "func");
+        // }
+
+    }
+
+    // printf("parent printed if found\n");
+
+    pointer = fixedSymbol;
+    while(flag == 0){
+        if((pointer->scopeValue != fixedSymbol->scopeValue) && (pointer->scopeValue > fixedSymbol->parentScope)){
+            pointer = printChildren(pointer, level+1);
+            flag = 1;
+        }
+        else if(pointer->scopeValue <= fixedSymbol->parentScope){
+            flag = 1;
+        }
+        else{
+            // printf("printing the children\n");
+
+            printf("|%*s%-*.*s|", level*2, " ", (28-(level*2)), (28-(level*2)), pointer->name);
+            printf("%-14s|", pointer->type);
+            printf("%-9d|", pointer->scopeValue);
+            // printf("%-16d|", pointer->parentScope);
+            printf("%-12d|", pointer->line);
+            printf("%-12d|", pointer->column);
+            if(pointer->varFunc == 1){
+                printf("%-12s|\n", "var");
+            }
+            else{
+                printf("%-12s|\n", "func");
+            }
+
+            if(pointer->next != NULL){
+                pointer = pointer->next;
+            }
+            else{
+                flag = 1;
+            }
+        }
+
+    }
+
+    return pointer;
+}
