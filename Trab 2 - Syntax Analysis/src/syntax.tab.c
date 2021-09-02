@@ -75,6 +75,7 @@
 #include <string.h>
 #include "base.h"
 #include "symbol_table.h"
+#include "scope.h"
 
 extern int yylex();
 extern int yylex_destroy();
@@ -85,7 +86,7 @@ extern FILE* yyin;
 //yynerrs //global variable counting errors
 
 
-#line 89 "./src/syntax.tab.c"
+#line 90 "./src/syntax.tab.c"
 
 # ifndef YY_CAST
 #  ifdef __cplusplus
@@ -583,15 +584,15 @@ static const yytype_int8 yytranslate[] =
   /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_int16 yyrline[] =
 {
-       0,   171,   171,   175,   176,   180,   181,   185,   189,   215,
-     219,   231,   232,   236,   237,   238,   239,   243,   244,   245,
-     246,   247,   248,   249,   250,   251,   255,   263,   264,   268,
-     269,   273,   274,   278,   282,   286,   287,   296,   305,   306,
-     310,   311,   319,   320,   324,   325,   329,   330,   334,   335,
-     339,   340,   344,   345,   346,   347,   348,   352,   353,   354,
-     355,   356,   360,   364,   365,   366,   370,   371,   375,   376,
-     380,   381,   385,   389,   393,   394,   395,   399,   401,   405,
-     409,   417,   421,   425
+       0,   173,   173,   177,   178,   182,   183,   187,   191,   217,
+     221,   233,   234,   238,   239,   240,   241,   245,   246,   247,
+     248,   249,   250,   251,   252,   253,   257,   265,   266,   270,
+     271,   275,   276,   280,   284,   288,   289,   298,   307,   308,
+     312,   313,   321,   322,   326,   327,   331,   332,   336,   337,
+     341,   342,   346,   347,   348,   349,   350,   354,   355,   356,
+     357,   358,   362,   366,   367,   368,   372,   373,   377,   378,
+     382,   383,   387,   391,   395,   396,   397,   401,   403,   407,
+     411,   419,   423,   427
 };
 #endif
 
@@ -2144,521 +2145,521 @@ yyreduce:
   switch (yyn)
     {
   case 2: /* program: declarationList  */
-#line 171 "./src/syntax.y"
+#line 173 "./src/syntax.y"
                     {}
-#line 2150 "./src/syntax.tab.c"
+#line 2151 "./src/syntax.tab.c"
     break;
 
   case 3: /* declarationList: declarationList declaration  */
-#line 175 "./src/syntax.y"
+#line 177 "./src/syntax.y"
                                 {}
-#line 2156 "./src/syntax.tab.c"
+#line 2157 "./src/syntax.tab.c"
     break;
 
   case 4: /* declarationList: declaration  */
-#line 176 "./src/syntax.y"
+#line 178 "./src/syntax.y"
                   {}
-#line 2162 "./src/syntax.tab.c"
+#line 2163 "./src/syntax.tab.c"
     break;
 
   case 5: /* declaration: varDeclaration  */
-#line 180 "./src/syntax.y"
+#line 182 "./src/syntax.y"
                    {}
-#line 2168 "./src/syntax.tab.c"
+#line 2169 "./src/syntax.tab.c"
     break;
 
   case 6: /* declaration: funcDeclaration  */
-#line 181 "./src/syntax.y"
+#line 183 "./src/syntax.y"
                       {}
-#line 2174 "./src/syntax.tab.c"
+#line 2175 "./src/syntax.tab.c"
     break;
 
   case 7: /* varDeclaration: TYPE ID DELIM_SEMICOLLON  */
-#line 185 "./src/syntax.y"
+#line 187 "./src/syntax.y"
                              {
-        printf("%s %s %s\n", (yyvsp[-2].t_token).text, (yyvsp[-1].t_token).text, (yyvsp[0].t_token).text);
-        createSymbol((yyvsp[-1].t_token).text, (yyvsp[-2].t_token).text, (yyvsp[-1].t_token).line, (yyvsp[-1].t_token).column); //line and column still not working
+        /* printf("%s %s %s\n", $1.text, $2.text, $3.text); */
+        createSymbol((yyvsp[-1].t_token).text, (yyvsp[-2].t_token).text, (yyvsp[-1].t_token).line, (yyvsp[-1].t_token).column, (yyvsp[-1].t_token).scope->scopeValue, (yyvsp[-1].t_token).scope->parentScope, 0); //line and column still not working
     }
-#line 2183 "./src/syntax.tab.c"
+#line 2184 "./src/syntax.tab.c"
     break;
 
   case 8: /* varDeclaration: TYPE LIST_TYPE ID DELIM_SEMICOLLON  */
-#line 189 "./src/syntax.y"
+#line 191 "./src/syntax.y"
                                          {
         char* temp;
         temp = (char*) malloc(sizeof((yyvsp[-3].t_token).text) + sizeof((yyvsp[-2].t_token).text) + 3);
         strcpy(temp, (yyvsp[-3].t_token).text);
         strcat(temp, " ");
         strcat(temp, (yyvsp[-2].t_token).text);
-        printf("%s %s %s %s - %s\n", (yyvsp[-3].t_token).text, (yyvsp[-2].t_token).text, (yyvsp[-1].t_token).text, (yyvsp[0].t_token).text, temp);
-        createSymbol((yyvsp[-1].t_token).text, temp, (yyvsp[-1].t_token).line, (yyvsp[-1].t_token).column); //line and column still not working
+        /* printf("%s %s %s %s - %s\n", $1.text, $2.text, $3.text, $4.text, temp); */
+        createSymbol((yyvsp[-1].t_token).text, temp, (yyvsp[-1].t_token).line, (yyvsp[-1].t_token).column, (yyvsp[-1].t_token).scope->scopeValue, (yyvsp[-1].t_token).scope->parentScope, 0); //line and column still not working
     }
-#line 2197 "./src/syntax.tab.c"
+#line 2198 "./src/syntax.tab.c"
     break;
 
   case 9: /* funcDeclaration: TYPE ID DELIM_PARENT_L parameters DELIM_PARENT_R bodyStatement  */
-#line 215 "./src/syntax.y"
+#line 217 "./src/syntax.y"
                                                                    {
-        printf("%s %s %s %s \n", (yyvsp[-5].t_token).text, (yyvsp[-4].t_token).text, (yyvsp[-3].t_token).text, (yyvsp[-1].t_token).text);
-        createSymbol((yyvsp[-4].t_token).text, (yyvsp[-5].t_token).text, (yyvsp[-4].t_token).line, (yyvsp[-4].t_token).column); //line and column still not working
+        /* printf("%s %s %s %s - escopo %d %d\n", $1.text, $2.text, $3.text, $5.text, $2.scope->scopeValue, $2.scope->parentScope); */
+        createSymbol((yyvsp[-4].t_token).text, (yyvsp[-5].t_token).text, (yyvsp[-4].t_token).line, (yyvsp[-4].t_token).column, (yyvsp[-4].t_token).scope->scopeValue, (yyvsp[-4].t_token).scope->parentScope, 1); //line and column still not working
     }
-#line 2206 "./src/syntax.tab.c"
+#line 2207 "./src/syntax.tab.c"
     break;
 
   case 10: /* funcDeclaration: TYPE LIST_TYPE ID DELIM_PARENT_L parameters DELIM_PARENT_R bodyStatement  */
-#line 219 "./src/syntax.y"
+#line 221 "./src/syntax.y"
                                                                                {
         char* temp;
         temp = (char*) malloc(sizeof((yyvsp[-6].t_token).text) + sizeof((yyvsp[-5].t_token).text) + 3);
         strcpy(temp, (yyvsp[-6].t_token).text);
         strcat(temp, " ");
         strcat(temp, (yyvsp[-5].t_token).text);
-        printf("%s %s %s %s %s - %s\n", (yyvsp[-6].t_token).text, (yyvsp[-5].t_token).text, (yyvsp[-4].t_token).text, (yyvsp[-3].t_token).text, (yyvsp[-1].t_token).text, temp);
-        createSymbol((yyvsp[-4].t_token).text, temp, (yyvsp[-4].t_token).line, (yyvsp[-4].t_token).column); //line and column still not working
+        /* printf("%s %s %s %s %s - %s - escopo %d %d\n", $1.text, $2.text, $3.text, $4.text, $6.text, temp, $3.scope->scopeValue, $3.scope->parentScope); */
+        createSymbol((yyvsp[-4].t_token).text, temp, (yyvsp[-4].t_token).line, (yyvsp[-4].t_token).column, (yyvsp[-4].t_token).scope->scopeValue, (yyvsp[-4].t_token).scope->parentScope, 1); //line and column still not working
     }
-#line 2220 "./src/syntax.tab.c"
+#line 2221 "./src/syntax.tab.c"
     break;
 
   case 11: /* parameters: parameterList  */
-#line 231 "./src/syntax.y"
+#line 233 "./src/syntax.y"
                   {}
-#line 2226 "./src/syntax.tab.c"
+#line 2227 "./src/syntax.tab.c"
     break;
 
   case 12: /* parameters: %empty  */
-#line 232 "./src/syntax.y"
+#line 234 "./src/syntax.y"
       {}
-#line 2232 "./src/syntax.tab.c"
+#line 2233 "./src/syntax.tab.c"
     break;
 
   case 13: /* parameterList: parameterList DELIM_COMMA TYPE ID  */
-#line 236 "./src/syntax.y"
+#line 238 "./src/syntax.y"
                                       {}
-#line 2238 "./src/syntax.tab.c"
+#line 2239 "./src/syntax.tab.c"
     break;
 
   case 14: /* parameterList: parameterList DELIM_COMMA TYPE LIST_TYPE ID  */
-#line 237 "./src/syntax.y"
+#line 239 "./src/syntax.y"
                                                   {}
-#line 2244 "./src/syntax.tab.c"
+#line 2245 "./src/syntax.tab.c"
     break;
 
   case 15: /* parameterList: TYPE ID  */
-#line 238 "./src/syntax.y"
+#line 240 "./src/syntax.y"
               {}
-#line 2250 "./src/syntax.tab.c"
+#line 2251 "./src/syntax.tab.c"
     break;
 
   case 16: /* parameterList: TYPE LIST_TYPE ID  */
-#line 239 "./src/syntax.y"
+#line 241 "./src/syntax.y"
                         {}
-#line 2256 "./src/syntax.tab.c"
+#line 2257 "./src/syntax.tab.c"
     break;
 
   case 17: /* statement: bodyStatement  */
-#line 243 "./src/syntax.y"
+#line 245 "./src/syntax.y"
                   {}
-#line 2262 "./src/syntax.tab.c"
+#line 2263 "./src/syntax.tab.c"
     break;
 
   case 18: /* statement: ifStatement  */
-#line 244 "./src/syntax.y"
+#line 246 "./src/syntax.y"
                   {}
-#line 2268 "./src/syntax.tab.c"
+#line 2269 "./src/syntax.tab.c"
     break;
 
   case 19: /* statement: loopStatement  */
-#line 245 "./src/syntax.y"
+#line 247 "./src/syntax.y"
                     {}
-#line 2274 "./src/syntax.tab.c"
+#line 2275 "./src/syntax.tab.c"
     break;
 
   case 20: /* statement: returnStatement  */
-#line 246 "./src/syntax.y"
+#line 248 "./src/syntax.y"
                       {}
-#line 2280 "./src/syntax.tab.c"
+#line 2281 "./src/syntax.tab.c"
     break;
 
   case 21: /* statement: listStatement DELIM_SEMICOLLON  */
-#line 247 "./src/syntax.y"
+#line 249 "./src/syntax.y"
                                      {}
-#line 2286 "./src/syntax.tab.c"
+#line 2287 "./src/syntax.tab.c"
     break;
 
   case 22: /* statement: writeOp DELIM_SEMICOLLON  */
-#line 248 "./src/syntax.y"
+#line 250 "./src/syntax.y"
                                {}
-#line 2292 "./src/syntax.tab.c"
+#line 2293 "./src/syntax.tab.c"
     break;
 
   case 23: /* statement: readOp DELIM_SEMICOLLON  */
-#line 249 "./src/syntax.y"
+#line 251 "./src/syntax.y"
                               {}
-#line 2298 "./src/syntax.tab.c"
+#line 2299 "./src/syntax.tab.c"
     break;
 
   case 24: /* statement: expressionStatement  */
-#line 250 "./src/syntax.y"
+#line 252 "./src/syntax.y"
                           {}
-#line 2304 "./src/syntax.tab.c"
+#line 2305 "./src/syntax.tab.c"
     break;
 
   case 25: /* statement: error  */
-#line 251 "./src/syntax.y"
+#line 253 "./src/syntax.y"
             {}
-#line 2310 "./src/syntax.tab.c"
+#line 2311 "./src/syntax.tab.c"
     break;
 
   case 26: /* bodyStatement: DELIM_CUR_BRACKET_L statementList DELIM_CUR_BRACKET_R  */
-#line 255 "./src/syntax.y"
+#line 257 "./src/syntax.y"
                                                           {}
-#line 2316 "./src/syntax.tab.c"
+#line 2317 "./src/syntax.tab.c"
     break;
 
   case 27: /* localDeclaration: localDeclaration varDeclaration  */
-#line 263 "./src/syntax.y"
+#line 265 "./src/syntax.y"
                                     {}
-#line 2322 "./src/syntax.tab.c"
+#line 2323 "./src/syntax.tab.c"
     break;
 
   case 28: /* localDeclaration: %empty  */
-#line 264 "./src/syntax.y"
+#line 266 "./src/syntax.y"
       {}
-#line 2328 "./src/syntax.tab.c"
+#line 2329 "./src/syntax.tab.c"
     break;
 
   case 29: /* statementList: statementList localDeclaration statement  */
-#line 268 "./src/syntax.y"
+#line 270 "./src/syntax.y"
                                              {}
-#line 2334 "./src/syntax.tab.c"
+#line 2335 "./src/syntax.tab.c"
     break;
 
   case 30: /* statementList: %empty  */
-#line 269 "./src/syntax.y"
+#line 271 "./src/syntax.y"
       {}
-#line 2340 "./src/syntax.tab.c"
+#line 2341 "./src/syntax.tab.c"
     break;
 
   case 31: /* ifStatement: IF_KEY DELIM_PARENT_L simpleExpression DELIM_PARENT_R statement  */
-#line 273 "./src/syntax.y"
+#line 275 "./src/syntax.y"
                                                                                     {}
-#line 2346 "./src/syntax.tab.c"
+#line 2347 "./src/syntax.tab.c"
     break;
 
   case 32: /* ifStatement: IF_KEY DELIM_PARENT_L simpleExpression DELIM_PARENT_R statement ELSE_KEY statement  */
-#line 274 "./src/syntax.y"
+#line 276 "./src/syntax.y"
                                                                                          {}
-#line 2352 "./src/syntax.tab.c"
+#line 2353 "./src/syntax.tab.c"
     break;
 
   case 33: /* loopStatement: FOR_KEY DELIM_PARENT_L expression DELIM_SEMICOLLON simpleExpression DELIM_SEMICOLLON expression DELIM_PARENT_R statement  */
-#line 278 "./src/syntax.y"
+#line 280 "./src/syntax.y"
                                                                                                                              {}
-#line 2358 "./src/syntax.tab.c"
+#line 2359 "./src/syntax.tab.c"
     break;
 
   case 34: /* returnStatement: RETURN_KEY expression DELIM_SEMICOLLON  */
-#line 282 "./src/syntax.y"
+#line 284 "./src/syntax.y"
                                            {}
-#line 2364 "./src/syntax.tab.c"
+#line 2365 "./src/syntax.tab.c"
     break;
 
   case 35: /* expression: ID ASSIGN_OP expression  */
-#line 286 "./src/syntax.y"
+#line 288 "./src/syntax.y"
                             {}
-#line 2370 "./src/syntax.tab.c"
+#line 2371 "./src/syntax.tab.c"
     break;
 
   case 36: /* expression: simpleExpression  */
-#line 287 "./src/syntax.y"
+#line 289 "./src/syntax.y"
                        {}
-#line 2376 "./src/syntax.tab.c"
+#line 2377 "./src/syntax.tab.c"
     break;
 
   case 37: /* simpleExpression: logicBinExpression  */
-#line 296 "./src/syntax.y"
+#line 298 "./src/syntax.y"
                        {}
-#line 2382 "./src/syntax.tab.c"
+#line 2383 "./src/syntax.tab.c"
     break;
 
   case 38: /* logicBinExpression: logicBinExpression LOGIC_OP logicUnExpression  */
-#line 305 "./src/syntax.y"
+#line 307 "./src/syntax.y"
                                                   {}
-#line 2388 "./src/syntax.tab.c"
+#line 2389 "./src/syntax.tab.c"
     break;
 
   case 39: /* logicBinExpression: logicUnExpression  */
-#line 306 "./src/syntax.y"
+#line 308 "./src/syntax.y"
                         {}
-#line 2394 "./src/syntax.tab.c"
+#line 2395 "./src/syntax.tab.c"
     break;
 
   case 40: /* logicUnExpression: EXCLA_OP logicUnExpression  */
-#line 310 "./src/syntax.y"
+#line 312 "./src/syntax.y"
                                {}
-#line 2400 "./src/syntax.tab.c"
+#line 2401 "./src/syntax.tab.c"
     break;
 
   case 41: /* logicUnExpression: binExpression  */
-#line 311 "./src/syntax.y"
+#line 313 "./src/syntax.y"
                     {}
-#line 2406 "./src/syntax.tab.c"
+#line 2407 "./src/syntax.tab.c"
     break;
 
   case 42: /* binExpression: binExpression BINARY_OP sumExpression  */
-#line 319 "./src/syntax.y"
+#line 321 "./src/syntax.y"
                                           {}
-#line 2412 "./src/syntax.tab.c"
+#line 2413 "./src/syntax.tab.c"
     break;
 
   case 43: /* binExpression: sumExpression  */
-#line 320 "./src/syntax.y"
+#line 322 "./src/syntax.y"
                     {}
-#line 2418 "./src/syntax.tab.c"
+#line 2419 "./src/syntax.tab.c"
     break;
 
   case 44: /* sumExpression: sumExpression sumOP mulExpression  */
-#line 324 "./src/syntax.y"
+#line 326 "./src/syntax.y"
                                       {}
-#line 2424 "./src/syntax.tab.c"
+#line 2425 "./src/syntax.tab.c"
     break;
 
   case 45: /* sumExpression: mulExpression  */
-#line 325 "./src/syntax.y"
+#line 327 "./src/syntax.y"
                     {}
-#line 2430 "./src/syntax.tab.c"
+#line 2431 "./src/syntax.tab.c"
     break;
 
   case 46: /* mulExpression: mulExpression mulOP factor  */
-#line 329 "./src/syntax.y"
+#line 331 "./src/syntax.y"
                                {}
-#line 2436 "./src/syntax.tab.c"
+#line 2437 "./src/syntax.tab.c"
     break;
 
   case 47: /* mulExpression: factor  */
-#line 330 "./src/syntax.y"
+#line 332 "./src/syntax.y"
              {}
-#line 2442 "./src/syntax.tab.c"
+#line 2443 "./src/syntax.tab.c"
     break;
 
   case 48: /* sumOP: PLUS_OP  */
-#line 334 "./src/syntax.y"
+#line 336 "./src/syntax.y"
             {}
-#line 2448 "./src/syntax.tab.c"
+#line 2449 "./src/syntax.tab.c"
     break;
 
   case 49: /* sumOP: MINUS_OP  */
-#line 335 "./src/syntax.y"
+#line 337 "./src/syntax.y"
                {}
-#line 2454 "./src/syntax.tab.c"
+#line 2455 "./src/syntax.tab.c"
     break;
 
   case 50: /* mulOP: MUL_OP  */
-#line 339 "./src/syntax.y"
+#line 341 "./src/syntax.y"
            {}
-#line 2460 "./src/syntax.tab.c"
+#line 2461 "./src/syntax.tab.c"
     break;
 
   case 51: /* mulOP: DIV_OP  */
-#line 340 "./src/syntax.y"
+#line 342 "./src/syntax.y"
              {}
-#line 2466 "./src/syntax.tab.c"
+#line 2467 "./src/syntax.tab.c"
     break;
 
   case 52: /* factor: ID  */
-#line 344 "./src/syntax.y"
+#line 346 "./src/syntax.y"
        {}
-#line 2472 "./src/syntax.tab.c"
+#line 2473 "./src/syntax.tab.c"
     break;
 
   case 53: /* factor: constant  */
-#line 345 "./src/syntax.y"
+#line 347 "./src/syntax.y"
                {}
-#line 2478 "./src/syntax.tab.c"
+#line 2479 "./src/syntax.tab.c"
     break;
 
   case 54: /* factor: DELIM_PARENT_L simpleExpression DELIM_PARENT_R  */
-#line 346 "./src/syntax.y"
+#line 348 "./src/syntax.y"
                                                      {}
-#line 2484 "./src/syntax.tab.c"
+#line 2485 "./src/syntax.tab.c"
     break;
 
   case 55: /* factor: functionCall  */
-#line 347 "./src/syntax.y"
+#line 349 "./src/syntax.y"
                    {}
-#line 2490 "./src/syntax.tab.c"
+#line 2491 "./src/syntax.tab.c"
     break;
 
   case 56: /* factor: listExpression  */
-#line 348 "./src/syntax.y"
+#line 350 "./src/syntax.y"
                      {}
-#line 2496 "./src/syntax.tab.c"
+#line 2497 "./src/syntax.tab.c"
     break;
 
   case 57: /* constant: INT  */
-#line 352 "./src/syntax.y"
+#line 354 "./src/syntax.y"
         {}
-#line 2502 "./src/syntax.tab.c"
+#line 2503 "./src/syntax.tab.c"
     break;
 
   case 58: /* constant: MINUS_OP INT  */
-#line 353 "./src/syntax.y"
+#line 355 "./src/syntax.y"
                    {}
-#line 2508 "./src/syntax.tab.c"
+#line 2509 "./src/syntax.tab.c"
     break;
 
   case 59: /* constant: FLOAT  */
-#line 354 "./src/syntax.y"
+#line 356 "./src/syntax.y"
             {}
-#line 2514 "./src/syntax.tab.c"
+#line 2515 "./src/syntax.tab.c"
     break;
 
   case 60: /* constant: MINUS_OP FLOAT  */
-#line 355 "./src/syntax.y"
+#line 357 "./src/syntax.y"
                      {}
-#line 2520 "./src/syntax.tab.c"
+#line 2521 "./src/syntax.tab.c"
     break;
 
   case 61: /* constant: NULL_CONST  */
-#line 356 "./src/syntax.y"
+#line 358 "./src/syntax.y"
                  {}
-#line 2526 "./src/syntax.tab.c"
+#line 2527 "./src/syntax.tab.c"
     break;
 
   case 62: /* functionCall: ID DELIM_PARENT_L parametersPass DELIM_PARENT_R  */
-#line 360 "./src/syntax.y"
+#line 362 "./src/syntax.y"
                                                     {}
-#line 2532 "./src/syntax.tab.c"
+#line 2533 "./src/syntax.tab.c"
     break;
 
   case 63: /* parametersPass: parametersPass DELIM_COMMA simpleExpression  */
-#line 364 "./src/syntax.y"
+#line 366 "./src/syntax.y"
                                                 {}
-#line 2538 "./src/syntax.tab.c"
+#line 2539 "./src/syntax.tab.c"
     break;
 
   case 64: /* parametersPass: simpleExpression  */
-#line 365 "./src/syntax.y"
+#line 367 "./src/syntax.y"
                        {}
-#line 2544 "./src/syntax.tab.c"
+#line 2545 "./src/syntax.tab.c"
     break;
 
   case 65: /* parametersPass: %empty  */
-#line 366 "./src/syntax.y"
+#line 368 "./src/syntax.y"
       {}
-#line 2550 "./src/syntax.tab.c"
+#line 2551 "./src/syntax.tab.c"
     break;
 
   case 66: /* writeOp: write  */
-#line 370 "./src/syntax.y"
+#line 372 "./src/syntax.y"
           {}
-#line 2556 "./src/syntax.tab.c"
+#line 2557 "./src/syntax.tab.c"
     break;
 
   case 67: /* writeOp: writeln  */
-#line 371 "./src/syntax.y"
+#line 373 "./src/syntax.y"
               {}
-#line 2562 "./src/syntax.tab.c"
+#line 2563 "./src/syntax.tab.c"
     break;
 
   case 68: /* write: OUTPUT_KEY DELIM_PARENT_L STRING DELIM_PARENT_R  */
-#line 375 "./src/syntax.y"
+#line 377 "./src/syntax.y"
                                                     {}
-#line 2568 "./src/syntax.tab.c"
+#line 2569 "./src/syntax.tab.c"
     break;
 
   case 69: /* write: OUTPUT_KEY DELIM_PARENT_L simpleExpression DELIM_PARENT_R  */
-#line 376 "./src/syntax.y"
+#line 378 "./src/syntax.y"
                                                                 {}
-#line 2574 "./src/syntax.tab.c"
+#line 2575 "./src/syntax.tab.c"
     break;
 
   case 70: /* writeln: OUTPUTLN_KEY DELIM_PARENT_L STRING DELIM_PARENT_R  */
-#line 380 "./src/syntax.y"
+#line 382 "./src/syntax.y"
                                                       {}
-#line 2580 "./src/syntax.tab.c"
+#line 2581 "./src/syntax.tab.c"
     break;
 
   case 71: /* writeln: OUTPUTLN_KEY DELIM_PARENT_L simpleExpression DELIM_PARENT_R  */
-#line 381 "./src/syntax.y"
+#line 383 "./src/syntax.y"
                                                                   {}
-#line 2586 "./src/syntax.tab.c"
+#line 2587 "./src/syntax.tab.c"
     break;
 
   case 72: /* readOp: INPUT_KEY DELIM_PARENT_L ID DELIM_PARENT_R  */
-#line 385 "./src/syntax.y"
+#line 387 "./src/syntax.y"
                                                {}
-#line 2592 "./src/syntax.tab.c"
+#line 2593 "./src/syntax.tab.c"
     break;
 
   case 73: /* expressionStatement: expression DELIM_SEMICOLLON  */
-#line 389 "./src/syntax.y"
+#line 391 "./src/syntax.y"
                                 {}
-#line 2598 "./src/syntax.tab.c"
+#line 2599 "./src/syntax.tab.c"
     break;
 
   case 74: /* listStatement: listAssign  */
-#line 393 "./src/syntax.y"
+#line 395 "./src/syntax.y"
                {}
-#line 2604 "./src/syntax.tab.c"
+#line 2605 "./src/syntax.tab.c"
     break;
 
   case 75: /* listStatement: listMap  */
-#line 394 "./src/syntax.y"
+#line 396 "./src/syntax.y"
               {}
-#line 2610 "./src/syntax.tab.c"
+#line 2611 "./src/syntax.tab.c"
     break;
 
   case 76: /* listStatement: listFilter  */
-#line 395 "./src/syntax.y"
+#line 397 "./src/syntax.y"
                  {}
-#line 2616 "./src/syntax.tab.c"
+#line 2617 "./src/syntax.tab.c"
     break;
 
   case 77: /* listExpression: listHeader  */
-#line 399 "./src/syntax.y"
+#line 401 "./src/syntax.y"
                {}
-#line 2622 "./src/syntax.tab.c"
+#line 2623 "./src/syntax.tab.c"
     break;
 
   case 78: /* listExpression: listTailDestructor  */
-#line 401 "./src/syntax.y"
+#line 403 "./src/syntax.y"
                          {}
-#line 2628 "./src/syntax.tab.c"
+#line 2629 "./src/syntax.tab.c"
     break;
 
   case 79: /* listAssign: ID ASSIGN_OP ID ASSIGN_LISTOP ID  */
-#line 405 "./src/syntax.y"
+#line 407 "./src/syntax.y"
                                      {}
-#line 2634 "./src/syntax.tab.c"
+#line 2635 "./src/syntax.tab.c"
     break;
 
   case 80: /* listHeader: HEADER_LISTOP ID  */
-#line 409 "./src/syntax.y"
+#line 411 "./src/syntax.y"
                      {}
-#line 2640 "./src/syntax.tab.c"
+#line 2641 "./src/syntax.tab.c"
     break;
 
   case 81: /* listTailDestructor: TAILDES_LISTOP ID  */
-#line 417 "./src/syntax.y"
+#line 419 "./src/syntax.y"
                       {}
-#line 2646 "./src/syntax.tab.c"
+#line 2647 "./src/syntax.tab.c"
     break;
 
   case 82: /* listMap: ID ASSIGN_OP ID MAP_LISTOP ID  */
-#line 421 "./src/syntax.y"
+#line 423 "./src/syntax.y"
                                   {}
-#line 2652 "./src/syntax.tab.c"
+#line 2653 "./src/syntax.tab.c"
     break;
 
   case 83: /* listFilter: ID ASSIGN_OP ID FILTER_LISTOP ID  */
-#line 425 "./src/syntax.y"
+#line 427 "./src/syntax.y"
                                      {}
-#line 2658 "./src/syntax.tab.c"
+#line 2659 "./src/syntax.tab.c"
     break;
 
 
-#line 2662 "./src/syntax.tab.c"
+#line 2663 "./src/syntax.tab.c"
 
       default: break;
     }
@@ -2883,13 +2884,13 @@ yyreturn:
   return yyresult;
 }
 
-#line 429 "./src/syntax.y"
+#line 431 "./src/syntax.y"
 
 /* Additional C code */
 
 void yyerror(const char* s){
     printf("Syntax error: %s\nLine: %d - Column: %d\n", s, line, column);
-    error = error + 1;
+    syntaticError = syntaticError + 1;
 }
 
 int main(int argc, char **argv){
@@ -2897,10 +2898,16 @@ int main(int argc, char **argv){
 
     line = 1;
     column = 1;
-    error = 0;
+    lexicalError = 0;
+    syntaticError = 0;
 
     /* createSymbol("Teste");
     printTable(); */
+
+    /* Inicializa a pilha de escopo com um valor para o escopo global */
+    lastScopeValue++;
+    pushScope(lastScopeValue, -1);
+
 
 
     if(argc >= 2) {
@@ -2914,6 +2921,12 @@ int main(int argc, char **argv){
             yyparse();
             fclose(yyin);
 
+            printf("Analyzer completed with %d lexical and %d syntatic errors.\n\n\n", lexicalError, syntaticError);
+
+
+            /* printTable(); */
+            printTable2();
+
             /* print_end(); */
         }
         else{
@@ -2926,7 +2939,7 @@ int main(int argc, char **argv){
         printf("No file has been chosen.\n");
     }
 
-    printTable();
+
 
     yylex_destroy();
 

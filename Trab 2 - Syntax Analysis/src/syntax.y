@@ -7,6 +7,7 @@
 #include <string.h>
 #include "base.h"
 #include "symbol_table.h"
+#include "scope.h"
 
 extern int yylex();
 extern int yylex_destroy();
@@ -25,6 +26,7 @@ extern FILE* yyin;
         char text[150];
         int line;
         int column;
+        t_scope* scope;
     } t_token;
 
     struct Nodes{
@@ -183,8 +185,8 @@ declaration:
 
 varDeclaration:
     TYPE ID DELIM_SEMICOLLON {
-        printf("%s %s %s\n", $1.text, $2.text, $3.text);
-        createSymbol($2.text, $1.text, $2.line, $2.column); //line and column still not working
+        /* printf("%s %s %s\n", $1.text, $2.text, $3.text); */
+        createSymbol($2.text, $1.text, $2.line, $2.column, $2.scope->scopeValue, $2.scope->parentScope, 0); //line and column still not working
     }
     | TYPE LIST_TYPE ID DELIM_SEMICOLLON {
         char* temp;
@@ -192,8 +194,8 @@ varDeclaration:
         strcpy(temp, $1.text);
         strcat(temp, " ");
         strcat(temp, $2.text);
-        printf("%s %s %s %s - %s\n", $1.text, $2.text, $3.text, $4.text, temp);
-        createSymbol($3.text, temp, $3.line, $3.column); //line and column still not working
+        /* printf("%s %s %s %s - %s\n", $1.text, $2.text, $3.text, $4.text, temp); */
+        createSymbol($3.text, temp, $3.line, $3.column, $3.scope->scopeValue, $3.scope->parentScope, 0); //line and column still not working
     }
 ;
 
@@ -213,8 +215,8 @@ varDeclaration:
 
 funcDeclaration:
     TYPE ID DELIM_PARENT_L parameters DELIM_PARENT_R bodyStatement {
-        printf("%s %s %s %s \n", $1.text, $2.text, $3.text, $5.text);
-        createSymbol($2.text, $1.text, $2.line, $2.column); //line and column still not working
+        /* printf("%s %s %s %s - escopo %d %d\n", $1.text, $2.text, $3.text, $5.text, $2.scope->scopeValue, $2.scope->parentScope); */
+        createSymbol($2.text, $1.text, $2.line, $2.column, $2.scope->scopeValue, $2.scope->parentScope, 1); //line and column still not working
     }
     | TYPE LIST_TYPE ID DELIM_PARENT_L parameters DELIM_PARENT_R bodyStatement {
         char* temp;
@@ -222,8 +224,8 @@ funcDeclaration:
         strcpy(temp, $1.text);
         strcat(temp, " ");
         strcat(temp, $2.text);
-        printf("%s %s %s %s %s - %s\n", $1.text, $2.text, $3.text, $4.text, $6.text, temp);
-        createSymbol($3.text, temp, $3.line, $3.column); //line and column still not working
+        /* printf("%s %s %s %s %s - %s - escopo %d %d\n", $1.text, $2.text, $3.text, $4.text, $6.text, temp, $3.scope->scopeValue, $3.scope->parentScope); */
+        createSymbol($3.text, temp, $3.line, $3.column, $3.scope->scopeValue, $3.scope->parentScope, 1); //line and column still not working
     }
 ;
 
@@ -431,7 +433,7 @@ listFilter:
 
 void yyerror(const char* s){
     printf("Syntax error: %s\nLine: %d - Column: %d\n", s, line, column);
-    error = error + 1;
+    syntaticError = syntaticError + 1;
 }
 
 int main(int argc, char **argv){
@@ -439,10 +441,16 @@ int main(int argc, char **argv){
 
     line = 1;
     column = 1;
-    error = 0;
+    lexicalError = 0;
+    syntaticError = 0;
 
     /* createSymbol("Teste");
     printTable(); */
+
+    /* Inicializa a pilha de escopo com um valor para o escopo global */
+    lastScopeValue++;
+    pushScope(lastScopeValue, -1);
+
 
 
     if(argc >= 2) {
@@ -456,6 +464,12 @@ int main(int argc, char **argv){
             yyparse();
             fclose(yyin);
 
+            printf("Analyzer completed with %d lexical and %d syntatic errors.\n\n\n", lexicalError, syntaticError);
+
+
+            /* printTable(); */
+            printTable2();
+
             /* print_end(); */
         }
         else{
@@ -468,7 +482,7 @@ int main(int argc, char **argv){
         printf("No file has been chosen.\n");
     }
 
-    printTable();
+
 
     yylex_destroy();
 

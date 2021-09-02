@@ -510,6 +510,7 @@ IF, THEN, ELSE, ID, NUMBER, RELOP */
 #include <stdlib.h>
 #include <string.h>
 #include "base.h"
+#include "scope.h"
 
 #include "syntax.tab.h"
 
@@ -547,7 +548,7 @@ void line_count();
 
 
 
-#line 551 "./src/lex.yy.c"
+#line 552 "./src/lex.yy.c"
 /* Definições */
 /* Base */
 /* Identificador */
@@ -576,7 +577,7 @@ void line_count();
 /* DELIM_CUR_BRACKET  [{}] */
 /* Comentários */
 /* Tags de formatação */
-#line 580 "./src/lex.yy.c"
+#line 581 "./src/lex.yy.c"
 
 #define INITIAL 0
 
@@ -791,10 +792,10 @@ YY_DECL
 		}
 
 	{
-#line 138 "./src/lexical.l"
+#line 139 "./src/lexical.l"
 
 
-#line 798 "./src/lex.yy.c"
+#line 799 "./src/lex.yy.c"
 
 	while ( /*CONSTCOND*/1 )		/* loops until end-of-file is reached */
 		{
@@ -853,14 +854,14 @@ do_action:	/* This label is used only to access EOF actions. */
 
 case 1:
 YY_RULE_SETUP
-#line 140 "./src/lexical.l"
+#line 141 "./src/lexical.l"
 {
     column_count();
 }
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
-#line 144 "./src/lexical.l"
+#line 145 "./src/lexical.l"
 {
     column_count();
 }
@@ -868,14 +869,14 @@ YY_RULE_SETUP
 case 3:
 /* rule 3 can match eol */
 YY_RULE_SETUP
-#line 148 "./src/lexical.l"
+#line 149 "./src/lexical.l"
 {
     line_count();
 }
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 152 "./src/lexical.l"
+#line 153 "./src/lexical.l"
 {
     /* print_block("Single Line Comment"); */
     /* column_count(); */
@@ -884,7 +885,7 @@ YY_RULE_SETUP
 case 5:
 /* rule 5 can match eol */
 YY_RULE_SETUP
-#line 157 "./src/lexical.l"
+#line 158 "./src/lexical.l"
 {
     /* print_block("Multiple Line Comment"); */
     /* column_count(); */
@@ -892,7 +893,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 162 "./src/lexical.l"
+#line 163 "./src/lexical.l"
 {
     /* print_block("Integer"); */
     column_count();
@@ -904,7 +905,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 171 "./src/lexical.l"
+#line 172 "./src/lexical.l"
 {
     /* print_block("Float"); */
     column_count();
@@ -916,7 +917,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
-#line 180 "./src/lexical.l"
+#line 181 "./src/lexical.l"
 {
     /* print_block("Type"); */
     column_count();
@@ -928,7 +929,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
-#line 189 "./src/lexical.l"
+#line 190 "./src/lexical.l"
 {
     /* print_block("List Type"); */
     column_count();
@@ -941,7 +942,7 @@ YY_RULE_SETUP
 case 10:
 /* rule 10 can match eol */
 YY_RULE_SETUP
-#line 198 "./src/lexical.l"
+#line 199 "./src/lexical.l"
 {
     /* print_block("String"); */
     column_count();
@@ -953,7 +954,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
-#line 207 "./src/lexical.l"
+#line 208 "./src/lexical.l"
 {
     /* print_block("Null"); */
     column_count();
@@ -965,7 +966,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
-#line 216 "./src/lexical.l"
+#line 217 "./src/lexical.l"
 {
     /* print_block("Plus Operation"); */
     column_count();
@@ -977,7 +978,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
-#line 225 "./src/lexical.l"
+#line 226 "./src/lexical.l"
 {
     /* print_block("Minus Operation"); */
     column_count();
@@ -989,7 +990,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
-#line 234 "./src/lexical.l"
+#line 235 "./src/lexical.l"
 {
     /* print_block("Div Operation"); */
     column_count();
@@ -1001,7 +1002,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
-#line 243 "./src/lexical.l"
+#line 244 "./src/lexical.l"
 {
     /* print_block("Mul Operation"); */
     column_count();
@@ -1013,7 +1014,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 16:
 YY_RULE_SETUP
-#line 252 "./src/lexical.l"
+#line 253 "./src/lexical.l"
 {
     /* print_block("Logic Operation"); */
     column_count();
@@ -1025,7 +1026,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 17:
 YY_RULE_SETUP
-#line 261 "./src/lexical.l"
+#line 262 "./src/lexical.l"
 {
     /* print_block("Binary Operation"); */
     column_count();
@@ -1037,7 +1038,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 18:
 YY_RULE_SETUP
-#line 270 "./src/lexical.l"
+#line 271 "./src/lexical.l"
 {
     /* print_block("If Keyword"); */
     column_count();
@@ -1049,7 +1050,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 19:
 YY_RULE_SETUP
-#line 279 "./src/lexical.l"
+#line 280 "./src/lexical.l"
 {
     /* print_block("Else Keyword"); */
     column_count();
@@ -1061,7 +1062,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 20:
 YY_RULE_SETUP
-#line 288 "./src/lexical.l"
+#line 289 "./src/lexical.l"
 {
     /* print_block("For Keyword"); */
     column_count();
@@ -1073,7 +1074,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 21:
 YY_RULE_SETUP
-#line 297 "./src/lexical.l"
+#line 298 "./src/lexical.l"
 {
     /* print_block("Return Keyword"); */
     column_count();
@@ -1085,7 +1086,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 22:
 YY_RULE_SETUP
-#line 306 "./src/lexical.l"
+#line 307 "./src/lexical.l"
 {
     /* print_block("Input Keyword"); */
     column_count();
@@ -1097,7 +1098,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 23:
 YY_RULE_SETUP
-#line 315 "./src/lexical.l"
+#line 316 "./src/lexical.l"
 {
     /* print_block("Output Keyword"); */
     column_count();
@@ -1109,7 +1110,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 24:
 YY_RULE_SETUP
-#line 324 "./src/lexical.l"
+#line 325 "./src/lexical.l"
 {
     /* print_block("Output with line break Keyword"); */
     column_count();
@@ -1121,7 +1122,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 25:
 YY_RULE_SETUP
-#line 333 "./src/lexical.l"
+#line 334 "./src/lexical.l"
 {
     /* print_block("Assignment Operator"); */
     column_count();
@@ -1133,7 +1134,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 26:
 YY_RULE_SETUP
-#line 342 "./src/lexical.l"
+#line 343 "./src/lexical.l"
 {
     /* print_block("Exclamation Point Operator"); */
     column_count();
@@ -1145,7 +1146,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 27:
 YY_RULE_SETUP
-#line 351 "./src/lexical.l"
+#line 352 "./src/lexical.l"
 {
     /* print_block("Assignment List Operator"); */
     column_count();
@@ -1157,7 +1158,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 28:
 YY_RULE_SETUP
-#line 360 "./src/lexical.l"
+#line 361 "./src/lexical.l"
 {
     /* print_block("Header List Operator"); */
     column_count();
@@ -1169,7 +1170,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 29:
 YY_RULE_SETUP
-#line 369 "./src/lexical.l"
+#line 370 "./src/lexical.l"
 {
     /* print_block("Tail Destructor List Operator"); */
     column_count();
@@ -1181,7 +1182,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 30:
 YY_RULE_SETUP
-#line 378 "./src/lexical.l"
+#line 379 "./src/lexical.l"
 {
     /* print_block("Map List Operator"); */
     column_count();
@@ -1193,7 +1194,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 31:
 YY_RULE_SETUP
-#line 387 "./src/lexical.l"
+#line 388 "./src/lexical.l"
 {
     /* print_block("Filter List Operator"); */
     column_count();
@@ -1205,7 +1206,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 32:
 YY_RULE_SETUP
-#line 396 "./src/lexical.l"
+#line 397 "./src/lexical.l"
 {
     /* print_block("Parenthesis Delimiter"); */
     column_count();
@@ -1217,7 +1218,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 33:
 YY_RULE_SETUP
-#line 405 "./src/lexical.l"
+#line 406 "./src/lexical.l"
 {
     /* print_block("Parenthesis Delimiter"); */
     column_count();
@@ -1229,7 +1230,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 34:
 YY_RULE_SETUP
-#line 414 "./src/lexical.l"
+#line 415 "./src/lexical.l"
 {
     /* print_block("Bracket Delimiter"); */
     column_count();
@@ -1241,7 +1242,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 35:
 YY_RULE_SETUP
-#line 423 "./src/lexical.l"
+#line 424 "./src/lexical.l"
 {
     /* print_block("Bracket Delimiter"); */
     column_count();
@@ -1253,31 +1254,49 @@ YY_RULE_SETUP
 	YY_BREAK
 case 36:
 YY_RULE_SETUP
-#line 432 "./src/lexical.l"
+#line 433 "./src/lexical.l"
 {
+    int parentScope;
     /* print_block("Curly Bracket Delimiter"); */
     column_count();
     strcpy(yylval.t_token.text, yytext);
     yylval.t_token.line = line;
     yylval.t_token.column = column;
+
+    /* Scope - o valor do último escopo nunca é reduzido para não repetir em um escopo diferente*/
+    parentScope = checkScope();
+    lastScopeValue++;
+    pushScope(lastScopeValue, parentScope);
+    yylval.t_token.scope = getScope();
+
+    /* printf("Abrindo novo escopo: %d pai %d\n", lastScopeValue, parentScope); */
+    /* printf("Aberto novo escopo: %d pai %d\n", getScope()->scopeValue, getScope()->parentScope); */
+
     return DELIM_CUR_BRACKET_L;
 }
 	YY_BREAK
 case 37:
 YY_RULE_SETUP
-#line 441 "./src/lexical.l"
+#line 453 "./src/lexical.l"
 {
+    /* int value; */
     /* print_block("Curly Bracket Delimiter"); */
     column_count();
     strcpy(yylval.t_token.text, yytext);
     yylval.t_token.line = line;
     yylval.t_token.column = column;
+
+    /* Scope - o valor do último escopo nunca é reduzido para não repetir em um escopo diferente*/
+    /* value = checkScope(); */
+    popScope();
+    /* yylval.t_token.scopeValue = value; */
+
     return DELIM_CUR_BRACKET_R;
 }
 	YY_BREAK
 case 38:
 YY_RULE_SETUP
-#line 450 "./src/lexical.l"
+#line 469 "./src/lexical.l"
 {
     /* print_block("Comma Delimiter"); */
     column_count();
@@ -1289,7 +1308,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 39:
 YY_RULE_SETUP
-#line 459 "./src/lexical.l"
+#line 478 "./src/lexical.l"
 {
     /* print_block("Semicollon Delimiter"); */
     column_count();
@@ -1301,7 +1320,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 40:
 YY_RULE_SETUP
-#line 468 "./src/lexical.l"
+#line 487 "./src/lexical.l"
 {
     /* print_block("Single Quote Delimiter"); */
     column_count();
@@ -1313,7 +1332,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 41:
 YY_RULE_SETUP
-#line 477 "./src/lexical.l"
+#line 496 "./src/lexical.l"
 {
     /* print_block("Double Quote Delimiter"); */
     column_count();
@@ -1325,31 +1344,39 @@ YY_RULE_SETUP
 	YY_BREAK
 case 42:
 YY_RULE_SETUP
-#line 487 "./src/lexical.l"
+#line 506 "./src/lexical.l"
 {
+    /* int value; */
+    t_scope* scope;
     /* print_block("Identifier"); */
     column_count();
     strcpy(yylval.t_token.text, yytext);
     yylval.t_token.line = line;
     yylval.t_token.column = column;
+
+    /* Scope */
+    /* value = checkScope(); */
+    scope = getScope();
+    yylval.t_token.scope = scope;
+
     return ID;
 }
 	YY_BREAK
 case 43:
 YY_RULE_SETUP
-#line 496 "./src/lexical.l"
+#line 523 "./src/lexical.l"
 {
     print_error(yytext);
     column_count();
-    error = error + 1;
+    lexicalError = lexicalError + 1;
 }
 	YY_BREAK
 case 44:
 YY_RULE_SETUP
-#line 502 "./src/lexical.l"
+#line 529 "./src/lexical.l"
 ECHO;
 	YY_BREAK
-#line 1353 "./src/lex.yy.c"
+#line 1380 "./src/lex.yy.c"
 case YY_STATE_EOF(INITIAL):
 	yyterminate();
 
@@ -2317,7 +2344,7 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 502 "./src/lexical.l"
+#line 529 "./src/lexical.l"
 
 /*
 removed rules

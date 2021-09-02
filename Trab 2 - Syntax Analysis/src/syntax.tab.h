@@ -153,19 +153,20 @@ extern int yydebug;
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 union YYSTYPE
 {
-#line 23 "./src/syntax.y"
+#line 24 "./src/syntax.y"
 
     struct Tokens{
         char text[150];
         int line;
         int column;
+        t_scope* scope;
     } t_token;
 
     struct Nodes{
         int temp;
     } t_node;
 
-#line 169 "./src/syntax.tab.h"
+#line 170 "./src/syntax.tab.h"
 
 };
 typedef union YYSTYPE YYSTYPE;
