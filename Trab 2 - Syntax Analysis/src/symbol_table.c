@@ -1,8 +1,8 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-#include "symbol_table.h"
-#include "base.h"
+#include "../lib/symbol_table.h"
+#include "../lib/base.h"
 // #include "scope.h"
 
 // ainda não limpa a tabela da memória, ainda é necessário tratar isso

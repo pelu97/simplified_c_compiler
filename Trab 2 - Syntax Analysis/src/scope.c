@@ -1,7 +1,7 @@
 #include <stdlib.h>
 #include <stdio.h>
-#include "base.h"
-#include "scope.h"
+#include "../lib/base.h"
+#include "../lib/scope.h"
 
 
 t_scope* ScopeStack = NULL;
