@@ -7,15 +7,22 @@
 int main(){
     t_symbol* symbol = NULL;
 
-    createSymbol("Simbolo 1", 1, 1);
+    createSymbol("Simbolo 1", "type", 1, 1, 0, -1);
 
-    createSymbol("Simbolo 3", 3, 3);
+    createSymbol("Simbolo 2", "type", 1, 1, 2, 1);
 
-    createSymbol("test_get", 4, 7);
+    createSymbol("Simbolo 3", "type", 1, 1, 2, 1);
 
-    createSymbol("Simbolo 8", 12, 34);
+    createSymbol("Simbolo 4", "type", 1, 1, 2, 1);
+
+    createSymbol("Simbolo escopo pai", "type", 1, 1, 1, 0);
+
+    createSymbol("Simbolo 6", "type", 1, 1, 0, -1);
+
 
     printTable();
+
+    printTable2();
 
     printf("Looking for symbol test_get\n");
 
