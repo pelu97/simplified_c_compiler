@@ -1,16 +1,43 @@
-int main(){
-    int potato;
-    int list lista1;
+int list IL;
+float list FL;
 
-    potato = 2;
+int list read_list(int n) {
+	int i;
+	i =  -435.7;
+	int list new;
+	new = NIL;
+	for (i = 0; i < n ; i = i + 1) {
+		int elem;
+		writeln("Digite o elemento da lista: ");
+		read(elem);
+		new = elem : new;
+	}
+	return new;
+}
 
-    lista1 = potato : lista1;
+int main() {
 
+	writeln("Digite os número de elementos da lista: ");
 
-    if(potato != 0){
-        writeln("Potatoes in list");
-        writeln(?lista1)
-    }
+	int n;
+	float list FL10;
+	read(n);
 
-    return 0;
+	IL  = read_list(n);
+	FL = succ >> 2;
+
+	FL10 = leq_10 <<  FL;
+	if (FL10 != NIL) {
+		float list AUXL;
+		int n; n = 0;
+		for (AUXL=FL10; AUXL != NIL; AUXL = !AUXL) {
+			n = n + ;
+			write(?AUXL); write(" ");
+		}
+		writeln(" ");
+		write("A nova lista tem "); write(n); writeln(" elementos.");
+	}
+	else writeln("A nova lista não possui elementos.");
+
+	return 0;
 }
