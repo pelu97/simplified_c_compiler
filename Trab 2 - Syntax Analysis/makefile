@@ -6,10 +6,10 @@ lexico: ./src/lexical.l
 sintatico: ./src/lexical.l ./src/syntax.y
 	bison -o ./src/syntax.tab.c -dy ./src/syntax.y
 	flex -o ./src/lex.yy.c ./src/lexical.l
-	gcc -c ./src/base.c -o ./src/base.o
-	gcc -c ./src/symbol_table.c -o ./src/symbol_table.o
-	gcc -c ./src/scope.c -o ./src/scope.o
-	gcc ./src/lex.yy.c ./src/syntax.tab.c ./src/base.o ./src/symbol_table.o ./src/scope.o -o tradutor -Wall
+	gcc -c ./lib/base.c -o ./lib/base.o
+	gcc -c ./lib/symbol_table.c -o ./lib/symbol_table.o
+	gcc -c ./lib/scope.c -o ./lib/scope.o
+	gcc ./src/lex.yy.c ./src/syntax.tab.c ./lib/base.o ./lib/symbol_table.o ./lib/scope.o -o tradutor -Wall
 
 run_correct1:
 	./tradutor ./tests/test_correct1.c

@@ -5,9 +5,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "base.h"
-#include "symbol_table.h"
-#include "scope.h"
+#include "../lib/base.h"
+#include "../lib/symbol_table.h"
+#include "../lib/scope.h"
 
 extern int yylex();
 extern int yylex_destroy();

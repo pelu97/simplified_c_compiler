@@ -7,8 +7,8 @@ IF, THEN, ELSE, ID, NUMBER, RELOP */
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "base.h"
-#include "scope.h"
+#include "../lib/base.h"
+#include "../lib/scope.h"
 
 #include "syntax.tab.h"
 
