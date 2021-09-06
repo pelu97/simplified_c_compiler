@@ -8,6 +8,7 @@
 #include "../lib/base.h"
 #include "../lib/symbol_table.h"
 #include "../lib/scope.h"
+#include "../lib/tree.h"
 
 extern int yylex();
 extern int yylex_destroy();
@@ -29,9 +30,7 @@ extern FILE* yyin;
         t_scope* scope;
     } t_token;
 
-    struct Nodes{
-        int temp;
-    } t_node;
+    struct Node* t_node;
 }
 
 /* %left PLUS_OP MINUS_OP
