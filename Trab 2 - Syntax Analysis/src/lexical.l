@@ -65,7 +65,7 @@ TYPE               int|float
 LIST_TYPE          list
 STRING             \"(\\.|[^"\\])*\"
 
-NULL_CONST         nil
+NULL_CONST         NIL
 
 /* Operadores */
 /* ARITHMETIC_OP      \+|\-|\/|\* */
