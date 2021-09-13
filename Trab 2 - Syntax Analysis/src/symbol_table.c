@@ -13,8 +13,8 @@ void createSymbol(char* symbolName, char* type, int line, int column, int scopeV
     t_symbol *symbol;
 
     symbol = (t_symbol*) malloc(sizeof(t_symbol));
-    symbol->name = (char*) malloc(sizeof(symbolName) + 1);
-    symbol->type = (char*) malloc(sizeof(type) + 1);
+    symbol->name = (char*) malloc(strlen(symbolName) + 1);
+    symbol->type = (char*) malloc(strlen(type) + 1);
 
     strcpy(symbol->name, symbolName);
     strcpy(symbol->type, type);
