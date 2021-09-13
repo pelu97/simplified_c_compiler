@@ -9,6 +9,7 @@
 #define COLOR_CYAN    "\x1B[36m"
 #define COLOR_WHITE   "\x1B[37m"
 
+// #define DEBUG 1
 
 extern int lexicalError;
 extern int syntaticError;

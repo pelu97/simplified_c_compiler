@@ -11,13 +11,20 @@ int main(){
     }
 
     nodes[0] = createNode("Node 1");
+
+    initializeTree(nodes[0]);
+
     nodes[1] = createNode("Node 2");
     nodes[2] = createNode("Node 3");
 
 
     addChild(nodes[0], 1);
 
+    addChild(nodes[1], 1);
+
     nodes[0]->child[0] = nodes[1];
+
+    nodes[1]->child[0] = nodes[2];
 
 
 
@@ -31,7 +38,9 @@ int main(){
         }
     }
 
-    printBranch(nodes[0]);
+    // printBranch(nodes[0], 0);
+
+    printTree();
 
 
 

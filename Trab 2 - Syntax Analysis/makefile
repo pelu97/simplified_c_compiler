@@ -3,7 +3,7 @@ lexico: ./src/lexical.l
 	flex -o ./src/lex.yy.c ./src/lexical.l
 	gcc ./src/lex.yy.c -o tradutor -Wall
 
-sintatico: ./src/lexical.l ./src/syntax.y
+sintatico: ./src/lexical.l ./src/syntax.y ./src/base.c ./src/symbol_table.c ./src/scope.c ./src/tree.c
 	bison -o ./src/syntax.tab.c -dy ./src/syntax.y
 	flex -o ./src/lex.yy.c ./src/lexical.l
 	gcc -c ./src/base.c -o ./src/base.o
@@ -21,11 +21,17 @@ run_correct2:
 run_correct3:
 	./tradutor ./tests/test_correct3.c
 
+run_correct4:
+	./tradutor ./tests/test_correct4.c
+
 run_wrong1:
 	./tradutor ./tests/test_wrong1.c
 
 run_wrong2:
 	./tradutor ./tests/test_wrong2.c
+
+run_tree:
+	./tradutor ./tests/test_tree.c
 
 debug_syntax:
 	bison -o ./src/syntax.tab.c -dy ./src/syntax.y -Wcounterexamples
