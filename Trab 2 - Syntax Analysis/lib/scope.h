@@ -7,6 +7,7 @@ typedef struct Scope {
     struct Scope* next;
 } t_scope;
 
+
 extern t_scope* ScopeStack;
 extern t_scope* topScope;
 extern int lastScopeValue;
@@ -18,3 +19,7 @@ int popScope();
 int checkScope();
 
 t_scope* getScope();
+
+void freeScopeToken(t_scope* scope);
+
+void freeScope();

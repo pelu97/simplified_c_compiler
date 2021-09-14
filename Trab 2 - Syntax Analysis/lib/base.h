@@ -18,6 +18,7 @@ extern int column;
 
 
 
+
 /* ------------------------ Funções de formatação da saída ------------------------ */
 
 /* Limpa a definição de cor de volta para o padrão */

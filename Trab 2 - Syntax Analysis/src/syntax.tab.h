@@ -100,54 +100,6 @@ extern int yydebug;
   };
   typedef enum yytokentype yytoken_kind_t;
 #endif
-/* Token kinds.  */
-#define YYEMPTY -2
-#define YYEOF 0
-#define YYerror 256
-#define YYUNDEF 257
-#define INT 258
-#define FLOAT 259
-#define ID 260
-#define TYPE 261
-#define LIST_TYPE 262
-#define STRING 263
-#define NULL_CONST 264
-#define PLUS_OP 265
-#define MINUS_OP 266
-#define DIV_OP 267
-#define MUL_OP 268
-#define LOGIC_OP 269
-#define BINARY_OP 270
-#define ASSIGN_OP 271
-#define EXCLA_OP 272
-#define IF_KEY 273
-#define ELSE_KEY 274
-#define FOR_KEY 275
-#define RETURN_KEY 276
-#define THEN_PREC 277
-#define INPUT_KEY 278
-#define OUTPUT_KEY 279
-#define OUTPUTLN_KEY 280
-#define ASSIGN_LISTOP 281
-#define HEADER_LISTOP 282
-#define TAILDES_LISTOP 283
-#define MAP_LISTOP 284
-#define FILTER_LISTOP 285
-#define DELIM_PARENT_L 286
-#define DELIM_PARENT_R 287
-#define DELIM_BRACKET_L 288
-#define DELIM_BRACKET_R 289
-#define DELIM_CUR_BRACKET_L 290
-#define DELIM_CUR_BRACKET_R 291
-#define DELIM_COMMA 292
-#define DELIM_SEMICOLLON 293
-#define DELIM_SQUOTE 294
-#define DELIM_DQUOTE 295
-#define SINGLE_COMMENT 296
-#define MULTI_COMMENT 297
-#define FORMAT_BLANKSPACE 298
-#define FORMAT_NEWLINE 299
-#define FORMAT_TAB 300
 
 /* Value type.  */
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
@@ -162,9 +114,11 @@ union YYSTYPE
         t_scope* scope;
     } t_token;
 
+    /* t_token_t t_token; */
+
     struct Node* t_node;
 
-#line 168 "./src/syntax.tab.h"
+#line 122 "./src/syntax.tab.h"
 
 };
 typedef union YYSTYPE YYSTYPE;

@@ -32,11 +32,15 @@ void pushScope(int value, int parentScope){
 // retorna -1 caso a pilha esteja vazia
 int popScope(){
     int value;
+    t_scope* temp;
 
 
     if(topScope != NULL){
         value = topScope->scopeValue;
+        temp = topScope;
         topScope = topScope->next;
+
+        free(temp);
     }
     else{
         value = -1;
@@ -74,4 +78,24 @@ t_scope* getScope(){
     }
 
     return scope;
+}
+
+void freeScopeToken(t_scope* scope){
+    if(scope != NULL){
+        free(scope);
+    }
+}
+
+void freeScope(){
+    t_scope* scope;
+    t_scope* temp;
+
+    scope = topScope;
+
+    while(scope != NULL){
+        temp = scope;
+        scope = scope->next;
+
+        free(temp);
+    }
 }

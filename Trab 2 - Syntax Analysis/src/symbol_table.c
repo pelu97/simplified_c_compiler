@@ -165,7 +165,7 @@ t_symbol* printChildren(t_symbol* fixedSymbol, int level){
         // printf("%-16d|", parentPointer->parentScope);
         printf("%-12d|", parentPointer->line);
         printf("%-12d|", parentPointer->column);
-        if(pointer->varFunc == 1){
+        if(parentPointer->varFunc == 1){
             printf("%-12s|\n", "var");
         }
         else{
@@ -233,4 +233,34 @@ t_symbol* printChildren(t_symbol* fixedSymbol, int level){
     }
 
     return pointer;
+}
+
+
+void freeTable(){
+    t_symbol* pointer;
+    t_symbol* temp;
+    int i;
+
+    pointer = SymbolTable;
+    i=0;
+
+    while(pointer != NULL){
+        temp = pointer;      //aponta para o atual
+        pointer = pointer->next;    //pega o próximo
+
+        #ifdef DEBUG
+        printf("Freeing pointer to symbol: %s\n", temp->name);
+        #endif
+
+        free(temp->type);   //libera a memória alocada para as strings
+        free(temp->name);
+        free(temp);      //libera o atual
+
+        i++;
+    }
+
+    #ifdef DEBUG
+    printf("%d symbols freed\n", i);
+    #endif
+
 }

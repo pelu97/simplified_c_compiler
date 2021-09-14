@@ -30,6 +30,8 @@ extern FILE* yyin;
         t_scope* scope;
     } t_token;
 
+    /* t_token_t t_token; */
+
     struct Node* t_node;
 }
 
@@ -220,7 +222,7 @@ varDeclaration:
 
         /* printf("variable declaration\n"); */
 
-        temp = (char*) malloc(strlen($2.text) + strlen("Variable Declaration - ID: "));
+        temp = (char*) malloc(strlen($2.text) + strlen("Variable Declaration - ID: ") + 1);
 
         /* printf("allocated memory\n"); */
         strcpy(temp, "Variable Declaration - ID: ");
@@ -229,6 +231,9 @@ varDeclaration:
         /* printf("concatenated second string\n"); */
         $$ = createNode(temp);
         /* initializeTree($$); */
+
+        freeScopeToken($2.scope);
+        free(temp);
     }
     | TYPE LIST_TYPE ID DELIM_SEMICOLLON {
         char* temp;
@@ -242,11 +247,15 @@ varDeclaration:
         createSymbol($3.text, temp, $3.line, $3.column, $3.scope->scopeValue, $3.scope->parentScope, 1);
 
 
-        temp2 = (char*) malloc(strlen($3.text) + strlen("Variable Declaration - List ID: "));
+        temp2 = (char*) malloc(strlen($3.text) + strlen("Variable Declaration - List ID: ") + 1);
 
         strcpy(temp2, "Variable Declaration - List ID: ");
         strcat(temp2, $3.text);
         $$ = createNode(temp2);
+
+        freeScopeToken($3.scope);
+        free(temp);
+        free(temp2);
     }
 ;
 
@@ -270,7 +279,7 @@ funcDeclaration:
         /* printf("%s %s %s %s - escopo %d %d\n", $1.text, $2.text, $3.text, $5.text, $2.scope->scopeValue, $2.scope->parentScope); */
         createSymbol($2.text, $1.text, $2.line, $2.column, $2.scope->scopeValue, $2.scope->parentScope, 0);
 
-        temp = (char*) malloc(strlen($2.text) + strlen("Function Declaration - ID: "));
+        temp = (char*) malloc(strlen($2.text) + strlen("Function Declaration - ID: ") + 1);
 
         strcpy(temp, "Function Declaration - ID: ");
         strcat(temp, $2.text);
@@ -280,6 +289,9 @@ funcDeclaration:
 
         $$->child[0] = $4;
         $$->child[1] = $6;
+
+        freeScopeToken($2.scope);
+        free(temp);
 
     }
     | TYPE LIST_TYPE ID DELIM_PARENT_L parameters DELIM_PARENT_R bodyStatement {
@@ -293,7 +305,7 @@ funcDeclaration:
         /* printf("%s %s %s %s %s - %s - escopo %d %d\n", $1.text, $2.text, $3.text, $4.text, $6.text, temp, $3.scope->scopeValue, $3.scope->parentScope); */
         createSymbol($3.text, temp, $3.line, $3.column, $3.scope->scopeValue, $3.scope->parentScope, 0);
 
-        temp2 = (char*) malloc(strlen($3.text) + strlen("Function Declaration - List ID: "));
+        temp2 = (char*) malloc(strlen($3.text) + strlen("Function Declaration - List ID: ") + 1);
 
         strcpy(temp2, "Function Declaration - List ID: ");
         strcat(temp2, $3.text);
@@ -303,6 +315,10 @@ funcDeclaration:
 
         $$->child[0] = $5;
         $$->child[1] = $7;
+
+        freeScopeToken($3.scope);
+        free(temp);
+        free(temp2);
     }
 ;
 
@@ -336,11 +352,14 @@ parameterSimple:
 
         createSymbol($2.text, $1.text, $2.line, $2.column, $2.scope->scopeValue, $2.scope->parentScope, 1);
 
-        temp = (char*) malloc(strlen($2.text) + strlen("Parameter declaration - ID: "));
+        temp = (char*) malloc(strlen($2.text) + strlen("Parameter declaration - ID: ") + 3);
 
         strcpy(temp, "Parameter declaration - ID: ");
         strcat(temp, $2.text);
         $$ = createNode(temp);
+
+        freeScopeToken($2.scope);
+        free(temp);
 
     }
     | TYPE LIST_TYPE ID{
@@ -354,11 +373,15 @@ parameterSimple:
 
         createSymbol($3.text, temp, $3.line, $3.column, $3.scope->scopeValue, $3.scope->parentScope, 1);
 
-        temp2 = (char*) malloc(strlen($2.text) + strlen("Parameter declaration - ID: "));
+        temp2 = (char*) malloc(strlen($3.text) + strlen("List parameter declaration - ID: ") + 3);
 
         strcpy(temp2, "List parameter declaration - ID: ");
-        strcat(temp2, $2.text);
+        strcat(temp2, $3.text);
         $$ = createNode(temp2);
+
+        freeScopeToken($3.scope);
+        free(temp);
+        free(temp2);
 
     }
 ;
@@ -396,6 +419,7 @@ statement:
 bodyStatement:
     DELIM_CUR_BRACKET_L statementList DELIM_CUR_BRACKET_R {
         $$ = $2;
+        freeScopeToken($1.scope);
     }
 ;
 
@@ -484,6 +508,7 @@ expression:
         addChild($$, 1);
 
         $$->child[0] = $3;
+        freeScopeToken($1.scope);
 
     }
     | simpleExpression {
@@ -614,6 +639,9 @@ factor:
         strcat(temp, $1.text);
 
         $$ = createNode(temp);
+
+        freeScopeToken($1.scope);
+        free(temp);
     }
     | constant {
         $$ = $1;
@@ -633,38 +661,46 @@ constant:
     INT {
         char* temp;
 
-        temp = (char*) malloc(strlen("Integer: ") + strlen($1.text));
+        temp = (char*) malloc(strlen("Integer: ") + strlen($1.text) + 1);
         strcpy(temp, "Integer: ");
         strcat(temp, $1.text);
 
         $$ = createNode(temp);
+
+        free(temp);
     }
     | MINUS_OP INT {
         char* temp;
 
-        temp = (char*) malloc(strlen("Negative Integer: ") + strlen($1.text));
+        temp = (char*) malloc(strlen("Negative Integer: ") + strlen($2.text) + 1);
         strcpy(temp, "Negative Integer: ");
-        strcat(temp, $1.text);
+        strcat(temp, $2.text);
 
         $$ = createNode(temp);
+
+        free(temp);
     }
     | FLOAT {
         char* temp;
 
-        temp = (char*) malloc(strlen("Float: ") + strlen($1.text));
+        temp = (char*) malloc(strlen("Float: ") + strlen($1.text) + 1);
         strcpy(temp, "Float: ");
         strcat(temp, $1.text);
 
         $$ = createNode(temp);
+
+        free(temp);
     }
     | MINUS_OP FLOAT {
         char* temp;
 
-        temp = (char*) malloc(strlen("Negative Float: ") + strlen($1.text));
+        temp = (char*) malloc(strlen("Negative Float: ") + strlen($2.text) + 1);
         strcpy(temp, "Negative Float: ");
-        strcat(temp, $1.text);
+        strcat(temp, $2.text);
 
         $$ = createNode(temp);
+
+        free(temp);
     }
     | NULL_CONST {
         $$ = createNode("Null");
@@ -678,6 +714,7 @@ functionCall:
         addChild($$, 1);
 
         $$->child[0] = $3;
+        freeScopeToken($1.scope);
     }
 ;
 
@@ -743,6 +780,9 @@ readOp:
         strcat(temp, $3.text);
 
         $$ = createNode(temp);
+
+        freeScopeToken($3.scope);
+        free(temp);
     }
 ;
 
@@ -777,12 +817,18 @@ listExpression:
 listAssign:
     ID ASSIGN_OP ID ASSIGN_LISTOP ID {
         $$ = createNode("List assign");
+
+        freeScopeToken($1.scope);
+        freeScopeToken($3.scope);
+        freeScopeToken($5.scope);
     }
 ;
 
 listHeader:
     HEADER_LISTOP ID {
         $$ = createNode("List header");
+
+        freeScopeToken($2.scope);
     }
 ;
 
@@ -793,18 +839,28 @@ listHeader:
 listTailDestructor:
     TAILDES_LISTOP ID {
         $$ = createNode("List tail destructor");
+
+        freeScopeToken($2.scope);
     }
 ;
 
 listMap:
     ID ASSIGN_OP ID MAP_LISTOP ID {
         $$ = createNode("List map");
+
+        freeScopeToken($1.scope);
+        freeScopeToken($3.scope);
+        freeScopeToken($5.scope);
     }
 ;
 
 listFilter:
     ID ASSIGN_OP ID FILTER_LISTOP ID {
         $$ = createNode("List filter");
+
+        freeScopeToken($1.scope);
+        freeScopeToken($3.scope);
+        freeScopeToken($5.scope);
     }
 ;
 
@@ -867,6 +923,10 @@ int main(int argc, char **argv){
 
 
     yylex_destroy();
+
+    freeTable();
+    freeScope();
+    freeTree();
 
     return 0;
 }

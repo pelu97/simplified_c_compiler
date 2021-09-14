@@ -29,4 +29,6 @@ void printTable2();
 
 t_symbol* printChildren(t_symbol* fixedSymbol, int level);
 
+void freeTable();
+
 // void insertSymbol();
