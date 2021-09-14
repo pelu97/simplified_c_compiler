@@ -4,13 +4,14 @@ lexico: ./src/lexical.l
 	gcc ./src/lex.yy.c -o tradutor -Wall
 
 sintatico: ./src/lexical.l ./src/syntax.y ./src/base.c ./src/symbol_table.c ./src/scope.c ./src/tree.c
-	bison -o ./src/syntax.tab.c -dy ./src/syntax.y
+	bison -o ./src/syntax.tab.c -d ./src/syntax.y
 	flex -o ./src/lex.yy.c ./src/lexical.l
 	gcc -c ./src/base.c -o ./src/base.o
 	gcc -c ./src/symbol_table.c -o ./src/symbol_table.o
 	gcc -c ./src/scope.c -o ./src/scope.o
 	gcc -c ./src/tree.c -o ./src/tree.o
-	gcc ./src/lex.yy.c ./src/syntax.tab.c ./src/base.o ./src/symbol_table.o ./src/scope.o ./src/tree.o -o tradutor -Wall
+	gcc -g ./src/lex.yy.c ./src/syntax.tab.c ./src/base.o ./src/symbol_table.o ./src/scope.o ./src/tree.o -o tradutor -Wall
+
 
 run_correct1:
 	./tradutor ./tests/test_correct1.c
