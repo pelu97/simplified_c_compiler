@@ -1,43 +1,81 @@
-int list IL;
-float list FL;
+int list_value;
 
-int list read_list(int n) {
-	int i;
-	i =  -435.7;
-	int list new;
-	new = NIL;
-	for (i = 0; i < n ; i = i + 1) {
-		int elem;
-		writeln("Digite o elemento da lista: ");
-		read(elem);
-		new = elem : new;
-	}
-	return new;
+
+int list list_input(int n){
+    int i;
+    int temp;
+    int list mylist;
+    mylist = NIL;
+
+    for(i=0; i<n; i = i + 1){
+        writeln("Digite um inteiro para armazenar na lista");
+        read(temp);
+        mylist = temp : mylist;
+    }
+
+    writeln("Lista armazenada");
+
+    return mylist;
 }
 
-int main() {
+int test_list(int list n){
+    int list temp_list;
+    int list temp_list2;
 
-	writeln("Digite os número de elementos da lista: ");
+    write("Primeiro elemento da lista: ");
+    writeln(?n);
 
-	int n;
-	float list FL10;
-	read(n);
+    write("Último elemento da lista: ");
+    writeln(!n);
 
-	IL  = read_list(n);
-	FL = succ >> IL;
+    list_value = ?n;
+    temp_list = check_list << n;
+    temp_list2 = double_list >> n;
 
-	FL10 = leq_10 <<  FL;
-	if (FL10 != NIL) {
-		float list AUXL;
-		int n; n = 0;
-		for (AUXL=FL10; AUXL != NIL; AUXL = !AUXL) {
-			n = n + 1;
-			write(?AUXL); write(" ");
-		}
-		writeln(" ");
-		write("A nova lista tem "); write(n); writeln(" elementos.");
-	}
-	else writeln("A nova lista não possui elementos.");
+    write("Último elemento da lista - removendo um: ");
+    writeln(%n);
 
-	return 0;
+    write("Primeiro elemento da lista duplicada: ");
+    writeln(?temp_list2);
+
+    write("Primeiro elemento da lista filtrada pelo primeiro valor da lista de entrada: ");
+    writeln(?temp_list);
+
+
+
+
+}
+
+int check_list(int i){
+    if(i >= list_value){
+        return 1;
+    }
+    else{
+        return 0;
+    }
+
+
+}
+
+int double_list(int i){
+    return i*2;
+}
+
+
+int main(){
+    int n;
+    int list listread;
+    write("Digite um tamanho para a lista: ");
+    read(n);
+
+    write("O inteiro digitado foi: ");
+    writeln(n);
+
+    listread = list_input(n);
+
+    test_list(listread);
+
+    write("Encerrando execução...");
+
+    return 0;
 }

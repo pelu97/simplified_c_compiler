@@ -2756,8 +2756,8 @@ yyreduce:
             {
         char* temp;
 
-        createSymbol((yyvsp[0].t_token).text, (yyvsp[-1].t_token).text, (yyvsp[0].t_token).line, (yyvsp[0].t_token).column, (yyvsp[0].t_token).scope->scopeValue, (yyvsp[0].t_token).scope->parentScope, 1);
-
+        createSymbol((yyvsp[0].t_token).text, (yyvsp[-1].t_token).text, (yyvsp[0].t_token).line, (yyvsp[0].t_token).column, lastScopeValue+1, (yyvsp[0].t_token).scope->scopeValue, 1);
+        /* $2.scope->scopeValue lastScopeValue+1 $2.scope->parentScope*/
         temp = (char*) malloc(strlen((yyvsp[0].t_token).text) + strlen("Parameter Declaration - ID: ") + 3);
 
         strcpy(temp, "Parameter Declaration - ID: ");
@@ -2785,8 +2785,8 @@ yyreduce:
         strcat(temp, " ");
         strcat(temp, (yyvsp[-1].t_token).text);
 
-        createSymbol((yyvsp[0].t_token).text, temp, (yyvsp[0].t_token).line, (yyvsp[0].t_token).column, (yyvsp[0].t_token).scope->scopeValue, (yyvsp[0].t_token).scope->parentScope, 1);
-
+        createSymbol((yyvsp[0].t_token).text, temp, (yyvsp[0].t_token).line, (yyvsp[0].t_token).column, lastScopeValue+1, (yyvsp[0].t_token).scope->scopeValue, 1);
+        /* $3.scope->scopeValue lastScopeValue+1 $3.scope->parentScope*/
         temp2 = (char*) malloc(strlen((yyvsp[0].t_token).text) + strlen("Parameter Declaration - List Type ID: ") + 3);
 
         strcpy(temp2, "Parameter Declaration - List Type ID: ");
@@ -3862,7 +3862,7 @@ int main(int argc, char **argv){
             printf("Analyzer completed with %d lexical and %d syntatic errors.\n\n\n", lexicalError, syntaticError);
 
 
-            /* printTable(); */
+            printTable();
             printTable2();
             printTree();
 

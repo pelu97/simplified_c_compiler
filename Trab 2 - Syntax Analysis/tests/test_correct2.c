@@ -1,36 +1,33 @@
-float succ(int i) {
-	return i+1;
+int batata;
+
+
+int bake(){
+    int temp;
+
+    if((batata < 100) && (batata > 20) || (batata == 10)){
+        temp = batata;
+    }
+    else{
+        temp = (batata * 2) + (3 + 5 * 9 / 3 - 2);
+    }
+
+
+    write(temp);
+    writeln(" batatas assadas");
 }
 
 
-int leq_10(float x) {
-	return x <= 10;
-}
+int main(){
 
+    write("Digite um inteiro: ");
+    read(batata);
 
-int main() {
+    write("O inteiro digitado foi: ");
+    writeln(batata);
 
-	writeln("Digite os número de elementos da lista: ");
+    bake(batata);
 
-	int n;
-	float list FL10;
-	read(n);
+    write("Encerrando execução...");
 
-	IL  = read_list(n);
-	FL = succ >> IL;
-
-	FL10 = leq_10 <<  FL;
-	if (FL10 != NIL) {
-		float list AUXL;
-		int n; n = 0;
-		for (AUXL=FL10; AUXL != NIL; AUXL = !AUXL) {
-			n = n + 1;
-			write(?AUXL); write(" ");
-		}
-		writeln(" ");
-		write("A nova lista tem "); write(n); writeln(" elementos.");
-	}
-	else writeln("A nova lista não possui elementos.");
-
-	return 0;
+    return 0;
 }

@@ -4,7 +4,7 @@ float succ(int i) {
 
 
 int leq_10(float x) {
-	return x <= 10;
+	return x <= 10;;
 }
 
 
@@ -12,7 +12,7 @@ int main() {
 
 	writeln("Digite os número de elementos da lista: ");
 
-	int n;
+	int n i;
 	float list FL10;
 	read(n);
 

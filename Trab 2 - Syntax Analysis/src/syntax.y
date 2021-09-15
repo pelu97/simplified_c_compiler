@@ -362,8 +362,8 @@ parameterSimple:
     TYPE ID {
         char* temp;
 
-        createSymbol($2.text, $1.text, $2.line, $2.column, $2.scope->scopeValue, $2.scope->parentScope, 1);
-
+        createSymbol($2.text, $1.text, $2.line, $2.column, lastScopeValue+1, $2.scope->scopeValue, 1);
+        /* $2.scope->scopeValue lastScopeValue+1 $2.scope->parentScope*/
         temp = (char*) malloc(strlen($2.text) + strlen("Parameter Declaration - ID: ") + 3);
 
         strcpy(temp, "Parameter Declaration - ID: ");
@@ -386,8 +386,8 @@ parameterSimple:
         strcat(temp, " ");
         strcat(temp, $2.text);
 
-        createSymbol($3.text, temp, $3.line, $3.column, $3.scope->scopeValue, $3.scope->parentScope, 1);
-
+        createSymbol($3.text, temp, $3.line, $3.column, lastScopeValue+1, $3.scope->scopeValue, 1);
+        /* $3.scope->scopeValue lastScopeValue+1 $3.scope->parentScope*/
         temp2 = (char*) malloc(strlen($3.text) + strlen("Parameter Declaration - List Type ID: ") + 3);
 
         strcpy(temp2, "Parameter Declaration - List Type ID: ");
@@ -1020,7 +1020,7 @@ int main(int argc, char **argv){
             printf("Analyzer completed with %d lexical and %d syntatic errors.\n\n\n", lexicalError, syntaticError);
 
 
-            /* printTable(); */
+            printTable();
             printTable2();
             printTree();
 
