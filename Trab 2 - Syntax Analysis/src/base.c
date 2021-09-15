@@ -1,4 +1,6 @@
 #include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
 
 #define COLOR_RESET   "\x1B[0m"
 #define COLOR_RED     "\x1B[31m"
@@ -17,7 +19,7 @@ int column;
 
 
 
-/* ------------------------ Funções de formatação da saída ------------------------ */
+/* ------------------------ Funções de formatação da saída do léxico ------------------------ */
 
 /* Limpa a definição de cor de volta para o padrão */
 void color_reset(){
@@ -183,4 +185,58 @@ void print_end(){
     color_reset();
 
 }
-/* ------------------------ Fim das funções de formatação ------------------------ */
+/* ------------------------ Fim das funções de formatação do léxico ------------------------ */
+
+
+/*------------------------- Formatação ----------------------------------*/
+char* add_color(char* string, char* color){
+    char* temp;
+    char* temp2;
+
+    temp = (char*) malloc(strlen(string) + strlen(color) + strlen(COLOR_RESET) + 3);
+
+    if(temp != NULL){
+        strcpy(temp, color);
+        strcat(temp, string);
+        strcat(temp, COLOR_RESET);
+
+        temp2 = string;
+        string = temp;
+        free(temp2);
+
+        #ifdef DEBUG
+        printf("ADDED COLOR TO: %s\n", string);
+        #endif
+
+        return string;
+    }
+    else{
+        printf("Fatal error when allocatin memory to add color formatting\n");
+    }
+
+
+}
+
+
+void test_colors(){
+    // #define COLOR_RESET   "\x1B[0m"
+    // #define COLOR_RED     "\x1B[31m"
+    // #define COLOR_GREEN   "\x1B[32m"
+    // #define COLOR_YELLOW  "\x1B[33m"
+    // #define COLOR_BLUE    "\x1B[34m"
+    // #define COLOR_MAGENTA "\x1B[35m"
+    // #define COLOR_CYAN    "\x1B[36m"
+    // #define COLOR_WHITE   "\x1B[37m"
+
+    printf("------------- TESTE DE CORES ---------------\n");
+
+    printf("%s teste RED %s\n", COLOR_RED, COLOR_RESET);
+    printf("%s teste GREEN %s\n", COLOR_GREEN, COLOR_RESET);
+    printf("%s teste YELLOW %s\n", COLOR_YELLOW, COLOR_RESET);
+    printf("%s teste BLUE %s\n", COLOR_BLUE, COLOR_RESET);
+    printf("%s teste MAGENTA %s\n", COLOR_MAGENTA, COLOR_RESET);
+    printf("%s teste CYAN %s\n", COLOR_CYAN, COLOR_RESET);
+    printf("%s teste WHYTE %s\n", COLOR_WHITE, COLOR_RESET);
+
+    printf("------------- FIM TESTE DE CORES ---------------\n");
+}

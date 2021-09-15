@@ -8,6 +8,8 @@
 #define COLOR_MAGENTA "\x1B[35m"
 #define COLOR_CYAN    "\x1B[36m"
 #define COLOR_WHITE   "\x1B[37m"
+#define COLOR_VAR     "\x1B[32m"
+#define COLOR_FUNC    "\x1B[33m"
 
 // #define DEBUG 1
 
@@ -19,7 +21,7 @@ extern int column;
 
 
 
-/* ------------------------ Funções de formatação da saída ------------------------ */
+/* ------------------------ Funções de formatação da saída do léxico ------------------------ */
 
 /* Limpa a definição de cor de volta para o padrão */
 void color_reset();
@@ -62,4 +64,11 @@ void print_start();
 
 /* Imprime um rodapé de finalização do analisador */
 void print_end();
-/* ------------------------ Fim das funções de formatação ------------------------ */
+/* ------------------------ Fim das funções de formatação do léxico ------------------------ */
+
+
+
+/*-------------------- Formatações -----------------------------*/
+char* add_color(char* string, char* color);
+
+void test_colors();

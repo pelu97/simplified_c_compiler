@@ -105,7 +105,30 @@ void printTree(){
     nodesBuilt = 0;
     #endif
 
-    printBranch(TreeRoot, 0);
+    printf(                 "┌────────────────────────────────────────────────────────────────────────────────────────────────────────────┐\n");
+    printf(                 "│------------------------------------------------SYNTAX TREE-------------------------------------------------│\n");
+    printf(                 "│                                                                                                            │\n");
+    printf(                 "│        ┌───────────────────────────────────────────┐                                                       │\n");
+    printf(                 "│        │-------------------Codes-------------------│                                                       │\n");
+    printf("│" COLOR_GREEN  "        │-█ Declarations-                           │                                                       " COLOR_RESET "│\n" );
+    printf("│" COLOR_YELLOW "        │-█ Constants and IDs-                      │                                                       " COLOR_RESET"│\n");
+    printf("│" COLOR_BLUE   "        │-█ Flow Control and Input/Output Keywords- │                                                       " COLOR_RESET"│\n");
+    printf("│" COLOR_CYAN   "        │-█ List Operations-                        │                                                       " COLOR_RESET"│\n");
+    printf("│" COLOR_RED    "        │-█ Syntax Errors-                          │                                                       " COLOR_RESET"│\n");
+    printf(                 "│        │-█ Others-                                 │                                                       │\n");
+    printf(                 "│        └───────────────────────────────────────────┘                                                       │\n");
+    printf(                 "│                                                                                                            │\n");
+
+    // █
+    // ╚
+    // │
+
+    // printBranch(TreeRoot, 0);
+    // printBranch2(TreeRoot, 0, "start");
+    printBranch3(TreeRoot, 0, "start");
+
+    printf("│--------------------------------------------------END TREE--------------------------------------------------│\n");
+    printf("└────────────────────────────────────────────────────────────────────────────────────────────────────────────┘\n");
 
     #ifdef DEBUG
     printf("%d nodes in tree\n", nodesBuilt);
@@ -137,6 +160,84 @@ void printBranch(t_node* node, int level){
                 printf("Printing child %d of node %s\n", i, node->name);
                 #endif
                 printBranch(node->child[i], level+1);
+            }
+        }
+    }
+}
+
+void printBranch2(t_node* node, int level, char* prevNode){
+    int i;
+
+    #ifdef DEBUG
+    printf("Printing branch %s- level %d\n", node->name, level);
+    nodesBuilt++;
+    #endif
+
+    // não vazio
+    if(node->empty == 0){
+        if(strcmp(node->name, prevNode) != 0){
+            if(level > 0){
+                printf("%*s", level*4, " ");
+            }
+            printf("%s\n", node->name);
+        }
+        else{
+            level--;
+        }
+
+        if(node->child != NULL){
+            #ifdef DEBUG
+            printf("Printing children of node %s\n", node->name);
+            #endif
+            for(i=0; node->child[i] != NULL; i++){
+                #ifdef DEBUG
+                printf("Printing child %d of node %s\n", i, node->name);
+                #endif
+                printBranch2(node->child[i], level+1, node->name);
+            }
+        }
+    }
+}
+
+void printBranch3(t_node* node, int level, char* prevNode){
+    int i, aux;
+
+    #ifdef DEBUG
+    printf("Printing branch %s- level %d\n", node->name, level);
+    nodesBuilt++;
+    #endif
+
+    // não vazio
+    if(node->empty == 0){
+        if(strcmp(node->name, prevNode) != 0){
+            if(level > 0){
+                printf("│%*s", level*4, " ");
+            }
+            else{
+                printf("│");
+            }
+            if(strncmp(node->name, "\x1B[", 2) == 0){
+                aux = 7;
+                // printf("FORMATTED NODE\n");
+            }
+            else{
+                aux = -2;
+            }
+            printf("%s%*s│\n", node->name, (110 - (level*4) - strlen(node->name) + aux), " ");
+        }
+        else{
+            level--;
+        }
+
+        if(node->child != NULL){
+            #ifdef DEBUG
+            printf("Printing children of node %s\n", node->name);
+            #endif
+            for(i=0; node->child[i] != NULL; i++){
+                #ifdef DEBUG
+                printf("Printing child %d of node %s\n", i, node->name);
+                #endif
+                printBranch3(node->child[i], level+1, node->name);
             }
         }
     }

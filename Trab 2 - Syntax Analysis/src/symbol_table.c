@@ -93,9 +93,10 @@ void printTable2(){
     t_symbol *pointer;
     int currentScope = 0;
 
-    printf("|---------------------------------------SYMBOL TABLE-----------------------------------------|\n");
-    printf("|____________________________________________________________________________________________|\n");
-    printf("|------------NAME------------|-----TYPE-----|--SCOPE--|----LINE----|---COLUMN---|--VAR/FUNC--|\n");
+    printf("┌────────────────────────────────────────────────────────────────────────────────────────────┐\n");
+    printf("│---------------------------------------SYMBOL TABLE-----------------------------------------│\n");
+    // printf("|____________________________________________________________________________________________|\n");
+    printf("│------------NAME------------|-----TYPE-----|--SCOPE--|----LINE----|---COLUMN---|--" COLOR_VAR "VAR" COLOR_RESET "/" COLOR_FUNC "FUNC" COLOR_RESET "--│\n");
     // printf("%s\n", SymbolTable->name);
     for(pointer = SymbolTable; pointer != NULL; pointer = pointer->next){
         // printf("|%28.28s|", "123456789012345678901234567890123456789012345678901234567890");
@@ -103,25 +104,38 @@ void printTable2(){
             pointer = printChildren(pointer, 1);
         }
         else{
-            printf("|%-28.28s|", pointer->name);
-            printf("%-14s|", pointer->type);
-            printf("%-9d|", pointer->scopeValue);
-            // printf("%-16d|", pointer->parentScope);
-            printf("%-12d|", pointer->line);
-            printf("%-12d|", pointer->column);
+            // printf("|%-28.28s|", pointer->name);
+            // printf("%-14s|", pointer->type);
+            // printf("%-9d|", pointer->scopeValue);
+            // // printf("%-16d|", pointer->parentScope);
+            // printf("%-12d|", pointer->line);
+            // printf("%-12d|", pointer->column);
             if(pointer->varFunc == 1){
-                printf("%-12s|\n", "var");
+                printf(COLOR_VAR "│" "%-28.28s"  "│", pointer->name);
+                printf("%-14s│", pointer->type);
+                printf("%-9d│", pointer->scopeValue);
+                // printf("%-16d│", pointer->parentScope);
+                printf("%-12d│", pointer->line);
+                printf("%-12d│", pointer->column);
+                printf("%-12s│\n" COLOR_RESET, "var");
             }
             else{
-                printf("%-12s|\n", "func");
+                printf(COLOR_FUNC"│" "%-28.28s""│", pointer->name);
+                printf("%-14s│", pointer->type);
+                printf("%-9d│", pointer->scopeValue);
+                // printf("%-16d│", pointer->parentScope);
+                printf("%-12d│", pointer->line);
+                printf("%-12d│", pointer->column);
+                printf("%-12s│\n" COLOR_RESET, "func");
             }
             // printf("Symbol read from table: %s\n", pointer->name);
         }
         currentScope = pointer->scopeValue;
     }
 
-    printf("|____________________________________________________________________________________________|\n");
-    printf("|-----------------------------------------END TABLE------------------------------------------|\n");
+    // printf("|____________________________________________________________________________________________|\n");
+    printf("│-----------------------------------------END TABLE------------------------------------------│\n");
+    printf("└────────────────────────────────────────────────────────────────────────────────────────────┘\n\n\n");
 }
 
 t_symbol* printChildren(t_symbol* fixedSymbol, int level){
@@ -154,43 +168,49 @@ t_symbol* printChildren(t_symbol* fixedSymbol, int level){
     if(found == 1){
         // printf("parent found: %d - %d\n", found, parentPointer->scopeValue);
 
-        if(level > 1){
-            printf("|%*s%-*.*s|", ((level-1)*2), " ", (28-((level-1)*2)), (28-((level-1)*2)), parentPointer->name);
-        }
-        else{
-            printf("|%-*.*s|", (28-((level-1)*2)), (28-((level-1)*2)), parentPointer->name);
-        }
-        printf("%-14s|", parentPointer->type);
-        printf("%-9d|", parentPointer->scopeValue);
-        // printf("%-16d|", parentPointer->parentScope);
-        printf("%-12d|", parentPointer->line);
-        printf("%-12d|", parentPointer->column);
         if(parentPointer->varFunc == 1){
-            printf("%-12s|\n", "var");
+            printf(COLOR_VAR);
         }
         else{
-            printf("%-12s|\n", "func");
+            printf(COLOR_FUNC);
         }
+        if(level > 1){
+            printf("│%*s%-*.*s│", ((level-1)*2), " ", (28-((level-1)*2)), (28-((level-1)*2)), parentPointer->name);
+        }
+        else{
+            printf("│%-*.*s│", (28-((level-1)*2)), (28-((level-1)*2)), parentPointer->name);
+        }
+        printf("%-14s│", parentPointer->type);
+        printf("%-9d│", parentPointer->scopeValue);
+        // printf("%-16d│", parentPointer->parentScope);
+        printf("%-12d│", parentPointer->line);
+        printf("%-12d│", parentPointer->column);
+        if(parentPointer->varFunc == 1){
+            printf("%-12s│\n", "var");
+        }
+        else{
+            printf("%-12s│\n", "func");
+        }
+        printf(COLOR_RESET);
     }
     else if(fixedSymbol->parentScope > -1){
-
         if(level > 1){
-            printf("|%*s%-*.*s|", ((level-1)*2), " ", (28-((level-1)*2)), (28-((level-1)*2)), "--New scope without ID--");
+            printf("│%*s%-*.*s│", ((level-1)*2), " ", (28-((level-1)*2)), (28-((level-1)*2)), "--New scope without ID--");
         }
         else{
-            printf("|%-*.*s|", (28-((level-1)*2)), (28-((level-1)*2)), "--New scope without ID--");
+            printf("│%-*.*s│", (28-((level-1)*2)), (28-((level-1)*2)), "--New scope without ID--");
         }
-        printf("%-14s|", " ");
-        printf("%-9d|", -1);
-        // printf("%-16d|", -1);
-        printf("%-12d|", -1);
-        printf("%-12d|", -1);
-        printf("%-12s|\n", " ");
+        printf("%-14s│", " ");
+        printf("%-9d│", -1);
+        // printf("%-16d│", -1);
+        printf("%-12d│", -1);
+        printf("%-12d│", -1);
+        printf("%-12s│\n", " ");
         // if(pointer->varFunc == 1){
-        //     printf("%-12s|\n", "var");
+        //     printf("%-12s│\n", "var");
         // }
         // else{
-        //     printf("%-12s|\n", "func");
+        //     printf("%-12s│\n", "func");
         // }
 
     }
@@ -208,19 +228,26 @@ t_symbol* printChildren(t_symbol* fixedSymbol, int level){
         }
         else{
             // printf("printing the children\n");
-
-            printf("|%*s%-*.*s|", level*2, " ", (28-(level*2)), (28-(level*2)), pointer->name);
-            printf("%-14s|", pointer->type);
-            printf("%-9d|", pointer->scopeValue);
-            // printf("%-16d|", pointer->parentScope);
-            printf("%-12d|", pointer->line);
-            printf("%-12d|", pointer->column);
             if(pointer->varFunc == 1){
-                printf("%-12s|\n", "var");
+                printf(COLOR_VAR);
             }
             else{
-                printf("%-12s|\n", "func");
+                printf(COLOR_FUNC);
             }
+
+            printf("│%*s%-*.*s│", level*2, " ", (28-(level*2)), (28-(level*2)), pointer->name);
+            printf("%-14s│", pointer->type);
+            printf("%-9d│", pointer->scopeValue);
+            // printf("%-16d│", pointer->parentScope);
+            printf("%-12d│", pointer->line);
+            printf("%-12d│", pointer->column);
+            if(pointer->varFunc == 1){
+                printf("%-12s│\n", "var");
+            }
+            else{
+                printf("%-12s│\n", "func");
+            }
+            printf(COLOR_RESET);
 
             if(pointer->next != NULL){
                 pointer = pointer->next;

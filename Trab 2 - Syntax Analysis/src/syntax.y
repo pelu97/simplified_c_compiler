@@ -181,7 +181,7 @@ program:
 
 declarationList:
     declarationList declaration {
-        $$ = createNode("Declaration List Declaration");
+        $$ = createNode("Declaration List - Declaration");
 
         addChild($$, 2);
 
@@ -193,7 +193,7 @@ declarationList:
         $$ = $1;
     }
     | declarationList statement {
-        $$ = createNode("Declaration List Statement");
+        $$ = createNode("Declaration List - Statement");
 
         addChild($$, 2);
 
@@ -229,6 +229,9 @@ varDeclaration:
         /* printf("copied first string\n"); */
         strcat(temp, $2.text);
         /* printf("concatenated second string\n"); */
+
+        temp = add_color(temp, COLOR_GREEN);
+
         $$ = createNode(temp);
         /* initializeTree($$); */
 
@@ -247,10 +250,13 @@ varDeclaration:
         createSymbol($3.text, temp, $3.line, $3.column, $3.scope->scopeValue, $3.scope->parentScope, 1);
 
 
-        temp2 = (char*) malloc(strlen($3.text) + strlen("Variable Declaration - List ID: ") + 1);
+        temp2 = (char*) malloc(strlen($3.text) + strlen("Variable Declaration - List Type ID: ") + 1);
 
-        strcpy(temp2, "Variable Declaration - List ID: ");
+        strcpy(temp2, "Variable Declaration - List Type ID: ");
         strcat(temp2, $3.text);
+
+        temp2 = add_color(temp2, COLOR_GREEN);
+
         $$ = createNode(temp2);
 
         freeScopeToken($3.scope);
@@ -283,6 +289,9 @@ funcDeclaration:
 
         strcpy(temp, "Function Declaration - ID: ");
         strcat(temp, $2.text);
+
+        temp = add_color(temp, COLOR_GREEN);
+
         $$ = createNode(temp);
 
         addChild($$, 2);
@@ -305,10 +314,13 @@ funcDeclaration:
         /* printf("%s %s %s %s %s - %s - escopo %d %d\n", $1.text, $2.text, $3.text, $4.text, $6.text, temp, $3.scope->scopeValue, $3.scope->parentScope); */
         createSymbol($3.text, temp, $3.line, $3.column, $3.scope->scopeValue, $3.scope->parentScope, 0);
 
-        temp2 = (char*) malloc(strlen($3.text) + strlen("Function Declaration - List ID: ") + 1);
+        temp2 = (char*) malloc(strlen($3.text) + strlen("Function Declaration - List Type ID: ") + 1);
 
-        strcpy(temp2, "Function Declaration - List ID: ");
+        strcpy(temp2, "Function Declaration - List Type ID: ");
         strcat(temp2, $3.text);
+
+        temp2 = add_color(temp2, COLOR_GREEN);
+
         $$ = createNode(temp2);
 
         addChild($$, 2);
@@ -352,10 +364,13 @@ parameterSimple:
 
         createSymbol($2.text, $1.text, $2.line, $2.column, $2.scope->scopeValue, $2.scope->parentScope, 1);
 
-        temp = (char*) malloc(strlen($2.text) + strlen("Parameter declaration - ID: ") + 3);
+        temp = (char*) malloc(strlen($2.text) + strlen("Parameter Declaration - ID: ") + 3);
 
-        strcpy(temp, "Parameter declaration - ID: ");
+        strcpy(temp, "Parameter Declaration - ID: ");
         strcat(temp, $2.text);
+
+        temp = add_color(temp, COLOR_GREEN);
+
         $$ = createNode(temp);
 
         freeScopeToken($2.scope);
@@ -373,10 +388,13 @@ parameterSimple:
 
         createSymbol($3.text, temp, $3.line, $3.column, $3.scope->scopeValue, $3.scope->parentScope, 1);
 
-        temp2 = (char*) malloc(strlen($3.text) + strlen("List parameter declaration - ID: ") + 3);
+        temp2 = (char*) malloc(strlen($3.text) + strlen("Parameter Declaration - List Type ID: ") + 3);
 
-        strcpy(temp2, "List parameter declaration - ID: ");
+        strcpy(temp2, "Parameter Declaration - List Type ID: ");
         strcat(temp2, $3.text);
+
+        temp2 = add_color(temp2, COLOR_GREEN);
+
         $$ = createNode(temp2);
 
         freeScopeToken($3.scope);
@@ -412,7 +430,7 @@ statement:
         $$ = $1;
     }
     | error {
-        $$ = createNode("ERROR");
+        $$ = createNode(COLOR_RED "SYNTAX ERROR" COLOR_RESET);
     }
 ;
 
@@ -429,7 +447,7 @@ bodyStatement:
 
 localDeclaration:
     localDeclaration varDeclaration {
-        $$ = createNode("Local declaration");
+        $$ = createNode("Local Declaration");
 
         addChild($$, 2);
 
@@ -459,7 +477,7 @@ statementList:
 
 ifStatement:
     IF_KEY DELIM_PARENT_L simpleExpression DELIM_PARENT_R statement %prec THEN_PREC {
-        $$ = createNode("If statement");
+        $$ = createNode(COLOR_BLUE "If Statement" COLOR_RESET);
 
         addChild($$, 2);
 
@@ -467,7 +485,7 @@ ifStatement:
         $$->child[1] = $5;
     }
     | IF_KEY DELIM_PARENT_L simpleExpression DELIM_PARENT_R statement ELSE_KEY statement {
-        $$ = createNode("If-else statement");
+        $$ = createNode(COLOR_BLUE "If-Else Statement" COLOR_RESET);
 
         addChild($$, 3);
 
@@ -480,7 +498,7 @@ ifStatement:
 
 loopStatement:
     FOR_KEY DELIM_PARENT_L expression DELIM_SEMICOLLON simpleExpression DELIM_SEMICOLLON expression DELIM_PARENT_R statement {
-        $$ = createNode("For statement");
+        $$ = createNode(COLOR_BLUE "For Statement" COLOR_RESET);
 
         addChild($$, 4);
 
@@ -493,7 +511,7 @@ loopStatement:
 
 returnStatement:
     RETURN_KEY expression DELIM_SEMICOLLON {
-        $$ = createNode("Return statement");
+        $$ = createNode(COLOR_BLUE "Return Statement" COLOR_RESET);
 
         addChild($$, 1);
 
@@ -503,7 +521,7 @@ returnStatement:
 
 expression:
     ID ASSIGN_OP expression {
-        $$ = createNode("Assign operation");
+        $$ = createNode("Assign Operation");
 
         addChild($$, 1);
 
@@ -534,7 +552,7 @@ simpleExpression:
 
 logicBinExpression:
     logicBinExpression LOGIC_OP logicUnExpression {
-        $$ = createNode("Logic Binary expression");
+        $$ = createNode("Logic Binary Expression");
 
         addChild($$, 2);
 
@@ -548,7 +566,7 @@ logicBinExpression:
 
 logicUnExpression:
     EXCLA_OP logicUnExpression {
-        $$ = createNode("Exclamation expression");
+        $$ = createNode("Exclamation Expression");
 
         addChild($$, 1);
 
@@ -565,7 +583,7 @@ logicUnExpression:
 
 binExpression:
     binExpression BINARY_OP sumExpression {
-        $$ = createNode("Binary expression");
+        $$ = createNode("Binary Expression");
 
         addChild($$, 2);
 
@@ -579,7 +597,7 @@ binExpression:
 
 sumExpression:
     sumExpression sumOP mulExpression {
-        $$ = createNode("Sum expression");
+        $$ = createNode("Sum Expression");
 
         addChild($$, 3);
 
@@ -596,7 +614,7 @@ sumExpression:
 
 mulExpression:
     mulExpression mulOP factor {
-        $$ = createNode("Multiplication expression");
+        $$ = createNode("Multiplication Expression");
 
         addChild($$, 3);
 
@@ -633,10 +651,12 @@ factor:
     ID {
         char* temp;
 
-        temp = (char*) malloc(strlen($1.text) + strlen("Id: ") + 3);
+        temp = (char*) malloc(strlen($1.text) + strlen("ID:  ") + 3);
 
-        strcpy(temp, "Id: ");
+        strcpy(temp, "ID:  ");
         strcat(temp, $1.text);
+
+        temp = add_color(temp, COLOR_YELLOW);
 
         $$ = createNode(temp);
 
@@ -661,9 +681,11 @@ constant:
     INT {
         char* temp;
 
-        temp = (char*) malloc(strlen("Integer: ") + strlen($1.text) + 1);
-        strcpy(temp, "Integer: ");
+        temp = (char*) malloc(strlen("Constant Integer: ") + strlen($1.text) + 1);
+        strcpy(temp, "Constant Integer: ");
         strcat(temp, $1.text);
+
+        temp = add_color(temp, COLOR_YELLOW);
 
         $$ = createNode(temp);
 
@@ -672,9 +694,11 @@ constant:
     | MINUS_OP INT {
         char* temp;
 
-        temp = (char*) malloc(strlen("Negative Integer: ") + strlen($2.text) + 1);
-        strcpy(temp, "Negative Integer: ");
+        temp = (char*) malloc(strlen("Constant Negative Integer: ") + strlen($2.text) + 1);
+        strcpy(temp, "Constant Negative Integer: ");
         strcat(temp, $2.text);
+
+        temp = add_color(temp, COLOR_YELLOW);
 
         $$ = createNode(temp);
 
@@ -683,9 +707,11 @@ constant:
     | FLOAT {
         char* temp;
 
-        temp = (char*) malloc(strlen("Float: ") + strlen($1.text) + 1);
-        strcpy(temp, "Float: ");
+        temp = (char*) malloc(strlen("Constant Float: ") + strlen($1.text) + 1);
+        strcpy(temp, "Constant Float: ");
         strcat(temp, $1.text);
+
+        temp = add_color(temp, COLOR_YELLOW);
 
         $$ = createNode(temp);
 
@@ -694,33 +720,51 @@ constant:
     | MINUS_OP FLOAT {
         char* temp;
 
-        temp = (char*) malloc(strlen("Negative Float: ") + strlen($2.text) + 1);
-        strcpy(temp, "Negative Float: ");
+        temp = (char*) malloc(strlen("Constant Negative Float: ") + strlen($2.text) + 1);
+        strcpy(temp, "Constant Negative Float: ");
         strcat(temp, $2.text);
+
+        temp = add_color(temp, COLOR_YELLOW);
 
         $$ = createNode(temp);
 
         free(temp);
     }
     | NULL_CONST {
-        $$ = createNode("Null");
+        char* temp;
+
+        temp = malloc(strlen("Constant NULL") + 1);
+        strcpy(temp, "Constant NULL");
+
+        temp = add_color(temp, COLOR_YELLOW);
+
+        $$ = createNode(temp);
+
+        free(temp);
     }
 ;
 
 functionCall:
     ID DELIM_PARENT_L parametersPass DELIM_PARENT_R {
-        $$ = createNode("Function call");
+        char* temp;
+
+        temp = (char*) malloc(strlen("Function Call - ID: ") + strlen($1.text) + 1);
+        strcpy(temp, "Function Call - ID: ");
+        strcat(temp, $1.text);
+
+        $$ = createNode(temp);
 
         addChild($$, 1);
 
         $$->child[0] = $3;
         freeScopeToken($1.scope);
+        free(temp);
     }
 ;
 
 parametersPass:
     parametersPass DELIM_COMMA simpleExpression {
-        $$ = createNode("Parameters pass");
+        $$ = createNode("Parameters Passing");
 
         addChild($$, 2);
 
@@ -746,10 +790,10 @@ writeOp:
 
 write:
     OUTPUT_KEY DELIM_PARENT_L STRING DELIM_PARENT_R {
-        $$ = createNode("Output string");
+        $$ = createNode(COLOR_BLUE "Output String" COLOR_RESET);
     }
     | OUTPUT_KEY DELIM_PARENT_L simpleExpression DELIM_PARENT_R {
-        $$ = createNode("Output expression");
+        $$ = createNode(COLOR_BLUE "Output Expression" COLOR_RESET);
 
         addChild($$, 1);
 
@@ -759,10 +803,10 @@ write:
 
 writeln:
     OUTPUTLN_KEY DELIM_PARENT_L STRING DELIM_PARENT_R {
-        $$ = createNode("OutputLn string");
+        $$ = createNode(COLOR_BLUE "OutputLn String" COLOR_RESET);
     }
     | OUTPUTLN_KEY DELIM_PARENT_L simpleExpression DELIM_PARENT_R {
-        $$ = createNode("OutputLn expression");
+        $$ = createNode(COLOR_BLUE "OutputLn Expression" COLOR_RESET);
 
         addChild($$, 1);
 
@@ -774,10 +818,12 @@ readOp:
     INPUT_KEY DELIM_PARENT_L ID DELIM_PARENT_R {
         char* temp;
 
-        temp = (char*) malloc(strlen($3.text) + strlen("Read Id: ") + 3);
+        temp = (char*) malloc(strlen($3.text) + strlen("Read - Input ID: ") + 3);
 
-        strcpy(temp, "Read Id: ");
+        strcpy(temp, "Read - Input ID: ");
         strcat(temp, $3.text);
+
+        temp = add_color(temp, COLOR_BLUE);
 
         $$ = createNode(temp);
 
@@ -816,19 +862,51 @@ listExpression:
 
 listAssign:
     ID ASSIGN_OP ID ASSIGN_LISTOP ID {
-        $$ = createNode("List assign");
+        char* temp;
+
+        /* temp = (char*) malloc(strlen($1.text) + strlen($3.text) + strlen($5.text) + strlen("List Assignment - ID1: ") + strlen(" - ID2: ") + strlen(" - ID3: ") + 3); */
+        temp = (char*) malloc(strlen($1.text) + strlen($3.text) + strlen($5.text) + strlen("List Assignment - IDs: ") + 6);
+
+        /* strcpy(temp, "List Assignment - ID1: ");
+        strcat(temp, $1.text);
+        strcat(temp, " - ID2: ");
+        strcat(temp, $3.text);
+        strcat(temp, " - ID3: ");
+        strcat(temp, $5.text); */
+
+        strcpy(temp, "List Assignment - IDs: ");
+        strcat(temp, $1.text);
+        strcat(temp, ", ");
+        strcat(temp, $3.text);
+        strcat(temp, ", ");
+        strcat(temp, $5.text);
+
+        temp = add_color(temp, COLOR_CYAN);
+
+        $$ = createNode(temp);
 
         freeScopeToken($1.scope);
         freeScopeToken($3.scope);
         freeScopeToken($5.scope);
+        free(temp);
     }
 ;
 
 listHeader:
     HEADER_LISTOP ID {
-        $$ = createNode("List header");
+        char* temp;
+
+        temp = (char*) malloc(strlen($2.text) + strlen("List Header - ID: ") + 3);
+
+        strcpy(temp, "List Header - ID: ");
+        strcat(temp, $2.text);
+
+        temp = add_color(temp, COLOR_CYAN);
+
+        $$ = createNode(temp);
 
         freeScopeToken($2.scope);
+        free(temp);
     }
 ;
 
@@ -838,29 +916,67 @@ listHeader:
 
 listTailDestructor:
     TAILDES_LISTOP ID {
-        $$ = createNode("List tail destructor");
+        char* temp;
+
+        temp = (char*) malloc(strlen($2.text) + strlen("List Tail Destructor - ID: ") + 3);
+
+        strcpy(temp, "List Tail Destructor - ID: ");
+        strcat(temp, $2.text);
+
+        temp = add_color(temp, COLOR_CYAN);
+
+        $$ = createNode(temp);
 
         freeScopeToken($2.scope);
+        free(temp);
     }
 ;
 
 listMap:
     ID ASSIGN_OP ID MAP_LISTOP ID {
-        $$ = createNode("List map");
+        char* temp;
+
+        temp = (char*) malloc(strlen($1.text) + strlen($3.text) + strlen($5.text) + strlen("List Map - IDs: ") + 6);
+
+        strcpy(temp, "List Map - IDs: ");
+        strcat(temp, $1.text);
+        strcat(temp, ", ");
+        strcat(temp, $3.text);
+        strcat(temp, ", ");
+        strcat(temp, $5.text);
+
+        temp = add_color(temp, COLOR_CYAN);
+
+        $$ = createNode(temp);
 
         freeScopeToken($1.scope);
         freeScopeToken($3.scope);
         freeScopeToken($5.scope);
+        free(temp);
     }
 ;
 
 listFilter:
     ID ASSIGN_OP ID FILTER_LISTOP ID {
-        $$ = createNode("List filter");
+        char* temp;
+
+        temp = (char*) malloc(strlen($1.text) + strlen($3.text) + strlen($5.text) + strlen("List Filter - IDs: ") + 6);
+
+        strcpy(temp, "List Filter - IDs: ");
+        strcat(temp, $1.text);
+        strcat(temp, ", ");
+        strcat(temp, $3.text);
+        strcat(temp, ", ");
+        strcat(temp, $5.text);
+
+        temp = add_color(temp, COLOR_CYAN);
+
+        $$ = createNode(temp);
 
         freeScopeToken($1.scope);
         freeScopeToken($3.scope);
         freeScopeToken($5.scope);
+        free(temp);
     }
 ;
 
@@ -920,7 +1036,7 @@ int main(int argc, char **argv){
         printf("No file has been chosen.\n");
     }
 
-
+    /* test_colors(); */
 
     yylex_destroy();
 

@@ -26,6 +26,10 @@ void printTree();
 
 void printBranch(t_node* node, int level);
 
+void printBranch2(t_node* node, int level, char* prevNode);
+
+void printBranch3(t_node* node, int level, char* prevNode);
+
 void freeTree();
 
 int freeBranch();
