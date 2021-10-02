@@ -4,6 +4,7 @@
 #include "../lib/semantic.h"
 #include "../lib/base.h"
 #include "../lib/symbol_table.h"
+#include "../lib/scope.h"
 
 
 t_semerror** semanticErrors = NULL;
@@ -282,6 +283,33 @@ char** addTempType(char** types, char* type, int index){
     #endif
 
     return types;
+}
+
+
+void checkIdDeclaration(char* id){
+    t_symbol* pointer;
+    int found = 0;
+
+    for(pointer = SymbolTable; pointer != NULL; pointer = pointer->next){
+        if(strcmp(id, pointer->name) == 0){
+            // achou o símbolo na tabela
+            // não procura o símbolo no escopo mais próximo (que é o que seria usado)
+            // procura apenas se existe um símbolo com esse nome em um escopo válido
+            // (escopo atual ou algum escopo pai, ou seja, algum escopo atualmente na pilha)
+            if(findInScopeStack(pointer->scopeValue) == 1){
+                found++;
+                break;
+            }
+        }
+    }
+
+    if(found == 0){
+        printf("Uso de uma variável ou função não declarada - %s\n", id);
+    }
+    else{
+        // else para testes, no final só é preciso imprimir quando ocorrer erro
+        printf("Uso de uma variável ou função declarada corretamente - %s\n", id);
+    }
 }
 
 

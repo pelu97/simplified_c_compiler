@@ -20,6 +20,8 @@ int checkScope();
 
 t_scope* getScope();
 
+int findInScopeStack(int value);
+
 void freeScopeToken(t_scope* scope);
 
 void freeScope();

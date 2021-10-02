@@ -80,6 +80,22 @@ t_scope* getScope(){
     return scope;
 }
 
+
+int findInScopeStack(int value){
+    t_scope* pointer;
+    int found = 0;
+
+    for(pointer = topScope; pointer != NULL; pointer = pointer->next){
+        if(value == pointer->scopeValue){
+            found = 1;
+            break;
+        }
+    }
+
+    return found;
+}
+
+
 void freeScopeToken(t_scope* scope){
     if(scope != NULL){
         free(scope);

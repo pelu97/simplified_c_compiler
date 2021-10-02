@@ -31,4 +31,6 @@ int getFunctionCallParameters(t_node* node, int index, char*** types);
 
 char** addTempType(char** types, char* type, int index);
 
+void checkIdDeclaration(char* id);
+
 void semanticAnalysis();

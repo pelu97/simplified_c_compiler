@@ -25,11 +25,11 @@ For semantic analysis:
 -- 1 or 2 passes?
 
 --Type check:
--check function parameters: quantity and types on every use;
+-check function parameters: quantity and types on every use; - CHECKING
 -check operators arguments types;
 
 --Scope:
--check if variables used (identifiers) have been declared inside the scope or in any parent scope;
+-check if variables used (identifiers) have been declared inside the scope or in any parent scope; - CHECKING
 
 --Main
 -detect existence of main function;
@@ -42,6 +42,9 @@ For semantic analysis:
 verificar se as chamadas à função estão corretas;
 Talvez uma lista de um struct próprio para isso; ou talvez um vetor de strings e uma variável para armazenar a quantidade, onde cada string é o tipo
 Parâmetros estão sendo armazenados - vetor de símbolos, é possível acessar o que quiser
+--Armazenar os erros em um struct e imprimir-los todos ao final? Talvez seja a melhor opção,
+evita que os erros sejam impressos no meio da análise sintática, no caso daqueles que são checados
+durante a sintática (chamada de função, por exemplo);
 */
 
 %}
@@ -572,6 +575,9 @@ expression:
         $$->child[0] = $3;
         freeScopeToken($1.scope);
 
+
+        checkIdDeclaration($1.text);
+
     }
     | simpleExpression {
         $$ = $1;
@@ -719,6 +725,8 @@ factor:
         free(temp);
 
         addNodeTypeId($$, $1.text);
+
+        checkIdDeclaration($1.text);
     }
     | constant {
         $$ = $1;
