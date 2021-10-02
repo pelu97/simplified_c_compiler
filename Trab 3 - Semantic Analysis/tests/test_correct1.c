@@ -1,7 +1,7 @@
 int list_value;
 
 
-int list list_input(int n){
+int list list_input(int n, int k, int l, int j, int g){
     int i;
     int temp;
     int list mylist;
@@ -61,17 +61,20 @@ int double_list(int i){
     return i*2;
 }
 
+int double_list(){
+    return 0;
+}
 
 int main(){
-    int n;
     int list listread;
+    int n;
     write("Digite um tamanho para a lista: ");
     read(n);
 
     write("O inteiro digitado foi: ");
     writeln(n);
 
-    listread = list_input(n);
+    listread = list_input(n, 0.1, 1, 2, 3.3);
 
     test_list(listread);
 
