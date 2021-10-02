@@ -13,6 +13,10 @@
 
 // #define DEBUG 1
 
+// #define DEBUG_TREE 1
+
+// #define DEBUG_SEMANTIC 1
+
 extern int lexicalError;
 extern int syntaticError;
 extern int line;
