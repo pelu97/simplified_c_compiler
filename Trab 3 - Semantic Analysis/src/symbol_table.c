@@ -8,8 +8,10 @@
 // ainda não limpa a tabela da memória, ainda é necessário tratar isso
 t_symbol *SymbolTable = NULL;
 t_symbol *lastSymbol = NULL;
+t_symbol **parameterHolder = NULL;
+int parameterHolderMax = 0;
 
-void createSymbol(char* symbolName, char* type, int line, int column, int scopeValue, int parentScope, int varFunc){
+t_symbol* createSymbol(char* symbolName, char* type, int line, int column, int scopeValue, int parentScope, int varFunc){
     t_symbol *symbol;
 
     symbol = (t_symbol*) malloc(sizeof(t_symbol));
@@ -27,6 +29,8 @@ void createSymbol(char* symbolName, char* type, int line, int column, int scopeV
     symbol->scopeValue = scopeValue;
     symbol->parentScope = parentScope;
     symbol->varFunc = varFunc;
+    symbol->paramNumber = 0;
+    symbol->parameters = NULL;
 
     // lastSymbol->next = symbol;
 
@@ -46,6 +50,8 @@ void createSymbol(char* symbolName, char* type, int line, int column, int scopeV
         lastSymbol = symbol;
     }
 
+    return symbol;
+
 
     // printf("Symbol inserted: %s\n", symbol->name);
 }
@@ -64,6 +70,38 @@ t_symbol* getSymbol(char* symbolName){
 
     return found;
 }
+
+
+void addParam(t_symbol* parameter){
+    t_symbol** temp;
+
+    temp = realloc(parameterHolder, (sizeof(t_symbol*) * (parameterHolderMax + 1)));
+
+
+    if(temp != NULL){
+        parameterHolder = temp;
+
+        parameterHolder[parameterHolderMax] = parameter;
+        parameterHolderMax++;
+    }
+    else{
+        printf("Fatal error on memory allocation for parameter holder\n");
+    }
+
+    // temp = (t_node**) realloc(node->child, (sizeof(t_node*) * (n + 1)));
+}
+
+
+void installParam(t_symbol* function){
+
+    function->parameters = parameterHolder;
+    function->paramNumber = parameterHolderMax;
+
+    parameterHolder = NULL;
+    parameterHolderMax = 0;
+}
+
+
 
 void printTable(){
     t_symbol *pointer;
@@ -262,6 +300,23 @@ t_symbol* printChildren(t_symbol* fixedSymbol, int level){
     return pointer;
 }
 
+
+void printParams(){
+    t_symbol* pointer;
+    int i;
+
+    for(pointer = SymbolTable; pointer != NULL; pointer = pointer->next){
+        // printf("|%28.28s|", "123456789012345678901234567890123456789012345678901234567890");
+        printf("|%-28.28s|", pointer->name);
+        printf("Parameters: ");
+
+        for(i = 0; i < pointer->paramNumber; i++){
+            printf(" %s ", pointer->parameters[i]->name);
+        }
+        printf("\n");
+        // printf("Symbol read from table: %s\n", pointer->name);
+    }
+}
 
 void freeTable(){
     t_symbol* pointer;

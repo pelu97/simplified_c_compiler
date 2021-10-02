@@ -9,6 +9,7 @@
 #include "../lib/symbol_table.h"
 #include "../lib/scope.h"
 #include "../lib/tree.h"
+#include "../lib/semantic.h"
 
 extern int yylex();
 extern int yylex_destroy();
@@ -21,6 +22,8 @@ extern FILE* yyin;
 /*
 For semantic analysis:
 
+-- 1 or 2 passes?
+
 --Type check:
 -check function parameters: quantity and types on every use;
 -check operators arguments types;
@@ -30,7 +33,15 @@ For semantic analysis:
 
 --Main
 -detect existence of main function;
+--Checando, mas poderia registrar a linha do registro;
+--Poderia estender parte da checagem para todas as funções - verificar e informar caso ocorram redefinições de funções
 
+
+---Notes:
+-Function parameters: preciso armazenar quantos parâmetros e os tipos deles no registro de funções na tabela de símbolos, para que seja possível
+verificar se as chamadas à função estão corretas;
+Talvez uma lista de um struct próprio para isso; ou talvez um vetor de strings e uma variável para armazenar a quantidade, onde cada string é o tipo
+Parâmetros estão sendo armazenados - vetor de símbolos, é possível acessar o que quiser
 */
 
 %}
@@ -232,9 +243,9 @@ declaration:
 varDeclaration:
     TYPE ID DELIM_SEMICOLLON {
         char* temp;
+
         /* printf("%s %s %s\n", $1.text, $2.text, $3.text); */
         createSymbol($2.text, $1.text, $2.line, $2.column, $2.scope->scopeValue, $2.scope->parentScope, 1);
-
         /* printf("variable declaration\n"); */
 
         temp = (char*) malloc(strlen($2.text) + strlen("Variable Declaration - ID: ") + 1);
@@ -252,6 +263,7 @@ varDeclaration:
 
         freeScopeToken($2.scope);
         free(temp);
+
     }
     | TYPE LIST_TYPE ID DELIM_SEMICOLLON {
         char* temp;
@@ -277,6 +289,7 @@ varDeclaration:
         freeScopeToken($3.scope);
         free(temp);
         free(temp2);
+
     }
 ;
 
@@ -297,8 +310,9 @@ varDeclaration:
 funcDeclaration:
     TYPE ID DELIM_PARENT_L parameters DELIM_PARENT_R bodyStatement {
         char* temp;
+        t_symbol* symbol;
         /* printf("%s %s %s %s - escopo %d %d\n", $1.text, $2.text, $3.text, $5.text, $2.scope->scopeValue, $2.scope->parentScope); */
-        createSymbol($2.text, $1.text, $2.line, $2.column, $2.scope->scopeValue, $2.scope->parentScope, 0);
+        symbol = createSymbol($2.text, $1.text, $2.line, $2.column, $2.scope->scopeValue, $2.scope->parentScope, 0);
 
         temp = (char*) malloc(strlen($2.text) + strlen("Function Declaration - ID: ") + 1);
 
@@ -317,17 +331,22 @@ funcDeclaration:
         freeScopeToken($2.scope);
         free(temp);
 
+        /* printf("function declaration test\n"); */
+
+        installParam(symbol);
+
     }
     | TYPE LIST_TYPE ID DELIM_PARENT_L parameters DELIM_PARENT_R bodyStatement {
         char* temp;
         char* temp2;
+        t_symbol* symbol;
 
         temp = (char*) malloc(sizeof($1.text) + sizeof($2.text) + 3);
         strcpy(temp, $1.text);
         strcat(temp, " ");
         strcat(temp, $2.text);
         /* printf("%s %s %s %s %s - %s - escopo %d %d\n", $1.text, $2.text, $3.text, $4.text, $6.text, temp, $3.scope->scopeValue, $3.scope->parentScope); */
-        createSymbol($3.text, temp, $3.line, $3.column, $3.scope->scopeValue, $3.scope->parentScope, 0);
+        symbol = createSymbol($3.text, temp, $3.line, $3.column, $3.scope->scopeValue, $3.scope->parentScope, 0);
 
         temp2 = (char*) malloc(strlen($3.text) + strlen("Function Declaration - List Type ID: ") + 1);
 
@@ -346,11 +365,14 @@ funcDeclaration:
         freeScopeToken($3.scope);
         free(temp);
         free(temp2);
+
+        installParam(symbol);
     }
 ;
 
 parameters:
     parameterList {
+        /* printf("parameters of function declaration test\n"); */
         $$ = $1;
     }
     | {
@@ -376,8 +398,9 @@ parameterList:
 parameterSimple:
     TYPE ID {
         char* temp;
+        t_symbol* symbol;
 
-        createSymbol($2.text, $1.text, $2.line, $2.column, lastScopeValue+1, $2.scope->scopeValue, 1);
+        symbol = createSymbol($2.text, $1.text, $2.line, $2.column, lastScopeValue+1, $2.scope->scopeValue, 1);
         /* $2.scope->scopeValue lastScopeValue+1 $2.scope->parentScope*/
         temp = (char*) malloc(strlen($2.text) + strlen("Parameter Declaration - ID: ") + 3);
 
@@ -391,17 +414,21 @@ parameterSimple:
         freeScopeToken($2.scope);
         free(temp);
 
+
+        addParam(symbol);
+
     }
     | TYPE LIST_TYPE ID{
         char* temp;
         char* temp2;
+        t_symbol* symbol;
 
         temp = (char*) malloc(strlen($1.text) + strlen($2.text) + 3);
         strcpy(temp, $1.text);
         strcat(temp, " ");
         strcat(temp, $2.text);
 
-        createSymbol($3.text, temp, $3.line, $3.column, lastScopeValue+1, $3.scope->scopeValue, 1);
+        symbol = createSymbol($3.text, temp, $3.line, $3.column, lastScopeValue+1, $3.scope->scopeValue, 1);
         /* $3.scope->scopeValue lastScopeValue+1 $3.scope->parentScope*/
         temp2 = (char*) malloc(strlen($3.text) + strlen("Parameter Declaration - List Type ID: ") + 3);
 
@@ -415,6 +442,8 @@ parameterSimple:
         freeScopeToken($3.scope);
         free(temp);
         free(temp2);
+
+        addParam(symbol);
 
     }
 ;
@@ -573,6 +602,9 @@ logicBinExpression:
 
         $$->child[0] = $1;
         $$->child[1] = $3;
+
+        addNodeType($$, "logic");
+
     }
     | logicUnExpression {
         $$ = $1;
@@ -586,6 +618,9 @@ logicUnExpression:
         addChild($$, 1);
 
         $$->child[0] = $2;
+
+        addNodeType($$, "logic");
+
     }
     | binExpression {
         $$ = $1;
@@ -604,6 +639,9 @@ binExpression:
 
         $$->child[0] = $1;
         $$->child[1] = $3;
+
+        addNodeType($$, "binary");
+
     }
     | sumExpression {
         $$ = $1;
@@ -620,7 +658,7 @@ sumExpression:
         $$->child[1] = $2;
         $$->child[2] = $3;
 
-
+        addNodeTypeChildren($$);
     }
     | mulExpression {
         $$ = $1;
@@ -638,6 +676,8 @@ mulExpression:
         $$->child[0] = $1;
         $$->child[1] = $2;
         $$->child[2] = $3;
+
+        addNodeTypeChildren($$);
     }
     | factor {
         $$ = $1;
@@ -677,6 +717,8 @@ factor:
 
         freeScopeToken($1.scope);
         free(temp);
+
+        addNodeTypeId($$, $1.text);
     }
     | constant {
         $$ = $1;
@@ -705,6 +747,8 @@ constant:
         $$ = createNode(temp);
 
         free(temp);
+
+        addNodeType($$, "int");
     }
     | MINUS_OP INT {
         char* temp;
@@ -718,6 +762,8 @@ constant:
         $$ = createNode(temp);
 
         free(temp);
+
+        addNodeType($$, "int");
     }
     | FLOAT {
         char* temp;
@@ -731,6 +777,8 @@ constant:
         $$ = createNode(temp);
 
         free(temp);
+
+        addNodeType($$, "float");
     }
     | MINUS_OP FLOAT {
         char* temp;
@@ -744,6 +792,8 @@ constant:
         $$ = createNode(temp);
 
         free(temp);
+
+        addNodeType($$, "float");
     }
     | NULL_CONST {
         char* temp;
@@ -756,6 +806,8 @@ constant:
         $$ = createNode(temp);
 
         free(temp);
+
+        addNodeType($$, "null");
     }
 ;
 
@@ -774,6 +826,10 @@ functionCall:
         $$->child[0] = $3;
         freeScopeToken($1.scope);
         free(temp);
+
+        addFunctionName($$, $1.text);
+
+        checkFunctionCall($$);
     }
 ;
 
@@ -1035,9 +1091,13 @@ int main(int argc, char **argv){
             printf("Analyzer completed with %d lexical and %d syntatic errors.\n\n\n", lexicalError, syntaticError);
 
 
-            printTable();
+            /* printTable(); */
             printTable2();
             printTree();
+
+            printParams();
+
+            semanticAnalysis();
 
             /* print_end(); */
         }

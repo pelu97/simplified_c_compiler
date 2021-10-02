@@ -77,6 +77,7 @@
 #include "../lib/symbol_table.h"
 #include "../lib/scope.h"
 #include "../lib/tree.h"
+#include "../lib/semantic.h"
 
 extern int yylex();
 extern int yylex_destroy();
@@ -86,8 +87,33 @@ extern FILE* yyin;
 
 //yynerrs //global variable counting errors
 
+/*
+For semantic analysis:
 
-#line 91 "./src/syntax.tab.c"
+-- 1 or 2 passes?
+
+--Type check:
+-check function parameters: quantity and types on every use;
+-check operators arguments types;
+
+--Scope:
+-check if variables used (identifiers) have been declared inside the scope or in any parent scope;
+
+--Main
+-detect existence of main function;
+--Checando, mas poderia registrar a linha do registro;
+--Poderia estender parte da checagem para todas as funções - verificar e informar caso ocorram redefinições de funções
+
+
+---Notes:
+-Function parameters: preciso armazenar quantos parâmetros e os tipos deles no registro de funções na tabela de símbolos, para que seja possível
+verificar se as chamadas à função estão corretas;
+Talvez uma lista de um struct próprio para isso; ou talvez um vetor de strings e uma variável para armazenar a quantidade, onde cada string é o tipo
+Parâmetros estão sendo armazenados - vetor de símbolos, é possível acessar o que quiser
+*/
+
+
+#line 117 "./src/syntax.tab.c"
 
 # ifndef YY_CAST
 #  ifdef __cplusplus
@@ -586,15 +612,15 @@ static const yytype_int8 yytranslate[] =
   /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_int16 yyrline[] =
 {
-       0,   175,   175,   183,   192,   195,   203,   209,   212,   218,
-     241,   283,   306,   338,   341,   347,   355,   362,   380,   408,
-     411,   414,   417,   420,   423,   426,   429,   432,   438,   449,
-     457,   463,   473,   479,   487,   500,   513,   523,   532,   543,
-     554,   562,   568,   575,   585,   593,   599,   610,   616,   627,
-     633,   636,   642,   645,   651,   666,   669,   672,   675,   681,
-     694,   707,   720,   733,   748,   766,   774,   777,   783,   786,
-     792,   795,   805,   808,   818,   836,   842,   845,   848,   854,
-     858,   864,   896,   918,   936,   960
+       0,   201,   201,   209,   218,   221,   229,   235,   238,   244,
+     268,   311,   339,   374,   378,   384,   392,   399,   421,   452,
+     455,   458,   461,   464,   467,   470,   473,   476,   482,   493,
+     501,   507,   517,   523,   531,   544,   557,   567,   576,   587,
+     598,   609,   615,   625,   635,   646,   652,   663,   669,   682,
+     688,   691,   697,   700,   706,   723,   726,   729,   732,   738,
+     753,   768,   783,   798,   815,   837,   845,   848,   854,   857,
+     863,   866,   876,   879,   889,   907,   913,   916,   919,   925,
+     929,   935,   967,   989,  1007,  1031
 };
 #endif
 
@@ -2526,17 +2552,17 @@ yyreduce:
   switch (yyn)
     {
   case 2: /* program: declarationList  */
-#line 175 "./src/syntax.y"
+#line 201 "./src/syntax.y"
                     {
         (yyval.t_node) = (yyvsp[0].t_node);
         /* printf("Declaration list - initialize tree\n"); */
         initializeTree((yyval.t_node));
     }
-#line 2536 "./src/syntax.tab.c"
+#line 2562 "./src/syntax.tab.c"
     break;
 
   case 3: /* declarationList: declarationList declaration  */
-#line 183 "./src/syntax.y"
+#line 209 "./src/syntax.y"
                                 {
         (yyval.t_node) = createNode("Declaration List - Declaration");
 
@@ -2546,19 +2572,19 @@ yyreduce:
         (yyval.t_node)->child[1] = (yyvsp[0].t_node);
 
     }
-#line 2550 "./src/syntax.tab.c"
+#line 2576 "./src/syntax.tab.c"
     break;
 
   case 4: /* declarationList: declaration  */
-#line 192 "./src/syntax.y"
+#line 218 "./src/syntax.y"
                   {
         (yyval.t_node) = (yyvsp[0].t_node);
     }
-#line 2558 "./src/syntax.tab.c"
+#line 2584 "./src/syntax.tab.c"
     break;
 
   case 5: /* declarationList: declarationList statement  */
-#line 195 "./src/syntax.y"
+#line 221 "./src/syntax.y"
                                 {
         (yyval.t_node) = createNode("Declaration List - Statement");
 
@@ -2567,40 +2593,40 @@ yyreduce:
         (yyval.t_node)->child[0] = (yyvsp[-1].t_node);
         (yyval.t_node)->child[1] = (yyvsp[0].t_node);
     }
-#line 2571 "./src/syntax.tab.c"
+#line 2597 "./src/syntax.tab.c"
     break;
 
   case 6: /* declarationList: statement  */
-#line 203 "./src/syntax.y"
+#line 229 "./src/syntax.y"
                 {
         (yyval.t_node) = (yyvsp[0].t_node);
     }
-#line 2579 "./src/syntax.tab.c"
+#line 2605 "./src/syntax.tab.c"
     break;
 
   case 7: /* declaration: varDeclaration  */
-#line 209 "./src/syntax.y"
+#line 235 "./src/syntax.y"
                    {
         (yyval.t_node) = (yyvsp[0].t_node);
     }
-#line 2587 "./src/syntax.tab.c"
+#line 2613 "./src/syntax.tab.c"
     break;
 
   case 8: /* declaration: funcDeclaration  */
-#line 212 "./src/syntax.y"
+#line 238 "./src/syntax.y"
                       {
         (yyval.t_node) = (yyvsp[0].t_node);
     }
-#line 2595 "./src/syntax.tab.c"
+#line 2621 "./src/syntax.tab.c"
     break;
 
   case 9: /* varDeclaration: TYPE ID DELIM_SEMICOLLON  */
-#line 218 "./src/syntax.y"
+#line 244 "./src/syntax.y"
                              {
         char* temp;
+
         /* printf("%s %s %s\n", $1.text, $2.text, $3.text); */
         createSymbol((yyvsp[-1].t_token).text, (yyvsp[-2].t_token).text, (yyvsp[-1].t_token).line, (yyvsp[-1].t_token).column, (yyvsp[-1].t_token).scope->scopeValue, (yyvsp[-1].t_token).scope->parentScope, 1);
-
         /* printf("variable declaration\n"); */
 
         temp = (char*) malloc(strlen((yyvsp[-1].t_token).text) + strlen("Variable Declaration - ID: ") + 1);
@@ -2618,12 +2644,13 @@ yyreduce:
 
         freeScopeToken((yyvsp[-1].t_token).scope);
         free(temp);
+
     }
-#line 2623 "./src/syntax.tab.c"
+#line 2650 "./src/syntax.tab.c"
     break;
 
   case 10: /* varDeclaration: TYPE LIST_TYPE ID DELIM_SEMICOLLON  */
-#line 241 "./src/syntax.y"
+#line 268 "./src/syntax.y"
                                          {
         char* temp;
         char* temp2;
@@ -2648,16 +2675,18 @@ yyreduce:
         freeScopeToken((yyvsp[-1].t_token).scope);
         free(temp);
         free(temp2);
+
     }
-#line 2653 "./src/syntax.tab.c"
+#line 2681 "./src/syntax.tab.c"
     break;
 
   case 11: /* funcDeclaration: TYPE ID DELIM_PARENT_L parameters DELIM_PARENT_R bodyStatement  */
-#line 283 "./src/syntax.y"
+#line 311 "./src/syntax.y"
                                                                    {
         char* temp;
+        t_symbol* symbol;
         /* printf("%s %s %s %s - escopo %d %d\n", $1.text, $2.text, $3.text, $5.text, $2.scope->scopeValue, $2.scope->parentScope); */
-        createSymbol((yyvsp[-4].t_token).text, (yyvsp[-5].t_token).text, (yyvsp[-4].t_token).line, (yyvsp[-4].t_token).column, (yyvsp[-4].t_token).scope->scopeValue, (yyvsp[-4].t_token).scope->parentScope, 0);
+        symbol = createSymbol((yyvsp[-4].t_token).text, (yyvsp[-5].t_token).text, (yyvsp[-4].t_token).line, (yyvsp[-4].t_token).column, (yyvsp[-4].t_token).scope->scopeValue, (yyvsp[-4].t_token).scope->parentScope, 0);
 
         temp = (char*) malloc(strlen((yyvsp[-4].t_token).text) + strlen("Function Declaration - ID: ") + 1);
 
@@ -2676,22 +2705,27 @@ yyreduce:
         freeScopeToken((yyvsp[-4].t_token).scope);
         free(temp);
 
+        /* printf("function declaration test\n"); */
+
+        installParam(symbol);
+
     }
-#line 2681 "./src/syntax.tab.c"
+#line 2714 "./src/syntax.tab.c"
     break;
 
   case 12: /* funcDeclaration: TYPE LIST_TYPE ID DELIM_PARENT_L parameters DELIM_PARENT_R bodyStatement  */
-#line 306 "./src/syntax.y"
+#line 339 "./src/syntax.y"
                                                                                {
         char* temp;
         char* temp2;
+        t_symbol* symbol;
 
         temp = (char*) malloc(sizeof((yyvsp[-6].t_token).text) + sizeof((yyvsp[-5].t_token).text) + 3);
         strcpy(temp, (yyvsp[-6].t_token).text);
         strcat(temp, " ");
         strcat(temp, (yyvsp[-5].t_token).text);
         /* printf("%s %s %s %s %s - %s - escopo %d %d\n", $1.text, $2.text, $3.text, $4.text, $6.text, temp, $3.scope->scopeValue, $3.scope->parentScope); */
-        createSymbol((yyvsp[-4].t_token).text, temp, (yyvsp[-4].t_token).line, (yyvsp[-4].t_token).column, (yyvsp[-4].t_token).scope->scopeValue, (yyvsp[-4].t_token).scope->parentScope, 0);
+        symbol = createSymbol((yyvsp[-4].t_token).text, temp, (yyvsp[-4].t_token).line, (yyvsp[-4].t_token).column, (yyvsp[-4].t_token).scope->scopeValue, (yyvsp[-4].t_token).scope->parentScope, 0);
 
         temp2 = (char*) malloc(strlen((yyvsp[-4].t_token).text) + strlen("Function Declaration - List Type ID: ") + 1);
 
@@ -2710,28 +2744,31 @@ yyreduce:
         freeScopeToken((yyvsp[-4].t_token).scope);
         free(temp);
         free(temp2);
+
+        installParam(symbol);
     }
-#line 2715 "./src/syntax.tab.c"
+#line 2751 "./src/syntax.tab.c"
     break;
 
   case 13: /* parameters: parameterList  */
-#line 338 "./src/syntax.y"
+#line 374 "./src/syntax.y"
                   {
+        /* printf("parameters of function declaration test\n"); */
         (yyval.t_node) = (yyvsp[0].t_node);
     }
-#line 2723 "./src/syntax.tab.c"
+#line 2760 "./src/syntax.tab.c"
     break;
 
   case 14: /* parameters: %empty  */
-#line 341 "./src/syntax.y"
+#line 378 "./src/syntax.y"
       {
         (yyval.t_node) = createEmptyNode();
     }
-#line 2731 "./src/syntax.tab.c"
+#line 2768 "./src/syntax.tab.c"
     break;
 
   case 15: /* parameterList: parameterList DELIM_COMMA parameterSimple  */
-#line 347 "./src/syntax.y"
+#line 384 "./src/syntax.y"
                                               {
         (yyval.t_node) = createNode("Parameters list");
 
@@ -2740,23 +2777,24 @@ yyreduce:
         (yyval.t_node)->child[0] = (yyvsp[-2].t_node);
         (yyval.t_node)->child[1] = (yyvsp[0].t_node);
     }
-#line 2744 "./src/syntax.tab.c"
+#line 2781 "./src/syntax.tab.c"
     break;
 
   case 16: /* parameterList: parameterSimple  */
-#line 355 "./src/syntax.y"
+#line 392 "./src/syntax.y"
                       {
         (yyval.t_node) = (yyvsp[0].t_node);
     }
-#line 2752 "./src/syntax.tab.c"
+#line 2789 "./src/syntax.tab.c"
     break;
 
   case 17: /* parameterSimple: TYPE ID  */
-#line 362 "./src/syntax.y"
+#line 399 "./src/syntax.y"
             {
         char* temp;
+        t_symbol* symbol;
 
-        createSymbol((yyvsp[0].t_token).text, (yyvsp[-1].t_token).text, (yyvsp[0].t_token).line, (yyvsp[0].t_token).column, lastScopeValue+1, (yyvsp[0].t_token).scope->scopeValue, 1);
+        symbol = createSymbol((yyvsp[0].t_token).text, (yyvsp[-1].t_token).text, (yyvsp[0].t_token).line, (yyvsp[0].t_token).column, lastScopeValue+1, (yyvsp[0].t_token).scope->scopeValue, 1);
         /* $2.scope->scopeValue lastScopeValue+1 $2.scope->parentScope*/
         temp = (char*) malloc(strlen((yyvsp[0].t_token).text) + strlen("Parameter Declaration - ID: ") + 3);
 
@@ -2770,22 +2808,26 @@ yyreduce:
         freeScopeToken((yyvsp[0].t_token).scope);
         free(temp);
 
+
+        addParam(symbol);
+
     }
-#line 2775 "./src/syntax.tab.c"
+#line 2816 "./src/syntax.tab.c"
     break;
 
   case 18: /* parameterSimple: TYPE LIST_TYPE ID  */
-#line 380 "./src/syntax.y"
+#line 421 "./src/syntax.y"
                        {
         char* temp;
         char* temp2;
+        t_symbol* symbol;
 
         temp = (char*) malloc(strlen((yyvsp[-2].t_token).text) + strlen((yyvsp[-1].t_token).text) + 3);
         strcpy(temp, (yyvsp[-2].t_token).text);
         strcat(temp, " ");
         strcat(temp, (yyvsp[-1].t_token).text);
 
-        createSymbol((yyvsp[0].t_token).text, temp, (yyvsp[0].t_token).line, (yyvsp[0].t_token).column, lastScopeValue+1, (yyvsp[0].t_token).scope->scopeValue, 1);
+        symbol = createSymbol((yyvsp[0].t_token).text, temp, (yyvsp[0].t_token).line, (yyvsp[0].t_token).column, lastScopeValue+1, (yyvsp[0].t_token).scope->scopeValue, 1);
         /* $3.scope->scopeValue lastScopeValue+1 $3.scope->parentScope*/
         temp2 = (char*) malloc(strlen((yyvsp[0].t_token).text) + strlen("Parameter Declaration - List Type ID: ") + 3);
 
@@ -2800,93 +2842,95 @@ yyreduce:
         free(temp);
         free(temp2);
 
+        addParam(symbol);
+
     }
-#line 2805 "./src/syntax.tab.c"
+#line 2849 "./src/syntax.tab.c"
     break;
 
   case 19: /* statement: bodyStatement  */
-#line 408 "./src/syntax.y"
+#line 452 "./src/syntax.y"
                   {
         (yyval.t_node) = (yyvsp[0].t_node);
     }
-#line 2813 "./src/syntax.tab.c"
+#line 2857 "./src/syntax.tab.c"
     break;
 
   case 20: /* statement: ifStatement  */
-#line 411 "./src/syntax.y"
+#line 455 "./src/syntax.y"
                   {
         (yyval.t_node) = (yyvsp[0].t_node);
     }
-#line 2821 "./src/syntax.tab.c"
+#line 2865 "./src/syntax.tab.c"
     break;
 
   case 21: /* statement: loopStatement  */
-#line 414 "./src/syntax.y"
+#line 458 "./src/syntax.y"
                     {
         (yyval.t_node) = (yyvsp[0].t_node);
     }
-#line 2829 "./src/syntax.tab.c"
+#line 2873 "./src/syntax.tab.c"
     break;
 
   case 22: /* statement: returnStatement  */
-#line 417 "./src/syntax.y"
+#line 461 "./src/syntax.y"
                       {
         (yyval.t_node) = (yyvsp[0].t_node);
     }
-#line 2837 "./src/syntax.tab.c"
+#line 2881 "./src/syntax.tab.c"
     break;
 
   case 23: /* statement: listStatement DELIM_SEMICOLLON  */
-#line 420 "./src/syntax.y"
+#line 464 "./src/syntax.y"
                                      {
         (yyval.t_node) = (yyvsp[-1].t_node);
     }
-#line 2845 "./src/syntax.tab.c"
+#line 2889 "./src/syntax.tab.c"
     break;
 
   case 24: /* statement: writeOp DELIM_SEMICOLLON  */
-#line 423 "./src/syntax.y"
+#line 467 "./src/syntax.y"
                                {
         (yyval.t_node) = (yyvsp[-1].t_node);
     }
-#line 2853 "./src/syntax.tab.c"
+#line 2897 "./src/syntax.tab.c"
     break;
 
   case 25: /* statement: readOp DELIM_SEMICOLLON  */
-#line 426 "./src/syntax.y"
+#line 470 "./src/syntax.y"
                               {
         (yyval.t_node) = (yyvsp[-1].t_node);
     }
-#line 2861 "./src/syntax.tab.c"
+#line 2905 "./src/syntax.tab.c"
     break;
 
   case 26: /* statement: expressionStatement  */
-#line 429 "./src/syntax.y"
+#line 473 "./src/syntax.y"
                           {
         (yyval.t_node) = (yyvsp[0].t_node);
     }
-#line 2869 "./src/syntax.tab.c"
+#line 2913 "./src/syntax.tab.c"
     break;
 
   case 27: /* statement: error  */
-#line 432 "./src/syntax.y"
+#line 476 "./src/syntax.y"
             {
         (yyval.t_node) = createNode(COLOR_RED "SYNTAX ERROR" COLOR_RESET);
     }
-#line 2877 "./src/syntax.tab.c"
+#line 2921 "./src/syntax.tab.c"
     break;
 
   case 28: /* bodyStatement: DELIM_CUR_BRACKET_L statementList DELIM_CUR_BRACKET_R  */
-#line 438 "./src/syntax.y"
+#line 482 "./src/syntax.y"
                                                           {
         (yyval.t_node) = (yyvsp[-1].t_node);
         freeScopeToken((yyvsp[-2].t_token).scope);
     }
-#line 2886 "./src/syntax.tab.c"
+#line 2930 "./src/syntax.tab.c"
     break;
 
   case 29: /* localDeclaration: localDeclaration varDeclaration  */
-#line 449 "./src/syntax.y"
+#line 493 "./src/syntax.y"
                                     {
         (yyval.t_node) = createNode("Local Declaration");
 
@@ -2895,19 +2939,19 @@ yyreduce:
         (yyval.t_node)->child[0] = (yyvsp[-1].t_node);
         (yyval.t_node)->child[1] = (yyvsp[0].t_node);
     }
-#line 2899 "./src/syntax.tab.c"
+#line 2943 "./src/syntax.tab.c"
     break;
 
   case 30: /* localDeclaration: %empty  */
-#line 457 "./src/syntax.y"
+#line 501 "./src/syntax.y"
       {
         (yyval.t_node) = createEmptyNode();
     }
-#line 2907 "./src/syntax.tab.c"
+#line 2951 "./src/syntax.tab.c"
     break;
 
   case 31: /* statementList: statementList localDeclaration statement  */
-#line 463 "./src/syntax.y"
+#line 507 "./src/syntax.y"
                                              {
         (yyval.t_node) = createNode("Statement List");
 
@@ -2918,19 +2962,19 @@ yyreduce:
         (yyval.t_node)->child[2] = (yyvsp[0].t_node);
 
     }
-#line 2922 "./src/syntax.tab.c"
+#line 2966 "./src/syntax.tab.c"
     break;
 
   case 32: /* statementList: %empty  */
-#line 473 "./src/syntax.y"
+#line 517 "./src/syntax.y"
       {
         (yyval.t_node) = createEmptyNode();
     }
-#line 2930 "./src/syntax.tab.c"
+#line 2974 "./src/syntax.tab.c"
     break;
 
   case 33: /* ifStatement: IF_KEY DELIM_PARENT_L simpleExpression DELIM_PARENT_R statement  */
-#line 479 "./src/syntax.y"
+#line 523 "./src/syntax.y"
                                                                                     {
         (yyval.t_node) = createNode(COLOR_BLUE "If Statement" COLOR_RESET);
 
@@ -2939,11 +2983,11 @@ yyreduce:
         (yyval.t_node)->child[0] = (yyvsp[-2].t_node);
         (yyval.t_node)->child[1] = (yyvsp[0].t_node);
     }
-#line 2943 "./src/syntax.tab.c"
+#line 2987 "./src/syntax.tab.c"
     break;
 
   case 34: /* ifStatement: IF_KEY DELIM_PARENT_L simpleExpression DELIM_PARENT_R statement ELSE_KEY statement  */
-#line 487 "./src/syntax.y"
+#line 531 "./src/syntax.y"
                                                                                          {
         (yyval.t_node) = createNode(COLOR_BLUE "If-Else Statement" COLOR_RESET);
 
@@ -2954,11 +2998,11 @@ yyreduce:
         (yyval.t_node)->child[2] = (yyvsp[0].t_node);
 
     }
-#line 2958 "./src/syntax.tab.c"
+#line 3002 "./src/syntax.tab.c"
     break;
 
   case 35: /* loopStatement: FOR_KEY DELIM_PARENT_L expression DELIM_SEMICOLLON simpleExpression DELIM_SEMICOLLON expression DELIM_PARENT_R statement  */
-#line 500 "./src/syntax.y"
+#line 544 "./src/syntax.y"
                                                                                                                              {
         (yyval.t_node) = createNode(COLOR_BLUE "For Statement" COLOR_RESET);
 
@@ -2969,11 +3013,11 @@ yyreduce:
         (yyval.t_node)->child[2] = (yyvsp[-2].t_node);
         (yyval.t_node)->child[3] = (yyvsp[0].t_node);
     }
-#line 2973 "./src/syntax.tab.c"
+#line 3017 "./src/syntax.tab.c"
     break;
 
   case 36: /* returnStatement: RETURN_KEY expression DELIM_SEMICOLLON  */
-#line 513 "./src/syntax.y"
+#line 557 "./src/syntax.y"
                                            {
         (yyval.t_node) = createNode(COLOR_BLUE "Return Statement" COLOR_RESET);
 
@@ -2981,11 +3025,11 @@ yyreduce:
 
         (yyval.t_node)->child[0] = (yyvsp[-1].t_node);
     }
-#line 2985 "./src/syntax.tab.c"
+#line 3029 "./src/syntax.tab.c"
     break;
 
   case 37: /* expression: ID ASSIGN_OP expression  */
-#line 523 "./src/syntax.y"
+#line 567 "./src/syntax.y"
                             {
         (yyval.t_node) = createNode("Assign Operation");
 
@@ -2995,27 +3039,27 @@ yyreduce:
         freeScopeToken((yyvsp[-2].t_token).scope);
 
     }
-#line 2999 "./src/syntax.tab.c"
+#line 3043 "./src/syntax.tab.c"
     break;
 
   case 38: /* expression: simpleExpression  */
-#line 532 "./src/syntax.y"
+#line 576 "./src/syntax.y"
                        {
         (yyval.t_node) = (yyvsp[0].t_node);
     }
-#line 3007 "./src/syntax.tab.c"
+#line 3051 "./src/syntax.tab.c"
     break;
 
   case 39: /* simpleExpression: logicBinExpression  */
-#line 543 "./src/syntax.y"
+#line 587 "./src/syntax.y"
                        {
         (yyval.t_node) = (yyvsp[0].t_node);
     }
-#line 3015 "./src/syntax.tab.c"
+#line 3059 "./src/syntax.tab.c"
     break;
 
   case 40: /* logicBinExpression: logicBinExpression LOGIC_OP logicUnExpression  */
-#line 554 "./src/syntax.y"
+#line 598 "./src/syntax.y"
                                                   {
         (yyval.t_node) = createNode("Logic Binary Expression");
 
@@ -3023,40 +3067,46 @@ yyreduce:
 
         (yyval.t_node)->child[0] = (yyvsp[-2].t_node);
         (yyval.t_node)->child[1] = (yyvsp[0].t_node);
+
+        addNodeType((yyval.t_node), "logic");
+
     }
-#line 3028 "./src/syntax.tab.c"
+#line 3075 "./src/syntax.tab.c"
     break;
 
   case 41: /* logicBinExpression: logicUnExpression  */
-#line 562 "./src/syntax.y"
+#line 609 "./src/syntax.y"
                         {
         (yyval.t_node) = (yyvsp[0].t_node);
     }
-#line 3036 "./src/syntax.tab.c"
+#line 3083 "./src/syntax.tab.c"
     break;
 
   case 42: /* logicUnExpression: EXCLA_OP logicUnExpression  */
-#line 568 "./src/syntax.y"
+#line 615 "./src/syntax.y"
                                {
         (yyval.t_node) = createNode("Exclamation Expression");
 
         addChild((yyval.t_node), 1);
 
         (yyval.t_node)->child[0] = (yyvsp[0].t_node);
+
+        addNodeType((yyval.t_node), "logic");
+
     }
-#line 3048 "./src/syntax.tab.c"
+#line 3098 "./src/syntax.tab.c"
     break;
 
   case 43: /* logicUnExpression: binExpression  */
-#line 575 "./src/syntax.y"
+#line 625 "./src/syntax.y"
                     {
         (yyval.t_node) = (yyvsp[0].t_node);
     }
-#line 3056 "./src/syntax.tab.c"
+#line 3106 "./src/syntax.tab.c"
     break;
 
   case 44: /* binExpression: binExpression BINARY_OP sumExpression  */
-#line 585 "./src/syntax.y"
+#line 635 "./src/syntax.y"
                                           {
         (yyval.t_node) = createNode("Binary Expression");
 
@@ -3064,20 +3114,23 @@ yyreduce:
 
         (yyval.t_node)->child[0] = (yyvsp[-2].t_node);
         (yyval.t_node)->child[1] = (yyvsp[0].t_node);
+
+        addNodeType((yyval.t_node), "binary");
+
     }
-#line 3069 "./src/syntax.tab.c"
+#line 3122 "./src/syntax.tab.c"
     break;
 
   case 45: /* binExpression: sumExpression  */
-#line 593 "./src/syntax.y"
+#line 646 "./src/syntax.y"
                     {
         (yyval.t_node) = (yyvsp[0].t_node);
     }
-#line 3077 "./src/syntax.tab.c"
+#line 3130 "./src/syntax.tab.c"
     break;
 
   case 46: /* sumExpression: sumExpression sumOP mulExpression  */
-#line 599 "./src/syntax.y"
+#line 652 "./src/syntax.y"
                                       {
         (yyval.t_node) = createNode("Sum Expression");
 
@@ -3087,21 +3140,21 @@ yyreduce:
         (yyval.t_node)->child[1] = (yyvsp[-1].t_node);
         (yyval.t_node)->child[2] = (yyvsp[0].t_node);
 
-
+        addNodeTypeChildren((yyval.t_node));
     }
-#line 3093 "./src/syntax.tab.c"
+#line 3146 "./src/syntax.tab.c"
     break;
 
   case 47: /* sumExpression: mulExpression  */
-#line 610 "./src/syntax.y"
+#line 663 "./src/syntax.y"
                     {
         (yyval.t_node) = (yyvsp[0].t_node);
     }
-#line 3101 "./src/syntax.tab.c"
+#line 3154 "./src/syntax.tab.c"
     break;
 
   case 48: /* mulExpression: mulExpression mulOP factor  */
-#line 616 "./src/syntax.y"
+#line 669 "./src/syntax.y"
                                {
         (yyval.t_node) = createNode("Multiplication Expression");
 
@@ -3112,52 +3165,54 @@ yyreduce:
         (yyval.t_node)->child[0] = (yyvsp[-2].t_node);
         (yyval.t_node)->child[1] = (yyvsp[-1].t_node);
         (yyval.t_node)->child[2] = (yyvsp[0].t_node);
+
+        addNodeTypeChildren((yyval.t_node));
     }
-#line 3117 "./src/syntax.tab.c"
+#line 3172 "./src/syntax.tab.c"
     break;
 
   case 49: /* mulExpression: factor  */
-#line 627 "./src/syntax.y"
+#line 682 "./src/syntax.y"
              {
         (yyval.t_node) = (yyvsp[0].t_node);
     }
-#line 3125 "./src/syntax.tab.c"
+#line 3180 "./src/syntax.tab.c"
     break;
 
   case 50: /* sumOP: PLUS_OP  */
-#line 633 "./src/syntax.y"
+#line 688 "./src/syntax.y"
             {
         (yyval.t_node) = createNode("+ Operator");
     }
-#line 3133 "./src/syntax.tab.c"
+#line 3188 "./src/syntax.tab.c"
     break;
 
   case 51: /* sumOP: MINUS_OP  */
-#line 636 "./src/syntax.y"
+#line 691 "./src/syntax.y"
                {
         (yyval.t_node) = createNode("- Operator");
     }
-#line 3141 "./src/syntax.tab.c"
+#line 3196 "./src/syntax.tab.c"
     break;
 
   case 52: /* mulOP: MUL_OP  */
-#line 642 "./src/syntax.y"
+#line 697 "./src/syntax.y"
            {
         (yyval.t_node) = createNode("* Operator");
     }
-#line 3149 "./src/syntax.tab.c"
+#line 3204 "./src/syntax.tab.c"
     break;
 
   case 53: /* mulOP: DIV_OP  */
-#line 645 "./src/syntax.y"
+#line 700 "./src/syntax.y"
              {
         (yyval.t_node) = createNode("/ Operator");
     }
-#line 3157 "./src/syntax.tab.c"
+#line 3212 "./src/syntax.tab.c"
     break;
 
   case 54: /* factor: ID  */
-#line 651 "./src/syntax.y"
+#line 706 "./src/syntax.y"
        {
         char* temp;
 
@@ -3172,44 +3227,46 @@ yyreduce:
 
         freeScopeToken((yyvsp[0].t_token).scope);
         free(temp);
+
+        addNodeTypeId((yyval.t_node), (yyvsp[0].t_token).text);
     }
-#line 3177 "./src/syntax.tab.c"
+#line 3234 "./src/syntax.tab.c"
     break;
 
   case 55: /* factor: constant  */
-#line 666 "./src/syntax.y"
+#line 723 "./src/syntax.y"
                {
         (yyval.t_node) = (yyvsp[0].t_node);
     }
-#line 3185 "./src/syntax.tab.c"
+#line 3242 "./src/syntax.tab.c"
     break;
 
   case 56: /* factor: DELIM_PARENT_L simpleExpression DELIM_PARENT_R  */
-#line 669 "./src/syntax.y"
+#line 726 "./src/syntax.y"
                                                      {
         (yyval.t_node) = (yyvsp[-1].t_node);
     }
-#line 3193 "./src/syntax.tab.c"
+#line 3250 "./src/syntax.tab.c"
     break;
 
   case 57: /* factor: functionCall  */
-#line 672 "./src/syntax.y"
+#line 729 "./src/syntax.y"
                    {
         (yyval.t_node) = (yyvsp[0].t_node);
     }
-#line 3201 "./src/syntax.tab.c"
+#line 3258 "./src/syntax.tab.c"
     break;
 
   case 58: /* factor: listExpression  */
-#line 675 "./src/syntax.y"
+#line 732 "./src/syntax.y"
                      {
         (yyval.t_node) = (yyvsp[0].t_node);
     }
-#line 3209 "./src/syntax.tab.c"
+#line 3266 "./src/syntax.tab.c"
     break;
 
   case 59: /* constant: INT  */
-#line 681 "./src/syntax.y"
+#line 738 "./src/syntax.y"
         {
         char* temp;
 
@@ -3222,12 +3279,14 @@ yyreduce:
         (yyval.t_node) = createNode(temp);
 
         free(temp);
+
+        addNodeType((yyval.t_node), "int");
     }
-#line 3227 "./src/syntax.tab.c"
+#line 3286 "./src/syntax.tab.c"
     break;
 
   case 60: /* constant: MINUS_OP INT  */
-#line 694 "./src/syntax.y"
+#line 753 "./src/syntax.y"
                    {
         char* temp;
 
@@ -3240,12 +3299,14 @@ yyreduce:
         (yyval.t_node) = createNode(temp);
 
         free(temp);
+
+        addNodeType((yyval.t_node), "int");
     }
-#line 3245 "./src/syntax.tab.c"
+#line 3306 "./src/syntax.tab.c"
     break;
 
   case 61: /* constant: FLOAT  */
-#line 707 "./src/syntax.y"
+#line 768 "./src/syntax.y"
             {
         char* temp;
 
@@ -3258,12 +3319,14 @@ yyreduce:
         (yyval.t_node) = createNode(temp);
 
         free(temp);
+
+        addNodeType((yyval.t_node), "float");
     }
-#line 3263 "./src/syntax.tab.c"
+#line 3326 "./src/syntax.tab.c"
     break;
 
   case 62: /* constant: MINUS_OP FLOAT  */
-#line 720 "./src/syntax.y"
+#line 783 "./src/syntax.y"
                      {
         char* temp;
 
@@ -3276,12 +3339,14 @@ yyreduce:
         (yyval.t_node) = createNode(temp);
 
         free(temp);
+
+        addNodeType((yyval.t_node), "float");
     }
-#line 3281 "./src/syntax.tab.c"
+#line 3346 "./src/syntax.tab.c"
     break;
 
   case 63: /* constant: NULL_CONST  */
-#line 733 "./src/syntax.y"
+#line 798 "./src/syntax.y"
                  {
         char* temp;
 
@@ -3293,12 +3358,14 @@ yyreduce:
         (yyval.t_node) = createNode(temp);
 
         free(temp);
+
+        addNodeType((yyval.t_node), "null");
     }
-#line 3298 "./src/syntax.tab.c"
+#line 3365 "./src/syntax.tab.c"
     break;
 
   case 64: /* functionCall: ID DELIM_PARENT_L parametersPass DELIM_PARENT_R  */
-#line 748 "./src/syntax.y"
+#line 815 "./src/syntax.y"
                                                     {
         char* temp;
 
@@ -3313,12 +3380,16 @@ yyreduce:
         (yyval.t_node)->child[0] = (yyvsp[-1].t_node);
         freeScopeToken((yyvsp[-3].t_token).scope);
         free(temp);
+
+        addFunctionName((yyval.t_node), (yyvsp[-3].t_token).text);
+
+        checkFunctionCall((yyval.t_node));
     }
-#line 3318 "./src/syntax.tab.c"
+#line 3389 "./src/syntax.tab.c"
     break;
 
   case 65: /* parametersPass: parametersPass DELIM_COMMA simpleExpression  */
-#line 766 "./src/syntax.y"
+#line 837 "./src/syntax.y"
                                                 {
         (yyval.t_node) = createNode("Parameters Passing");
 
@@ -3327,51 +3398,51 @@ yyreduce:
         (yyval.t_node)->child[0] = (yyvsp[-2].t_node);
         (yyval.t_node)->child[1] = (yyvsp[0].t_node);
     }
-#line 3331 "./src/syntax.tab.c"
+#line 3402 "./src/syntax.tab.c"
     break;
 
   case 66: /* parametersPass: simpleExpression  */
-#line 774 "./src/syntax.y"
+#line 845 "./src/syntax.y"
                        {
         (yyval.t_node) = (yyvsp[0].t_node);
     }
-#line 3339 "./src/syntax.tab.c"
+#line 3410 "./src/syntax.tab.c"
     break;
 
   case 67: /* parametersPass: %empty  */
-#line 777 "./src/syntax.y"
+#line 848 "./src/syntax.y"
       {
         (yyval.t_node) = createEmptyNode();
     }
-#line 3347 "./src/syntax.tab.c"
+#line 3418 "./src/syntax.tab.c"
     break;
 
   case 68: /* writeOp: write  */
-#line 783 "./src/syntax.y"
+#line 854 "./src/syntax.y"
           {
         (yyval.t_node) = (yyvsp[0].t_node);
     }
-#line 3355 "./src/syntax.tab.c"
+#line 3426 "./src/syntax.tab.c"
     break;
 
   case 69: /* writeOp: writeln  */
-#line 786 "./src/syntax.y"
+#line 857 "./src/syntax.y"
               {
         (yyval.t_node) = (yyvsp[0].t_node);
     }
-#line 3363 "./src/syntax.tab.c"
+#line 3434 "./src/syntax.tab.c"
     break;
 
   case 70: /* write: OUTPUT_KEY DELIM_PARENT_L STRING DELIM_PARENT_R  */
-#line 792 "./src/syntax.y"
+#line 863 "./src/syntax.y"
                                                     {
         (yyval.t_node) = createNode(COLOR_BLUE "Output String" COLOR_RESET);
     }
-#line 3371 "./src/syntax.tab.c"
+#line 3442 "./src/syntax.tab.c"
     break;
 
   case 71: /* write: OUTPUT_KEY DELIM_PARENT_L simpleExpression DELIM_PARENT_R  */
-#line 795 "./src/syntax.y"
+#line 866 "./src/syntax.y"
                                                                 {
         (yyval.t_node) = createNode(COLOR_BLUE "Output Expression" COLOR_RESET);
 
@@ -3379,19 +3450,19 @@ yyreduce:
 
         (yyval.t_node)->child[0] = (yyvsp[-1].t_node);
     }
-#line 3383 "./src/syntax.tab.c"
+#line 3454 "./src/syntax.tab.c"
     break;
 
   case 72: /* writeln: OUTPUTLN_KEY DELIM_PARENT_L STRING DELIM_PARENT_R  */
-#line 805 "./src/syntax.y"
+#line 876 "./src/syntax.y"
                                                       {
         (yyval.t_node) = createNode(COLOR_BLUE "OutputLn String" COLOR_RESET);
     }
-#line 3391 "./src/syntax.tab.c"
+#line 3462 "./src/syntax.tab.c"
     break;
 
   case 73: /* writeln: OUTPUTLN_KEY DELIM_PARENT_L simpleExpression DELIM_PARENT_R  */
-#line 808 "./src/syntax.y"
+#line 879 "./src/syntax.y"
                                                                   {
         (yyval.t_node) = createNode(COLOR_BLUE "OutputLn Expression" COLOR_RESET);
 
@@ -3399,11 +3470,11 @@ yyreduce:
 
         (yyval.t_node)->child[0] = (yyvsp[-1].t_node);
     }
-#line 3403 "./src/syntax.tab.c"
+#line 3474 "./src/syntax.tab.c"
     break;
 
   case 74: /* readOp: INPUT_KEY DELIM_PARENT_L ID DELIM_PARENT_R  */
-#line 818 "./src/syntax.y"
+#line 889 "./src/syntax.y"
                                                {
         char* temp;
 
@@ -3419,59 +3490,59 @@ yyreduce:
         freeScopeToken((yyvsp[-1].t_token).scope);
         free(temp);
     }
-#line 3423 "./src/syntax.tab.c"
+#line 3494 "./src/syntax.tab.c"
     break;
 
   case 75: /* expressionStatement: expression DELIM_SEMICOLLON  */
-#line 836 "./src/syntax.y"
+#line 907 "./src/syntax.y"
                                 {
         (yyval.t_node) = (yyvsp[-1].t_node);
     }
-#line 3431 "./src/syntax.tab.c"
+#line 3502 "./src/syntax.tab.c"
     break;
 
   case 76: /* listStatement: listAssign  */
-#line 842 "./src/syntax.y"
+#line 913 "./src/syntax.y"
                {
         (yyval.t_node) = (yyvsp[0].t_node);
     }
-#line 3439 "./src/syntax.tab.c"
+#line 3510 "./src/syntax.tab.c"
     break;
 
   case 77: /* listStatement: listMap  */
-#line 845 "./src/syntax.y"
+#line 916 "./src/syntax.y"
               {
         (yyval.t_node) = (yyvsp[0].t_node);
     }
-#line 3447 "./src/syntax.tab.c"
+#line 3518 "./src/syntax.tab.c"
     break;
 
   case 78: /* listStatement: listFilter  */
-#line 848 "./src/syntax.y"
+#line 919 "./src/syntax.y"
                  {
         (yyval.t_node) = (yyvsp[0].t_node);
     }
-#line 3455 "./src/syntax.tab.c"
+#line 3526 "./src/syntax.tab.c"
     break;
 
   case 79: /* listExpression: listHeader  */
-#line 854 "./src/syntax.y"
+#line 925 "./src/syntax.y"
                {
         (yyval.t_node) = (yyvsp[0].t_node);
     }
-#line 3463 "./src/syntax.tab.c"
+#line 3534 "./src/syntax.tab.c"
     break;
 
   case 80: /* listExpression: listTailDestructor  */
-#line 858 "./src/syntax.y"
+#line 929 "./src/syntax.y"
                          {
         (yyval.t_node) = (yyvsp[0].t_node);
     }
-#line 3471 "./src/syntax.tab.c"
+#line 3542 "./src/syntax.tab.c"
     break;
 
   case 81: /* listAssign: ID ASSIGN_OP ID ASSIGN_LISTOP ID  */
-#line 864 "./src/syntax.y"
+#line 935 "./src/syntax.y"
                                      {
         char* temp;
 
@@ -3501,11 +3572,11 @@ yyreduce:
         freeScopeToken((yyvsp[0].t_token).scope);
         free(temp);
     }
-#line 3505 "./src/syntax.tab.c"
+#line 3576 "./src/syntax.tab.c"
     break;
 
   case 82: /* listHeader: HEADER_LISTOP ID  */
-#line 896 "./src/syntax.y"
+#line 967 "./src/syntax.y"
                      {
         char* temp;
 
@@ -3521,11 +3592,11 @@ yyreduce:
         freeScopeToken((yyvsp[0].t_token).scope);
         free(temp);
     }
-#line 3525 "./src/syntax.tab.c"
+#line 3596 "./src/syntax.tab.c"
     break;
 
   case 83: /* listTailDestructor: TAILDES_LISTOP ID  */
-#line 918 "./src/syntax.y"
+#line 989 "./src/syntax.y"
                       {
         char* temp;
 
@@ -3541,11 +3612,11 @@ yyreduce:
         freeScopeToken((yyvsp[0].t_token).scope);
         free(temp);
     }
-#line 3545 "./src/syntax.tab.c"
+#line 3616 "./src/syntax.tab.c"
     break;
 
   case 84: /* listMap: ID ASSIGN_OP ID MAP_LISTOP ID  */
-#line 936 "./src/syntax.y"
+#line 1007 "./src/syntax.y"
                                   {
         char* temp;
 
@@ -3567,11 +3638,11 @@ yyreduce:
         freeScopeToken((yyvsp[0].t_token).scope);
         free(temp);
     }
-#line 3571 "./src/syntax.tab.c"
+#line 3642 "./src/syntax.tab.c"
     break;
 
   case 85: /* listFilter: ID ASSIGN_OP ID FILTER_LISTOP ID  */
-#line 960 "./src/syntax.y"
+#line 1031 "./src/syntax.y"
                                      {
         char* temp;
 
@@ -3593,11 +3664,11 @@ yyreduce:
         freeScopeToken((yyvsp[0].t_token).scope);
         free(temp);
     }
-#line 3597 "./src/syntax.tab.c"
+#line 3668 "./src/syntax.tab.c"
     break;
 
 
-#line 3601 "./src/syntax.tab.c"
+#line 3672 "./src/syntax.tab.c"
 
       default: break;
     }
@@ -3822,7 +3893,7 @@ yyreturn:
   return yyresult;
 }
 
-#line 984 "./src/syntax.y"
+#line 1055 "./src/syntax.y"
 
 /* Additional C code */
 
@@ -3862,9 +3933,13 @@ int main(int argc, char **argv){
             printf("Analyzer completed with %d lexical and %d syntatic errors.\n\n\n", lexicalError, syntaticError);
 
 
-            printTable();
+            /* printTable(); */
             printTable2();
             printTree();
+
+            printParams();
+
+            semanticAnalysis();
 
             /* print_end(); */
         }

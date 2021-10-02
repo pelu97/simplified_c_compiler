@@ -3,12 +3,16 @@
 
 
 
-
+#ifndef NODETYPE
+#define NODETYPE
 typedef struct Node{
     char* name;
     int empty;
     struct Node** child;
+    char* type;
+    char* functionName;
 } t_node;
+#endif
 
 
 extern t_node* TreeRoot;
@@ -17,6 +21,14 @@ extern t_node* TreeRoot;
 t_node* createNode(char* name);
 
 t_node* createEmptyNode();
+
+void addNodeType(t_node* node, char* type);
+
+void addNodeTypeChildren(t_node* node);
+
+void addNodeTypeId(t_node* node, char* id);
+
+void addFunctionName(t_node* node, char* function);
 
 void initializeTree(t_node* node);
 
