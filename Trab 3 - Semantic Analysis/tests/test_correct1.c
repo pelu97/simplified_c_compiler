@@ -15,8 +15,6 @@ int list list_input(int n, int k, int l, int j, int g){
         mylist = temp : mylist;
     }
 
-    jonathan = 0;
-    batataazul = 1;
 
     writeln("Lista armazenada");
 
@@ -70,10 +68,6 @@ int double_list(int i){
     return i*2;
 }
 
-int double_list(){
-    return 0;
-}
-
 int main(){
     int list listread;
     int n;
@@ -83,7 +77,7 @@ int main(){
     write("O inteiro digitado foi: ");
     writeln(n);
 
-    listread = list_input(n, 0.1, NIL, 2, 3.3);
+    listread = list_input(n, 1, 4, 2, 3);
 
     test_list(listread);
 

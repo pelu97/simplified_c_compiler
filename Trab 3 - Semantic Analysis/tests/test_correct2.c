@@ -25,7 +25,7 @@ int main(){
     write("O inteiro digitado foi: ");
     writeln(batata);
 
-    bake(batata);
+    bake();
 
     write("Encerrando execução...");
 
