@@ -575,8 +575,10 @@ expression:
         $$->child[0] = $3;
         freeScopeToken($1.scope);
 
+        addNodePosition($$, $1.line, $1.column);
+        addNodeId($$, $1.text);
 
-        checkIdDeclaration($1.text);
+        checkIdDeclaration($$);
 
     }
     | simpleExpression {
@@ -725,8 +727,10 @@ factor:
         free(temp);
 
         addNodeTypeId($$, $1.text);
+        addNodePosition($$, $1.line, $1.column);
+        addNodeId($$, $1.text);
 
-        checkIdDeclaration($1.text);
+        checkIdDeclaration($$);
     }
     | constant {
         $$ = $1;
@@ -757,6 +761,7 @@ constant:
         free(temp);
 
         addNodeType($$, "int");
+        addNodePosition($$, $1.line, $1.column);
     }
     | MINUS_OP INT {
         char* temp;
@@ -772,6 +777,7 @@ constant:
         free(temp);
 
         addNodeType($$, "int");
+        addNodePosition($$, $2.line, $2.column);
     }
     | FLOAT {
         char* temp;
@@ -787,6 +793,7 @@ constant:
         free(temp);
 
         addNodeType($$, "float");
+        addNodePosition($$, $1.line, $1.column);
     }
     | MINUS_OP FLOAT {
         char* temp;
@@ -802,6 +809,7 @@ constant:
         free(temp);
 
         addNodeType($$, "float");
+        addNodePosition($$, $2.line, $2.column);
     }
     | NULL_CONST {
         char* temp;
@@ -816,6 +824,7 @@ constant:
         free(temp);
 
         addNodeType($$, "null");
+        addNodePosition($$, $1.line, $1.column);
     }
 ;
 
@@ -836,6 +845,7 @@ functionCall:
         free(temp);
 
         addFunctionName($$, $1.text);
+        addNodePosition($$, $1.line, $1.column);
 
         checkFunctionCall($$);
     }
@@ -1096,16 +1106,16 @@ int main(int argc, char **argv){
             yyparse();
             fclose(yyin);
 
-            printf("Analyzer completed with %d lexical and %d syntatic errors.\n\n\n", lexicalError, syntaticError);
+            semanticAnalysis();
 
+            printf("\nAnalyzer completed. Errors: \n" COLOR_YELLOW "--%d lexical;" COLOR_RESET COLOR_CYAN " \n--%d syntatic; " COLOR_RESET COLOR_GREEN "\n--%d semantic." COLOR_RESET "\n\n\n", lexicalError, syntaticError, semanticErrorsTotal);
 
             /* printTable(); */
             printTable2();
             printTree();
 
-            printParams();
+            /* printParams(); */
 
-            semanticAnalysis();
 
             /* print_end(); */
         }

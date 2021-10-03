@@ -10,14 +10,16 @@
 t_semerror** semanticErrors = NULL;
 int semanticErrorsTotal = 0;
 
-void addError(char* type, char* message, int line, int column){
+void addError(char* type, char* message, char* error_text, int line, int column){
     t_semerror* error;
 
     semanticErrorsTotal++;
 
     semanticErrors = realloc(semanticErrors, (sizeof(t_semerror*) * semanticErrorsTotal));
 
+    #ifdef DEBUG_SEMANTIC
     printf("Adding error with type %s and message %s\n", type, message);
+    #endif
 
     error = malloc(sizeof(t_semerror));
 
@@ -27,27 +29,57 @@ void addError(char* type, char* message, int line, int column){
     error->message = malloc(strlen(message) + 1);
     strcpy(error->message, message);
 
+    error->error_text = malloc(strlen(error_text) + 1);
+    strcpy(error->error_text, error_text);
+
     error->line = line;
     error->column = column;
+
+    semanticErrors[semanticErrorsTotal-1] = error;
 }
 
 void printErrors(){
     int i;
 
+    #ifdef DEBUG_SEMANTIC
+    printf("Printing %d semantic errors\n", semanticErrorsTotal);
+    #endif
+
     for(i=0; i<semanticErrorsTotal; i++){
-        printf("%s\n", semanticErrors[i]->message);
+        printf("%s - line: %d, column: %d\n", semanticErrors[i]->message, semanticErrors[i]->line, semanticErrors[i]->column);
     }
 }
 
 int checkMain(){
     t_symbol* pointer;
     int found = 0;
+    char temp[500];
+    int line, column;
 
     for(pointer = SymbolTable; pointer != NULL; pointer = pointer->next){
         if((strcmp(pointer->name, "main") == 0) && (pointer->varFunc == 0)){
             found++;
+
+            if(found == 1){
+                line = pointer->line;
+                column = pointer->column;
+            }
+
+            if(found > 1){
+                sprintf(temp, "Redefinition of function main. Previous definition on line %d, column %d.", line, column);
+
+                // strcpy(temp, "Redefinition of function main. Previous definition on line ");
+                // strcat(temp, line);
+                // strcat(temp, ", column ");
+                // strcat(temp, column);
+
+                addError("mainRedef", temp, "", pointer->line, pointer->column);
+            }
         }
+
+        #ifdef DEBUG_SEMANTIC
         printf("Comparing %s with main - varFunc=%d\n", pointer->name, pointer->varFunc);
+        #endif
     }
 
     return found;
@@ -85,7 +117,7 @@ void checkFunctions(){
                         strcpy(temp, "Redefinition of function ");
                         strcat(temp, pointer->name);
                         strcat(temp, ". Previous definition on position: ");
-                        addError("funcRedef", temp, -1, -1);
+                        addError("funcRedef", temp, "test", -1, -1);
 
                         functionChecked[j] = 1;
                         free(temp);
@@ -102,14 +134,17 @@ void checkFunctions(){
 
 void checkFunctionCall(t_node* node){
     int i, paramNumber, j, correct;
-    char** types = NULL;
+    // char** types = NULL;
+    t_typeTemp** types = NULL;
     t_symbol* funcDeclaration;
+    char temp[500];
 
     // check children of node for types
     // store types in temporary array of strings
     // find function declaration in symbol table
     // compare types and number of arguments stored in temporary array with the symbol table declaration of the function
     // profit
+
 
     #ifdef DEBUG_SEMANTIC
     printf("Function call check - Checking function call...\n");
@@ -124,12 +159,13 @@ void checkFunctionCall(t_node* node){
 
     // printBranch(node, 0);
 
-    printf("Parâmetros no nó: %s\n", node->name);
+    // printf("Parâmetros no nó: %s\n", node->name);
     for(i=0; i<paramNumber; i++){
         #ifdef DEBUG_SEMANTIC
-        printf("Function call check - Printing type %d - length: %d\n", i, strlen(types[i]));
+        printf("Function call check - Printing type %d - length: %d\n", i, strlen(types[i]->type));
+        printf("%s\n", types[i]->type);
         #endif
-        printf("%s\n", types[i]);
+        NULL;
     }
 
     funcDeclaration = getSymbol(node->functionName);
@@ -141,30 +177,42 @@ void checkFunctionCall(t_node* node){
         if(paramNumber == funcDeclaration->paramNumber){
             for(i=0; i<paramNumber; i++){
                 #ifdef DEBUG_SEMANTIC
-                printf("Function call check - Comparing types %s - %s\n", types[j], funcDeclaration->parameters[i]->type);
+                printf("Function call check - Comparing types %s - %s\n", types[j]->type, funcDeclaration->parameters[i]->type);
                 #endif
 
-                if(strcmp(types[j], funcDeclaration->parameters[i]->type) != 0){
+                if(strcmp(types[j]->type, funcDeclaration->parameters[i]->type) != 0){
                     correct = 0;
-                    printf("Wrong parameter type (%s - %s) in call to function %s\n", types[j], funcDeclaration->parameters[i]->type, funcDeclaration->name);
+                    // printf("Wrong parameter type (%s - %s) in call to function %s\n", types[j]->type, funcDeclaration->parameters[i]->type, funcDeclaration->name);
+
+                    strcpy(temp, "Wrong parameter type in call to function ");
+                    strcat(temp, funcDeclaration->name);
+                    strcat(temp, ". Expected ");
+                    strcat(temp, funcDeclaration->parameters[i]->type);
+                    strcat(temp, " - got ");
+                    strcat(temp, types[j]->type);
+                    addError("paramType", temp, "", types[j]->line, types[j]->column);
                 }
                 j--;
             }
         }
         else{
             // different number of parameters
-            printf("Wrong number of parameters in call to function %s\n", funcDeclaration->name);
+            // printf("Wrong number of parameters in call to function %s\n", funcDeclaration->name);
+            strcpy(temp, "Wrong number of parameters in call to function ");
+            strcat(temp, funcDeclaration->name);
+            addError("paramNumber", temp, "", node->line, node->column);
         }
 
 
     }
     else{
-        printf("Error when looking for function declaration - function '%s' not declared in symbol table\n", node->functionName);
+        // printf("Error when looking for function declaration - function '%s' not declared in symbol table\n", node->functionName);
+        NULL;
     }
 
 }
 
-int getFunctionCallParameters(t_node* node, int index, char*** types){
+int getFunctionCallParameters(t_node* node, int index, t_typeTemp*** types){
     // int size = 0;
     // child 0 é nó para o próximo parâmetro - se não houver child 1, child 0 é o último tipo
     // child 1 é o parâmetro atual
@@ -206,7 +254,7 @@ int getFunctionCallParameters(t_node* node, int index, char*** types){
             printf("Function call check - Node still has more than one paramater child - recursion\n");
             #endif
 
-            *types = addTempType(*types, node->child[1]->type, index);
+            *types = addTempType(*types, node->child[1]->type, index, node->child[1]->line, node->child[1]->column);
             index++;
             index = getFunctionCallParameters(node->child[0], index, types);
         }
@@ -217,9 +265,9 @@ int getFunctionCallParameters(t_node* node, int index, char*** types){
             printf("Function call check - Node only has expression childs - no recursion\n");
             #endif
 
-            *types = addTempType(*types, node->child[1]->type, index);
+            *types = addTempType(*types, node->child[1]->type, index, node->child[1]->line, node->child[1]->column);
             index++;
-            *types = addTempType(*types, node->child[0]->type, index);
+            *types = addTempType(*types, node->child[0]->type, index, node->child[0]->line, node->child[0]->column);
             index++;
         }
     }
@@ -230,7 +278,7 @@ int getFunctionCallParameters(t_node* node, int index, char*** types){
 
         if(node->empty == 0){
             // caso de só existir um parâmetro. O nó passado no início da execução não tem filhos e já é o nó que deve ser analisado
-            *types = addTempType(*types, node->type, index);
+            *types = addTempType(*types, node->type, index, node->line, node->column);
             index++;
         }
         // caso o nó não tenha filhos e seja vazio, não há nada a fazer. É o nó criado quando a chamada de função não possuía parâmetros
@@ -239,15 +287,15 @@ int getFunctionCallParameters(t_node* node, int index, char*** types){
     return index;
 }
 
-char** addTempType(char** types, char* type, int index){
-    char** temp;
+t_typeTemp** addTempType(t_typeTemp** types, char* type, int index, int line, int column){
+    t_typeTemp** temp;
 
     #ifdef DEBUG_SEMANTIC
     printf("Function call check - Adding temporary type: %s\n", type);
     #endif
 
     // temp = realloc(types, (size + strlen(type) + 1));
-    temp = realloc(types, (sizeof(char*) * (index+2)));
+    temp = realloc(types, (sizeof(t_typeTemp*) * (index+2)));
     // index + 2 compensa pela posição do índice que começa em 0 (+1) e pelo fato de estar adicionado mais um elemento (+1)
     // então index+2 representa o número de elementos atuais +1 que será adicionado agora
 
@@ -256,18 +304,22 @@ char** addTempType(char** types, char* type, int index){
         types = temp;
 
         #ifdef DEBUG_SEMANTIC
-        printf("Function call check - Allocated memory for temporary array of types: %d bytes\n", (sizeof(char*) * (index+1)));
+        printf("Function call check - Allocated memory for temporary array of types: %d bytes\n", (sizeof(t_typeTemp*) * (index+2)));
         #endif
 
         index++;
-        types[index] = malloc(strlen(type) + 1);
+        // types[index] = malloc(strlen(type) + 1);
+        // types[index] = malloc((strlen(type) + 1) + (sizeof(int) * 2));
+        types[index] = malloc(sizeof(t_typeTemp));
+        types[index]->type = malloc(strlen(type) + 1);
 
         #ifdef DEBUG_SEMANTIC
-        printf("Function call check - Allocated memory for temporary type: %s - index: %d - bytes: %d\n", type, index, (strlen(type) + 1));
+        printf("Function call check - Allocated memory for temporary type: %s - index: %d - bytes: %d, bytes for type: %d\n", type, index, (sizeof(t_typeTemp)), (strlen(type) + 1));
         #endif
 
-        strcpy(types[index], type);
-
+        strcpy(types[index]->type, type);
+        types[index]->line = line;
+        types[index]->column = column;
         // size = size + strlen(type) + 1;
 
         #ifdef DEBUG_SEMANTIC
@@ -279,19 +331,20 @@ char** addTempType(char** types, char* type, int index){
     }
 
     #ifdef DEBUG_SEMANTIC
-    printf("Function call check - Added temporary type: %s\n", types[index]);
+    printf("Function call check - Added temporary type: %s\n", types[index]->type);
     #endif
 
     return types;
 }
 
 
-void checkIdDeclaration(char* id){
+void checkIdDeclaration(t_node* node){
     t_symbol* pointer;
     int found = 0;
+    char temp[300];
 
     for(pointer = SymbolTable; pointer != NULL; pointer = pointer->next){
-        if(strcmp(id, pointer->name) == 0){
+        if(strcmp(node->id, pointer->name) == 0){
             // achou o símbolo na tabela
             // não procura o símbolo no escopo mais próximo (que é o que seria usado)
             // procura apenas se existe um símbolo com esse nome em um escopo válido
@@ -304,11 +357,18 @@ void checkIdDeclaration(char* id){
     }
 
     if(found == 0){
-        printf("Uso de uma variável ou função não declarada - %s\n", id);
+        // printf("Uso de uma variável ou função não declarada - %s\n", node->id);
+
+        strcpy(temp, "Variable or function ");
+        strcat(temp, node->id);
+        strcat(temp, " undeclared in this scope.");
+
+        addError("undeclaredId", temp, "", node->line, node->column);
     }
     else{
         // else para testes, no final só é preciso imprimir quando ocorrer erro
-        printf("Uso de uma variável ou função declarada corretamente - %s\n", id);
+        // printf("Uso de uma variável ou função declarada corretamente - %s\n", node->id);
+        NULL;
     }
 }
 
@@ -318,23 +378,23 @@ void semanticAnalysis(){
 
     mainFunction = checkMain();
 
-    if(mainFunction == 0){
-        printf("Não foi encontrada uma definição para a main\n");
-    }
-    else if(mainFunction == 1){
-        printf("Foi encontrada uma definição correta para a main\n");
-    }
-    else if(mainFunction > 1){
-        printf("Foram encontradas múltiplas definições para a main\n");
-    }
-    else{
-        printf("Erro ao procurar a definição para a main\n");
-    }
+    // if(mainFunction == 0){
+    //     printf("Não foi encontrada uma definição para a main\n");
+    // }
+    // else if(mainFunction == 1){
+    //     printf("Foi encontrada uma definição correta para a main\n");
+    // }
+    // else if(mainFunction > 1){
+    //     printf("Foram encontradas múltiplas definições para a main\n");
+    // }
+    // else{
+    //     printf("Erro ao procurar a definição para a main\n");
+    // }
 
     // checkFunctions();
 
 
     // printf("%d\n", semanticErrorsTotal);
-    // printErrors();
+    printErrors();
 
 }

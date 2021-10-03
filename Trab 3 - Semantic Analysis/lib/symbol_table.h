@@ -11,7 +11,7 @@ typedef struct Symbols {
     struct Symbols *next;
     int scopeValue;
     int parentScope;
-    int varFunc;
+    int varFunc;    //1 = var; 0 = func
     //semantic
     int paramNumber;
     struct Symbols **parameters;

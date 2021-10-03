@@ -23,6 +23,10 @@ t_node* createNode(char* name){
     node->name = (char*) malloc(strlen(name) + 1);
     node->empty = 0;
     node->type = NULL;
+    node->functionName = NULL;
+    node->line = -1;
+    node->column = -1;
+    node->id = NULL;
 
     #ifdef DEBUG_TREE
     printf("Node creation - allocated memory\n");
@@ -50,6 +54,11 @@ t_node* createEmptyNode(){
 
     node->name = (char*) malloc(3);
     node->empty = 1;
+    node->type = NULL;
+    node->functionName = NULL;
+    node->line = -1;
+    node->column = -1;
+    node->id = NULL;
 
     #ifdef DEBUG_TREE
     printf("Node creation - allocated memory\n");
@@ -118,6 +127,18 @@ void addNodeTypeId(t_node* node, char* id){
 void addFunctionName(t_node* node, char* function){
     node->functionName = malloc(strlen(function) + 1);
     strcpy(node->functionName, function);
+}
+
+
+void addNodePosition(t_node* node, int line, int column){
+    node->line = line;
+    node->column = column;
+}
+
+
+void addNodeId(t_node* node, char* id){
+    node->id = malloc(strlen(id) + 1);
+    strcpy(node->id, id);
 }
 
 
@@ -280,7 +301,7 @@ void printBranch3(t_node* node, int level, char* prevNode){
             else{
                 aux = -2;
             }
-            printf("%s%s%*s│\n", node->name, node->type, (110 - (level*4) - strlen(node->name) + aux), " ");
+            printf("%s%*s│\n", node->name, (110 - (level*4) - strlen(node->name) + aux), " ");
         }
         else{
             level--;

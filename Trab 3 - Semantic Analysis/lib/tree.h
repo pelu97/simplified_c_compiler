@@ -11,6 +11,9 @@ typedef struct Node{
     struct Node** child;
     char* type;
     char* functionName;
+    int line;
+    int column;
+    char* id;
 } t_node;
 #endif
 
@@ -29,6 +32,10 @@ void addNodeTypeChildren(t_node* node);
 void addNodeTypeId(t_node* node, char* id);
 
 void addFunctionName(t_node* node, char* function);
+
+void addNodePosition(t_node* node, int line, int column);
+
+void addNodeId(t_node* node, char* id);
 
 void initializeTree(t_node* node);
 
