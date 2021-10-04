@@ -1,6 +1,6 @@
 Um arquivo make foi incluído para facilitar a compilação do tradutor. Basta utilizar o comando
 
-    make sintatico
+    make semantico
 
 na pasta principal.
 
