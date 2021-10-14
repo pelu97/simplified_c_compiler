@@ -45,6 +45,54 @@ Parâmetros estão sendo armazenados - vetor de símbolos, é possível acessar 
 --Armazenar os erros em um struct e imprimir-los todos ao final? Talvez seja a melhor opção,
 evita que os erros sejam impressos no meio da análise sintática, no caso daqueles que são checados
 durante a sintática (chamada de função, por exemplo);
+
+--ERRO NA CHECAGEM DA ADIÇÃO DOS TIPOS DO PARÂMETROS DE UMA FUNÇÃO
+-Ao buscar os tipos, caso só exista um parâmetro e seja uma sum expression, por exemplo, é um nó que contém filhos e portanto a lógica
+está errada para ele. Está buscando os tipos dos filhos sendo que os filhos não são outros argumentos. O tipo que deveria ser pego é o tipo do próprio nó; - CORRIGIDO
+
+--Ao adicionar o tipo de uma variável no seu nó, o escopo deve ser levado em consideração para encontrar a declaração da variável; - CORRIGIDO
+
+--Atualizar as buscas de símbolo para utilizar sempre a validação de escopo; Funções criadas, é preciso colocar em todos os locais necessários e
+adicionar um tratamento para incluir um erro semântico quando não encontrar o símbolo em um escopo válido. Necessário também verificar se não há um erro do mesmo
+tipo já sendo inserido em algum lugar; - CORRIGIDO
+
+--É preciso imprimir a árvore sintática anotada. De certa forma isso facilita outras coisas pois vai ser útil ver os tipos dos nós para debug; - CORRIGIDO
+
+--Corrigir as operações de lista para aceitarem expressões, não só ids; - CORRIGIDO
+
+--Incluir nós de conversão de tipo; - FEITO
+
+--Verificar, nas operações de map e de filter, se a função passada como parâmetro possui o número e o tipo correto de parâmetros; - CORRIGIDO
+
+--Pegar o tipo do construtor de lista - basear nos parâmetros; - FEITO
+
+--Implementar a verificação dos parâmetros em operadores - aritméticos, relacionais, de lista, todos; - FEITO
+
+--Corrigir checagem de passagem de parâmetros para funções - é necessário converter o tipo quando possível e só exibir o erro quando não for possível; - CORRIGIDO
+
+--Pegar tipo correto nos nós com constante NIL, utilizar a expressão que antecede o NIL - olhar na descrição da semântica, NIL é um list de algum tipo; - FEITO
+
+--Operadores unários de lista aplicados em NIL devem gerar erro semântico; - FEITO
+
+-- Operadores binários de lista devem ter um tipo list do lado direito do operador - pode ser NIL (NIL é lista); - FEITO
+
+--Map e filter precisam ter uma função unária como primeiro argumento (esquerda) do operador; - FEITO
+
+--Verificar a semântica do write, writeln e read; - FEITO
+
+--Resolver o problema do ! - como? verificar o tipo do argumento passado para ele. Se for do tipo list, o comportamento muda. O que significa mudar o comportamento?
+Basicamente mudar o tipo do nó. TALVEZ mudar também o nome do nó para a expressão de lista; - FEITO
+
+--Adicionar type cast no return caso seja do tipo diferente do retorno da função; - FEITO
+
+--Incluir return no final de toda função, por precaução, pois toda função deve ter um return;
+
+--Adicionar impressão de erro quando não foi possível encontrar uma variável ou função na tabela de símbolos em um escopo válido - talvez colocar direto na função
+que faz a busca na tabela seja a melhor forma; - FEITO
+
+--Adicionar nós de conversão de tipo nas operações relacionais - caso esteja comparando um int e um float, o int deve ser convertido
+
+--Erro ao usar o NIL no map ou filter - não está pegando o tipo direito; - CORRIGIDO
 */
 
 %}
@@ -186,10 +234,11 @@ durante a sintática (chamada de função, por exemplo);
 %type <t_node> writeln
 %type <t_node> readOp
 %type <t_node> expressionStatement
-%type <t_node> listStatement
+/* %type <t_node> listStatement */
 %type <t_node> listExpression
 %type <t_node> listAssign
 %type <t_node> listHeader
+/* %type <t_node> listTail */
 %type <t_node> listTailDestructor
 %type <t_node> listMap
 %type <t_node> listFilter
@@ -210,7 +259,7 @@ program:
 
 declarationList:
     declarationList declaration {
-        $$ = createNode("Declaration List - Declaration");
+        $$ = createNode("Declaration List - Declaration", "decListDec");
 
         addChild($$, 2);
 
@@ -222,7 +271,7 @@ declarationList:
         $$ = $1;
     }
     | declarationList statement {
-        $$ = createNode("Declaration List - Statement");
+        $$ = createNode("Declaration List - Statement", "decListState");
 
         addChild($$, 2);
 
@@ -261,7 +310,7 @@ varDeclaration:
 
         temp = add_color(temp, COLOR_GREEN);
 
-        $$ = createNode(temp);
+        $$ = createNode(temp, "varDec");
         /* initializeTree($$); */
 
         freeScopeToken($2.scope);
@@ -287,7 +336,7 @@ varDeclaration:
 
         temp2 = add_color(temp2, COLOR_GREEN);
 
-        $$ = createNode(temp2);
+        $$ = createNode(temp2, "varDecList");
 
         freeScopeToken($3.scope);
         free(temp);
@@ -311,11 +360,19 @@ varDeclaration:
 ; */
 
 funcDeclaration:
-    TYPE ID DELIM_PARENT_L parameters DELIM_PARENT_R bodyStatement {
-        char* temp;
-        t_symbol* symbol;
+    TYPE ID {
         /* printf("%s %s %s %s - escopo %d %d\n", $1.text, $2.text, $3.text, $5.text, $2.scope->scopeValue, $2.scope->parentScope); */
-        symbol = createSymbol($2.text, $1.text, $2.line, $2.column, $2.scope->scopeValue, $2.scope->parentScope, 0);
+        createSymbol($2.text, $1.text, $2.line, $2.column, $2.scope->scopeValue, $2.scope->parentScope, 0);
+        updateLastFunc($2.text);
+    } DELIM_PARENT_L parameters DELIM_PARENT_R {
+        t_symbol* symbol;
+
+        /* symbol = getSymbol($2.text); */
+        symbol = getSymbolValidScopeFunc($2.text);
+        installParam(symbol);
+    }
+    bodyStatement {
+        char* temp;
 
         temp = (char*) malloc(strlen($2.text) + strlen("Function Declaration - ID: ") + 1);
 
@@ -324,32 +381,40 @@ funcDeclaration:
 
         temp = add_color(temp, COLOR_GREEN);
 
-        $$ = createNode(temp);
+        $$ = createNode(temp, "funcDec");
 
         addChild($$, 2);
 
-        $$->child[0] = $4;
-        $$->child[1] = $6;
+        $$->child[0] = $5;
+        $$->child[1] = $8;
 
         freeScopeToken($2.scope);
         free(temp);
 
         /* printf("function declaration test\n"); */
 
-        installParam(symbol);
-
     }
-    | TYPE LIST_TYPE ID DELIM_PARENT_L parameters DELIM_PARENT_R bodyStatement {
+    | TYPE LIST_TYPE ID {
         char* temp;
-        char* temp2;
-        t_symbol* symbol;
 
         temp = (char*) malloc(sizeof($1.text) + sizeof($2.text) + 3);
         strcpy(temp, $1.text);
         strcat(temp, " ");
         strcat(temp, $2.text);
-        /* printf("%s %s %s %s %s - %s - escopo %d %d\n", $1.text, $2.text, $3.text, $4.text, $6.text, temp, $3.scope->scopeValue, $3.scope->parentScope); */
-        symbol = createSymbol($3.text, temp, $3.line, $3.column, $3.scope->scopeValue, $3.scope->parentScope, 0);
+        createSymbol($3.text, temp, $3.line, $3.column, $3.scope->scopeValue, $3.scope->parentScope, 0);
+        updateLastFunc($3.text);
+
+        free(temp);
+    }
+    DELIM_PARENT_L parameters DELIM_PARENT_R {
+        t_symbol* symbol;
+
+        symbol = getSymbolValidScopeFunc($3.text);
+
+        installParam(symbol);
+    }
+    bodyStatement {
+        char* temp2;
 
         temp2 = (char*) malloc(strlen($3.text) + strlen("Function Declaration - List Type ID: ") + 1);
 
@@ -358,18 +423,15 @@ funcDeclaration:
 
         temp2 = add_color(temp2, COLOR_GREEN);
 
-        $$ = createNode(temp2);
+        $$ = createNode(temp2, "funcDecList");
 
         addChild($$, 2);
 
-        $$->child[0] = $5;
-        $$->child[1] = $7;
+        $$->child[0] = $6;
+        $$->child[1] = $9;
 
         freeScopeToken($3.scope);
-        free(temp);
         free(temp2);
-
-        installParam(symbol);
     }
 ;
 
@@ -385,7 +447,7 @@ parameters:
 
 parameterList:
     parameterList DELIM_COMMA parameterSimple {
-        $$ = createNode("Parameters list");
+        $$ = createNode("Parameters list", "paramList");
 
         addChild($$, 2);
 
@@ -412,7 +474,7 @@ parameterSimple:
 
         temp = add_color(temp, COLOR_GREEN);
 
-        $$ = createNode(temp);
+        $$ = createNode(temp, "paramSimple");
 
         freeScopeToken($2.scope);
         free(temp);
@@ -440,7 +502,7 @@ parameterSimple:
 
         temp2 = add_color(temp2, COLOR_GREEN);
 
-        $$ = createNode(temp2);
+        $$ = createNode(temp2, "paramSimpleList");
 
         freeScopeToken($3.scope);
         free(temp);
@@ -464,9 +526,9 @@ statement:
     | returnStatement {
         $$ = $1;
     }
-    | listStatement DELIM_SEMICOLLON {
+    /* | listStatement DELIM_SEMICOLLON {
         $$ = $1;
-    }
+    } */
     | writeOp DELIM_SEMICOLLON {
         $$ = $1;
     }
@@ -477,7 +539,7 @@ statement:
         $$ = $1;
     }
     | error {
-        $$ = createNode(COLOR_RED "SYNTAX ERROR" COLOR_RESET);
+        $$ = createNode(COLOR_RED "SYNTAX ERROR" COLOR_RESET, "error");
     }
 ;
 
@@ -494,7 +556,7 @@ bodyStatement:
 
 localDeclaration:
     localDeclaration varDeclaration {
-        $$ = createNode("Local Declaration");
+        $$ = createNode("Local Declaration", "localDec");
 
         addChild($$, 2);
 
@@ -508,7 +570,7 @@ localDeclaration:
 
 statementList:
     statementList localDeclaration statement {
-        $$ = createNode("Statement List");
+        $$ = createNode("Statement List", "stateList");
 
         addChild($$, 3);
 
@@ -524,7 +586,7 @@ statementList:
 
 ifStatement:
     IF_KEY DELIM_PARENT_L simpleExpression DELIM_PARENT_R statement %prec THEN_PREC {
-        $$ = createNode(COLOR_BLUE "If Statement" COLOR_RESET);
+        $$ = createNode(COLOR_BLUE "If Statement" COLOR_RESET, "if");
 
         addChild($$, 2);
 
@@ -532,7 +594,7 @@ ifStatement:
         $$->child[1] = $5;
     }
     | IF_KEY DELIM_PARENT_L simpleExpression DELIM_PARENT_R statement ELSE_KEY statement {
-        $$ = createNode(COLOR_BLUE "If-Else Statement" COLOR_RESET);
+        $$ = createNode(COLOR_BLUE "If-Else Statement" COLOR_RESET, "ifelse");
 
         addChild($$, 3);
 
@@ -545,7 +607,7 @@ ifStatement:
 
 loopStatement:
     FOR_KEY DELIM_PARENT_L expression DELIM_SEMICOLLON simpleExpression DELIM_SEMICOLLON expression DELIM_PARENT_R statement {
-        $$ = createNode(COLOR_BLUE "For Statement" COLOR_RESET);
+        $$ = createNode(COLOR_BLUE "For Statement" COLOR_RESET, "for");
 
         addChild($$, 4);
 
@@ -558,17 +620,21 @@ loopStatement:
 
 returnStatement:
     RETURN_KEY expression DELIM_SEMICOLLON {
-        $$ = createNode(COLOR_BLUE "Return Statement" COLOR_RESET);
+        $$ = createNode(COLOR_BLUE "Return Statement" COLOR_RESET, "return");
 
         addChild($$, 1);
 
+        addFunctionName($$, lastFuncDeclared);
+
         $$->child[0] = $2;
+
+        verifyOperands($$);
     }
 ;
 
 expression:
     ID ASSIGN_OP expression {
-        $$ = createNode("Assign Operation");
+        $$ = createNode("Assign Operation", "assignOp");
 
         addChild($$, 1);
 
@@ -578,7 +644,11 @@ expression:
         addNodePosition($$, $1.line, $1.column);
         addNodeId($$, $1.text);
 
+        /* addNodePosition($3, $3->line, $3->column); */
+
         checkIdDeclaration($$);
+
+        verifyOperands($$);
 
     }
     | simpleExpression {
@@ -604,14 +674,18 @@ simpleExpression:
 
 logicBinExpression:
     logicBinExpression LOGIC_OP logicUnExpression {
-        $$ = createNode("Logic Binary Expression");
+        $$ = createNode("Logic Binary Expression", "logicBin");
 
         addChild($$, 2);
 
         $$->child[0] = $1;
         $$->child[1] = $3;
 
-        addNodeType($$, "logic");
+        addNodeType($$, "int");
+
+        addNodePosition($$, $$->child[1]->line, $$->child[1]->column);
+
+        verifyOperands($$);
 
     }
     | logicUnExpression {
@@ -621,13 +695,18 @@ logicBinExpression:
 
 logicUnExpression:
     EXCLA_OP logicUnExpression {
-        $$ = createNode("Exclamation Expression");
+        $$ = createNode("Exclamation Expression", "exclaExp");
 
         addChild($$, 1);
 
         $$->child[0] = $2;
 
-        addNodeType($$, "logic");
+        /* addNodeType($$, "int"); */
+        addNodeTypeChildren($$);
+
+        addNodePosition($$, $$->child[0]->line, $$->child[0]->column);
+
+        verifyOperands($$);
 
     }
     | binExpression {
@@ -640,25 +719,29 @@ logicUnExpression:
     | EXCLA_OP simpleExpression {printf("%d %d\n", $1, $2);} */
 
 binExpression:
-    binExpression BINARY_OP sumExpression {
-        $$ = createNode("Binary Expression");
+    binExpression BINARY_OP listExpression {
+        $$ = createNode("Binary Expression", "binExp");
 
         addChild($$, 2);
 
         $$->child[0] = $1;
         $$->child[1] = $3;
 
-        addNodeType($$, "binary");
+        addNodeType($$, "int");
+
+        addNodePosition($$, $$->child[1]->line, $$->child[1]->column);
+
+        verifyOperands($$);
 
     }
-    | sumExpression {
+    | listExpression {
         $$ = $1;
     }
 ;
 
 sumExpression:
     sumExpression sumOP mulExpression {
-        $$ = createNode("Sum Expression");
+        $$ = createNode("Sum Expression", "sumExp");
 
         addChild($$, 3);
 
@@ -667,6 +750,10 @@ sumExpression:
         $$->child[2] = $3;
 
         addNodeTypeChildren($$);
+
+        addNodePosition($$, $$->child[2]->line, $$->child[2]->column);
+
+        verifyOperands($$);
     }
     | mulExpression {
         $$ = $1;
@@ -675,7 +762,7 @@ sumExpression:
 
 mulExpression:
     mulExpression mulOP factor {
-        $$ = createNode("Multiplication Expression");
+        $$ = createNode("Multiplication Expression", "mulExp");
 
         addChild($$, 3);
 
@@ -686,6 +773,10 @@ mulExpression:
         $$->child[2] = $3;
 
         addNodeTypeChildren($$);
+
+        addNodePosition($$, $$->child[2]->line, $$->child[2]->column);
+
+        verifyOperands($$);
     }
     | factor {
         $$ = $1;
@@ -694,19 +785,19 @@ mulExpression:
 
 sumOP:
     PLUS_OP {
-        $$ = createNode("+ Operator");
+        $$ = createNode("+ Operator", "plusOp");
     }
     | MINUS_OP {
-        $$ = createNode("- Operator");
+        $$ = createNode("- Operator", "minusOp");
     }
 ;
 
 mulOP:
     MUL_OP {
-        $$ = createNode("* Operator");
+        $$ = createNode("* Operator", "mulOp");
     }
     | DIV_OP {
-        $$ = createNode("/ Operator");
+        $$ = createNode("/ Operator", "divOp");
     }
 ;
 
@@ -721,7 +812,7 @@ factor:
 
         temp = add_color(temp, COLOR_YELLOW);
 
-        $$ = createNode(temp);
+        $$ = createNode(temp, "id");
 
         freeScopeToken($1.scope);
         free(temp);
@@ -741,9 +832,9 @@ factor:
     | functionCall {
         $$ = $1;
     }
-    | listExpression {
+    /* | listExpression {
         $$ = $1;
-    }
+    } */
 ;
 
 constant:
@@ -756,7 +847,7 @@ constant:
 
         temp = add_color(temp, COLOR_YELLOW);
 
-        $$ = createNode(temp);
+        $$ = createNode(temp, "constInt");
 
         free(temp);
 
@@ -772,7 +863,7 @@ constant:
 
         temp = add_color(temp, COLOR_YELLOW);
 
-        $$ = createNode(temp);
+        $$ = createNode(temp, "constNegInt");
 
         free(temp);
 
@@ -788,7 +879,7 @@ constant:
 
         temp = add_color(temp, COLOR_YELLOW);
 
-        $$ = createNode(temp);
+        $$ = createNode(temp, "constFloat");
 
         free(temp);
 
@@ -804,7 +895,7 @@ constant:
 
         temp = add_color(temp, COLOR_YELLOW);
 
-        $$ = createNode(temp);
+        $$ = createNode(temp, "constNegFloat");
 
         free(temp);
 
@@ -819,11 +910,11 @@ constant:
 
         temp = add_color(temp, COLOR_YELLOW);
 
-        $$ = createNode(temp);
+        $$ = createNode(temp, "constNull");
 
         free(temp);
 
-        addNodeType($$, "null");
+        addNodeType($$, "nil");
         addNodePosition($$, $1.line, $1.column);
     }
 ;
@@ -836,7 +927,7 @@ functionCall:
         strcpy(temp, "Function Call - ID: ");
         strcat(temp, $1.text);
 
-        $$ = createNode(temp);
+        $$ = createNode(temp, "funcCall");
 
         addChild($$, 1);
 
@@ -844,6 +935,7 @@ functionCall:
         freeScopeToken($1.scope);
         free(temp);
 
+        addNodeTypeId($$, $1.text);
         addFunctionName($$, $1.text);
         addNodePosition($$, $1.line, $1.column);
 
@@ -853,7 +945,7 @@ functionCall:
 
 parametersPass:
     parametersPass DELIM_COMMA simpleExpression {
-        $$ = createNode("Parameters Passing");
+        $$ = createNode("Parameters Passing", "paramPass");
 
         addChild($$, 2);
 
@@ -879,27 +971,31 @@ writeOp:
 
 write:
     OUTPUT_KEY DELIM_PARENT_L STRING DELIM_PARENT_R {
-        $$ = createNode(COLOR_BLUE "Output String" COLOR_RESET);
+        $$ = createNode(COLOR_BLUE "Output String" COLOR_RESET, "writeString");
     }
     | OUTPUT_KEY DELIM_PARENT_L simpleExpression DELIM_PARENT_R {
-        $$ = createNode(COLOR_BLUE "Output Expression" COLOR_RESET);
+        $$ = createNode(COLOR_BLUE "Output Expression" COLOR_RESET, "writeExp");
 
         addChild($$, 1);
 
         $$->child[0] = $3;
+
+        verifyOperands($$);
     }
 ;
 
 writeln:
     OUTPUTLN_KEY DELIM_PARENT_L STRING DELIM_PARENT_R {
-        $$ = createNode(COLOR_BLUE "OutputLn String" COLOR_RESET);
+        $$ = createNode(COLOR_BLUE "OutputLn String" COLOR_RESET, "writelnString");
     }
     | OUTPUTLN_KEY DELIM_PARENT_L simpleExpression DELIM_PARENT_R {
-        $$ = createNode(COLOR_BLUE "OutputLn Expression" COLOR_RESET);
+        $$ = createNode(COLOR_BLUE "OutputLn Expression" COLOR_RESET, "writelnExp");
 
         addChild($$, 1);
 
         $$->child[0] = $3;
+
+        verifyOperands($$);
     }
 ;
 
@@ -914,7 +1010,12 @@ readOp:
 
         temp = add_color(temp, COLOR_BLUE);
 
-        $$ = createNode(temp);
+        $$ = createNode(temp, "readOp");
+
+        addNodeId($$, $3.text);
+        addNodePosition($$, $3.line, $3.column);
+
+        verifyOperands($$);
 
         freeScopeToken($3.scope);
         free(temp);
@@ -927,7 +1028,7 @@ expressionStatement:
     }
 ;
 
-listStatement:
+/* listStatement:
     listAssign {
         $$ = $1;
     }
@@ -937,24 +1038,41 @@ listStatement:
     | listFilter {
         $$ = $1;
     }
-;
+; */
 
 listExpression:
-    listHeader {
+    /* listHeader {
+        $$ = $1;
+    } */
+    /* | listTail {printf("%d\n", $1);} */
+    /* | listTailDestructor {
         $$ = $1;
     }
-    /* | listTail {printf("%d\n", $1);} */
-    | listTailDestructor {
+    | listAssign {
+        $$ = $1;
+    }
+    | listMap {
+        $$ = $1;
+    }
+    | listFilter {
+        $$ = $1;
+    }
+    | sumExpression {
+        $$ = $1;
+    } */
+    listAssign {
         $$ = $1;
     }
 ;
 
 listAssign:
-    ID ASSIGN_OP ID ASSIGN_LISTOP ID {
+    listAssign ASSIGN_LISTOP listHeader {
         char* temp;
 
         /* temp = (char*) malloc(strlen($1.text) + strlen($3.text) + strlen($5.text) + strlen("List Assignment - ID1: ") + strlen(" - ID2: ") + strlen(" - ID3: ") + 3); */
-        temp = (char*) malloc(strlen($1.text) + strlen($3.text) + strlen($5.text) + strlen("List Assignment - IDs: ") + 6);
+        /* temp = (char*) malloc(strlen($1.text) + strlen($3.text) + strlen($5.text) + strlen("List Assignment - IDs: ") + 6); */
+
+        temp = malloc(strlen("List Assignment") + 3);
 
         /* strcpy(temp, "List Assignment - ID1: ");
         strcat(temp, $1.text);
@@ -963,39 +1081,70 @@ listAssign:
         strcat(temp, " - ID3: ");
         strcat(temp, $5.text); */
 
-        strcpy(temp, "List Assignment - IDs: ");
+        /* strcpy(temp, "List Assignment - IDs: ");
         strcat(temp, $1.text);
         strcat(temp, ", ");
         strcat(temp, $3.text);
         strcat(temp, ", ");
-        strcat(temp, $5.text);
+        strcat(temp, $5.text); */
+
+        strcpy(temp, "List Assignment");
 
         temp = add_color(temp, COLOR_CYAN);
 
-        $$ = createNode(temp);
+        $$ = createNode(temp, "listAssign");
 
-        freeScopeToken($1.scope);
+        addChild($$, 2);
+
+        $$->child[0] = $1;
+        $$->child[1] = $3;
+
+        addNodeTypeChildren($$);
+
+        addNodePosition($$, $$->child[1]->line, $$->child[1]->column);
+
+        /* freeScopeToken($1.scope);
         freeScopeToken($3.scope);
-        freeScopeToken($5.scope);
+        freeScopeToken($5.scope); */
         free(temp);
+    }
+    | listHeader {
+        $$ = $1;
     }
 ;
 
+
 listHeader:
-    HEADER_LISTOP ID {
+    HEADER_LISTOP listHeader {
         char* temp;
 
-        temp = (char*) malloc(strlen($2.text) + strlen("List Header - ID: ") + 3);
+        temp = (char*) malloc(strlen("List Header") + 3);
 
-        strcpy(temp, "List Header - ID: ");
-        strcat(temp, $2.text);
+        strcpy(temp, "List Header");
+        /* strcpy(temp, "List Header - ID: "); */
+        /* strcat(temp, $2.text); */
 
         temp = add_color(temp, COLOR_CYAN);
 
-        $$ = createNode(temp);
+        $$ = createNode(temp, "listHeader");
 
-        freeScopeToken($2.scope);
+        addChild($$, 1);
+
+        $$->child[0] = $2;
+
+        addNodeTypeChildren($$);
+
+        addNodePosition($$, $$->child[0]->line, $$->child[0]->column);
+
+        verifyOperands($$);
+        /* freeScopeToken($2.scope); */
         free(temp);
+    }
+    /* | listTail {
+        $$ = $1;
+    } */
+    | listTailDestructor {
+        $$ = $1;
     }
 ;
 
@@ -1003,78 +1152,138 @@ listHeader:
     EXCLA_OP ID {printf("%d %d\n", $1, $2);}
 ; */
 
+/* listTail:
+    EXCLA_OP listTail {
+        $$ = $1;
+    }
+    | listTailDestructor {
+        $$ = $1;
+    }
+; */
+
 listTailDestructor:
-    TAILDES_LISTOP ID {
+    TAILDES_LISTOP listTailDestructor {
         char* temp;
 
-        temp = (char*) malloc(strlen($2.text) + strlen("List Tail Destructor - ID: ") + 3);
+        /* temp = (char*) malloc(strlen($2.text) + strlen("List Tail Destructor - ID: ") + 3); */
+        temp = malloc(strlen("List Tail Destructor") + 3);
 
-        strcpy(temp, "List Tail Destructor - ID: ");
-        strcat(temp, $2.text);
+        /* strcpy(temp, "List Tail Destructor - ID: ");
+        strcat(temp, $2.text); */
+        strcpy(temp, "List Tail Destructor");
 
         temp = add_color(temp, COLOR_CYAN);
 
-        $$ = createNode(temp);
+        $$ = createNode(temp, "listTailDest");
 
-        freeScopeToken($2.scope);
+        addChild($$, 1);
+
+        $$->child[0] = $2;
+
+        addNodeTypeChildren($$);
+
+        addNodePosition($$, $$->child[0]->line, $$->child[0]->column);
+
+        verifyOperands($$);
+
+        /* freeScopeToken($2.scope); */
         free(temp);
+    }
+    | listMap {
+        $$ = $1;
     }
 ;
 
 listMap:
-    ID ASSIGN_OP ID MAP_LISTOP ID {
+    listMap MAP_LISTOP listFilter {
         char* temp;
 
-        temp = (char*) malloc(strlen($1.text) + strlen($3.text) + strlen($5.text) + strlen("List Map - IDs: ") + 6);
+        /* temp = (char*) malloc(strlen($1.text) + strlen($3.text) + strlen($5.text) + strlen("List Map - IDs: ") + 6); */
+        temp = malloc(strlen("List Map") + 3);
 
-        strcpy(temp, "List Map - IDs: ");
-        strcat(temp, $1.text);
+        /* strcpy(temp, "List Map - IDs: "); */
+        /* strcat(temp, $1.text);
         strcat(temp, ", ");
         strcat(temp, $3.text);
         strcat(temp, ", ");
-        strcat(temp, $5.text);
+        strcat(temp, $5.text); */
+
+        strcpy(temp, "List Map");
 
         temp = add_color(temp, COLOR_CYAN);
 
-        $$ = createNode(temp);
+        $$ = createNode(temp, "listMap");
 
-        freeScopeToken($1.scope);
+        addChild($$, 2);
+
+        $$->child[0] = $1;
+        $$->child[1] = $3;
+
+        addNodeTypeChildren($$);
+
+        addNodePosition($$, $$->child[1]->line, $$->child[1]->column);
+
+        verifyOperands($$);
+
+        /* freeScopeToken($1.scope);
         freeScopeToken($3.scope);
-        freeScopeToken($5.scope);
+        freeScopeToken($5.scope); */
         free(temp);
+    }
+    | listFilter {
+        $$ = $1;
     }
 ;
 
 listFilter:
-    ID ASSIGN_OP ID FILTER_LISTOP ID {
+    listFilter FILTER_LISTOP sumExpression {
         char* temp;
 
-        temp = (char*) malloc(strlen($1.text) + strlen($3.text) + strlen($5.text) + strlen("List Filter - IDs: ") + 6);
+        /* temp = (char*) malloc(strlen($1.text) + strlen($3.text) + strlen($5.text) + strlen("List Filter - IDs: ") + 6); */
+        temp = malloc(strlen("List Filter") + 3);
 
-        strcpy(temp, "List Filter - IDs: ");
-        strcat(temp, $1.text);
+        /* strcpy(temp, "List Filter - IDs: "); */
+        /* strcat(temp, $1.text);
         strcat(temp, ", ");
         strcat(temp, $3.text);
         strcat(temp, ", ");
-        strcat(temp, $5.text);
+        strcat(temp, $5.text); */
+
+        strcpy(temp, "List Filter");
 
         temp = add_color(temp, COLOR_CYAN);
 
-        $$ = createNode(temp);
+        $$ = createNode(temp, "listFilter");
 
-        freeScopeToken($1.scope);
+        addChild($$, 2);
+
+        $$->child[0] = $1;
+        $$->child[1] = $3;
+
+        addNodeTypeChildren($$);
+
+        addNodePosition($$, $$->child[1]->line, $$->child[1]->column);
+
+        verifyOperands($$);
+
+        /* freeScopeToken($1.scope);
         freeScopeToken($3.scope);
-        freeScopeToken($5.scope);
+        freeScopeToken($5.scope); */
         free(temp);
     }
+    | sumExpression {
+        $$ = $1;
+    }
 ;
+
+
 
 
 %%
 /* Additional C code */
 
 void yyerror(const char* s){
-    printf("Syntax error: %s\nLine: %d - Column: %d\n", s, line, column);
+    printf(COLOR_RED "Syntax error:" COLOR_RESET " %s\nLine: %d - Column: %d\n", s, line, column);
     syntaticError = syntaticError + 1;
 }
 

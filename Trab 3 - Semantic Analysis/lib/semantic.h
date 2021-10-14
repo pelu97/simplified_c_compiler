@@ -3,6 +3,7 @@
 
 
 
+
 typedef struct semanticErrors{
     char* type;
     char* message;
@@ -15,6 +16,8 @@ typedef struct typesTemporary{
     char* type;
     int line;
     int column;
+    t_node* fatherNode;
+    int childIndex;
 } t_typeTemp;
 
 
@@ -36,14 +39,24 @@ void checkFunctionCall(t_node* node);
 
 // int getFunctionCallParameters(t_node* node, int index, char*** types);
 
-int getFunctionCallParameters(t_node* node, int index, t_typeTemp*** types);
+int getFunctionCallParameters(t_node* node, int index, t_typeTemp*** types, t_node* fatherNode, int childIndex);
 
 // char** addTempType(char** types, char* type, int index);
 
-t_typeTemp** addTempType(t_typeTemp** types, char* type, int index, int line, int position);
+t_typeTemp** addTempType(t_typeTemp** types, char* type, int index, int line, int position, t_node* fatherNode, int childIndex);
 
 // void checkIdDeclaration(char* id);
 
 void checkIdDeclaration(t_node* node);
 
+int checkConversion(char* type1, char* type2);
+
+void addOperandError(int line, int column);
+
+int verifyListFunction(t_node* node);
+
+void verifyOperands(t_node* node);
+
 void semanticAnalysis();
+
+void freeErrors();

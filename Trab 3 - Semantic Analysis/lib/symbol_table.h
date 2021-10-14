@@ -28,6 +28,16 @@ t_symbol* createSymbol(char* symbolName, char* type, int line, int column, int s
 
 t_symbol* getSymbol(char* symbolName);
 
+t_symbol* getSymbolFilter(char* symbolName, int scope, int varFunc);
+
+t_symbol* getSymbolWithScope(char* symbolName, int scope);
+
+t_symbol* getSymbolValidScope(char* symbolName);
+
+t_symbol* getSymbolValidScopeVar(char* symbolName);
+
+t_symbol* getSymbolValidScopeFunc(char* symbolName);
+
 // adds parameter to temporary holder
 void addParam(t_symbol* parameter);
 

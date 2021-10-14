@@ -35,6 +35,12 @@ run_correct3:
 run_correct4:
 	./tradutor ./tests/test_correct4.c
 
+run_correct5:
+	./tradutor ./tests/test_correct5.c
+
+run_correct6:
+	./tradutor ./tests/test_correct6.c
+
 run_wrong1:
 	./tradutor ./tests/test_wrong1.c
 
@@ -45,7 +51,7 @@ run_tree:
 	./tradutor ./tests/test_tree.c
 
 debug_syntax:
-	bison -o ./src/syntax.tab.c -dy ./src/syntax.y -Wcounterexamples
+	bison -o ./src/syntax.tab.c -d ./src/syntax.y -Wcounterexamples
 
 
 debug_symbol_table: ./lib/symbol_table.h ./src/symbol_table.c ./src/debug_symbol_table.c

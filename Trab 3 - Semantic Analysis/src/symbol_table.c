@@ -3,7 +3,7 @@
 #include <string.h>
 #include "../lib/symbol_table.h"
 #include "../lib/base.h"
-// #include "scope.h"
+#include "../lib/scope.h"
 
 // ainda não limpa a tabela da memória, ainda é necessário tratar isso
 t_symbol *SymbolTable = NULL;
@@ -35,6 +35,7 @@ t_symbol* createSymbol(char* symbolName, char* type, int line, int column, int s
     // lastSymbol->next = symbol;
 
     // lastSymbol = symbol;
+
 
     if(SymbolTable == NULL) {
         SymbolTable = symbol;
@@ -69,6 +70,97 @@ t_symbol* getSymbol(char* symbolName){
     }
 
     return found;
+}
+
+
+t_symbol* getSymbolFilter(char* symbolName, int scope, int varFunc){
+    t_symbol* pointer;
+    t_symbol* found = NULL;
+
+    for(pointer = SymbolTable; pointer != NULL && found == NULL; pointer = pointer->next){
+        // printf("Comparing %s with %s\n", symbolName, pointer->name);
+        if((strcmp(pointer->name, symbolName) == 0) && (pointer->scopeValue == scope) && ( (varFunc == -1) || ((varFunc != -1) && (pointer->varFunc == varFunc)) ) ){
+            found = pointer;
+            // printf("Symbol found - ending search\n");
+        }
+    }
+
+    return found;
+}
+
+
+t_symbol* getSymbolWithScope(char* symbolName, int scope){
+    t_symbol* pointer;
+    t_symbol* found = NULL;
+
+    for(pointer = SymbolTable; pointer != NULL && found == NULL; pointer = pointer->next){
+        // printf("Comparing %s with %s\n", symbolName, pointer->name);
+        if((strcmp(pointer->name, symbolName) == 0) && (pointer->scopeValue == scope)){
+            found = pointer;
+            // printf("Symbol found - ending search\n");
+        }
+    }
+
+    return found;
+}
+
+
+t_symbol* getSymbolValidScope(char* symbolName){
+    t_symbol* pointer;
+    t_symbol* symbol = NULL;
+    t_scope* scopePointer = NULL;
+
+    for(scopePointer = topScope; scopePointer != NULL; scopePointer = scopePointer->next){
+        symbol = getSymbolFilter(symbolName, scopePointer->scopeValue, -1);
+
+        if(symbol != NULL){
+            break;
+        }
+    }
+
+    return symbol;
+}
+
+
+t_symbol* getSymbolValidScopeVar(char* symbolName){
+    t_symbol* pointer;
+    t_symbol* symbol = NULL;
+    t_scope* scopePointer = NULL;
+
+    for(scopePointer = topScope; scopePointer != NULL; scopePointer = scopePointer->next){
+        symbol = getSymbolFilter(symbolName, scopePointer->scopeValue, 1);
+
+        if(symbol != NULL){
+            break;
+        }
+    }
+
+    // for(pointer = SymbolTable; pointer != NULL && found == NULL; pointer = pointer->next){
+    //     // printf("Comparing %s with %s\n", symbolName, pointer->name);
+    //     if((strcmp(pointer->name, symbolName) == 0) && (pointer->scopeValue == scope) && (pointer->varFunc == 1)){
+    //         found = pointer;
+    //         // printf("Symbol found - ending search\n");
+    //     }
+    // }
+
+    return symbol;
+}
+
+
+t_symbol* getSymbolValidScopeFunc(char* symbolName){
+    t_symbol* pointer;
+    t_symbol* symbol = NULL;
+    t_scope* scopePointer = NULL;
+
+    for(scopePointer = topScope; scopePointer != NULL; scopePointer = scopePointer->next){
+        symbol = getSymbolFilter(symbolName, scopePointer->scopeValue, 0);
+
+        if(symbol != NULL){
+            break;
+        }
+    }
+
+    return symbol;
 }
 
 
@@ -308,7 +400,7 @@ void printParams(){
     for(pointer = SymbolTable; pointer != NULL; pointer = pointer->next){
         // printf("|%28.28s|", "123456789012345678901234567890123456789012345678901234567890");
         printf("|%-28.28s|", pointer->name);
-        printf("Parameters: ");
+        printf("Parameters (%d): ", pointer->paramNumber);
 
         for(i = 0; i < pointer->paramNumber; i++){
             printf(" %s ", pointer->parameters[i]->name);
@@ -334,8 +426,18 @@ void freeTable(){
         printf("Freeing pointer to symbol: %s\n", temp->name);
         #endif
 
-        free(temp->type);   //libera a memória alocada para as strings
-        free(temp->name);
+        if(temp->name != NULL){
+            free(temp->type);   //libera a memória alocada para o tipo
+        }
+
+        if(temp->name != NULL){
+            free(temp->name);   //libera a memória alocada para o nome
+        }
+
+        if(temp->parameters != NULL){
+            free(temp->parameters); //libera a memória alocada para os parâmetros
+        }
+
         free(temp);      //libera o atual
 
         i++;
