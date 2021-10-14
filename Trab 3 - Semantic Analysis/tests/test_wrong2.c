@@ -3,8 +3,9 @@ int batata;
 
 int bake(){
     int temp;
+    int list potatolist;
 
-    if((batata < 100) && (batata > 20) || (batata == 10)){
+    if((batata < 100) && (batata > 20) || (batata == potatolist)){
         temp = batata;
     }
     else{
@@ -12,12 +13,13 @@ int bake(){
     }
 
 
-    write(temp);
+    write(temp temp);
     writeln(" batatas assadas");
 }
 
 
 int main(){
+    float list lista;
 
     write("Digite um inteiro: ");
     read(batata);
@@ -25,9 +27,12 @@ int main(){
     write("O inteiro digitado foi: ");
     writeln(batata);
 
+    read(lista);
+    write(lista);
+
     bake(2);
 
-    write("Encerrando execução...");
+    write("Encerrando execução...");;
 
     return 0;
 }

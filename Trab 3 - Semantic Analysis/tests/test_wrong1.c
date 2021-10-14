@@ -7,7 +7,7 @@ int list list_input(int n, int k, int l, int j, int g){
     int temp;
     int list mylist;
     mylist = NIL;
-    int batata;
+    int batata
 
     for(i=0; i<n; i = i + 1){
         writeln("Digite um inteiro para armazenar na lista");
@@ -68,14 +68,10 @@ int double_list(int i){
     return i*2;
 }
 
-int double_list(int i){
-    return i*2;
-}
-
-int main(){
+int mein(){
     int list listread;
     int n;
-    write("Digite um tamanho para a lista: ");
+    write("Digite um tamanho para a lista: ")
     read(n);
 
     write("O inteiro digitado foi: ");
@@ -90,6 +86,6 @@ int main(){
     return 0;
 }
 
-int main(){
-    return 0;
-}
+// int main(){
+//     return 0;
+// }
