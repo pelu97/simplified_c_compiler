@@ -11,6 +11,13 @@
 #define COLOR_VAR     "\x1B[32m"
 #define COLOR_FUNC    "\x1B[33m"
 
+#define COLOR_B_RED     "\x1B[31;1m"
+#define COLOR_B_GREEN   "\x1B[32;1m"
+#define COLOR_B_YELLOW  "\x1B[33;1m"
+#define COLOR_B_BLUE    "\x1B[34;1m"
+#define COLOR_B_MAGENTA "\x1B[35;1m"
+#define COLOR_B_CYAN    "\x1B[36;1m"
+
 // #define DEBUG 1
 
 // #define DEBUG_TREE 1
