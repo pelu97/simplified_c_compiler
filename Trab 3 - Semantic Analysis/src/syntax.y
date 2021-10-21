@@ -93,6 +93,9 @@ que faz a busca na tabela seja a melhor forma; - FEITO
 --Adicionar nós de conversão de tipo nas operações relacionais - caso esteja comparando um int e um float, o int deve ser convertido
 
 --Erro ao usar o NIL no map ou filter - não está pegando o tipo direito; - CORRIGIDO
+
+--Se declarar uma função dentro de uma função, dá problemas com o lastFuncDeclared; - NÃO É SUPORTADO PELO C, NADA PARA CORRIGIR
+
 */
 
 %}

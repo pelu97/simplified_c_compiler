@@ -694,7 +694,12 @@ void verifyOperands(t_node* node){
         else{
             // addError("operandType", "Tipo de operando inválido", "", node->child[0]->line, node->child[0]->column);
             // addOperandError(node->child[0]->line, node->child[0]->column);
-            addError("operandType", "Invalid operand - Expecting operand of type int", "", node->child[0]->line, node->child[0]->column);
+            if((strcmp(node->child[0]->type, "int") != 0)){
+                addError("operandType", "Invalid operand - Expecting operand of type int", "", node->child[0]->line, node->child[0]->column);
+            }
+            if((strcmp(node->child[1]->type, "int") != 0)){
+                addError("operandType", "Invalid operand - Expecting operand of type int", "", node->child[1]->line, node->child[1]->column);
+            }
             // addNodeType(node, "Error");
         }
     }
