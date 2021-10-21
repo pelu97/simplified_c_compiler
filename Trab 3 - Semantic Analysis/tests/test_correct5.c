@@ -97,6 +97,7 @@ int main(){
     int list listread;
     int n;
     int ####;
+    NIL var;
     write("Digite um tamanho para a lista: ")
     read(n);
 
@@ -143,6 +144,8 @@ int main(){
     // !NIL;
 
     // 3 > 5.0;
+
+    var = 1 : NIL;
 
     return 0;
 }
