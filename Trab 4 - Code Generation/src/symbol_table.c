@@ -11,15 +11,17 @@ t_symbol *lastSymbol = NULL;
 t_symbol **parameterHolder = NULL;
 int parameterHolderMax = 0;
 
-t_symbol* createSymbol(char* symbolName, char* type, int line, int column, int scopeValue, int parentScope, int varFunc){
+t_symbol* createSymbol(char* symbolName, char* type, int line, int column, int scopeValue, int parentScope, int varFunc, char* typeBase){
     t_symbol *symbol;
 
     symbol = (t_symbol*) malloc(sizeof(t_symbol));
     symbol->name = (char*) malloc(strlen(symbolName) + 1);
     symbol->type = (char*) malloc(strlen(type) + 1);
+    symbol->typeBase = (char*) malloc(strlen(typeBase) + 1);
 
     strcpy(symbol->name, symbolName);
     strcpy(symbol->type, type);
+    strcpy(symbol->typeBase, typeBase);
 
     symbol->next = NULL;
 

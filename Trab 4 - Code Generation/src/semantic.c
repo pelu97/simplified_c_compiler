@@ -600,12 +600,12 @@ void verifyOperands(t_node* node){
     if(strcmp(node->sigla, "exclaExp") == 0){
         // operação de lista
         if((strcmp(node->child[0]->type, "int list") == 0) || (strcmp(node->child[0]->type, "float list") == 0)){
-            overrideNode(node, COLOR_CYAN "List Tail" COLOR_RESET);
+            overrideNode(node, COLOR_CYAN "List Tail" COLOR_RESET, "listTail");
         }
         else if((strcmp(node->child[0]->type, "nil") == 0)){
             // operação de lista mas em uma constante null - comportamento indefinido - erro
             // addOperandError(node->child[0]->line, node->child[0]->column);
-            overrideNode(node, COLOR_CYAN "List Tail" COLOR_RESET);
+            overrideNode(node, COLOR_CYAN "List Tail" COLOR_RESET, "listTail");
             addNodeType(node, "Error");
             addError("operandType", "Invalid operand - Expecting operand of type list (int list or float list)", "", node->child[0]->line, node->child[0]->column);
         }
@@ -733,6 +733,8 @@ void verifyOperands(t_node* node){
         tempSymbol = getSymbolValidScopeVar(node->id);
 
         if(tempSymbol != NULL){
+            addNodeSymbol(node, tempSymbol);
+
             if((strcmp(tempSymbol->type, "int") == 0) || (strcmp(tempSymbol->type, "float") == 0)){
                 // lado esquerdo é um tipo simples
                 // pode haver conversão do lado direito
@@ -804,6 +806,8 @@ void verifyOperands(t_node* node){
         tempSymbol = getSymbolValidScopeVar(node->id);
 
         if(tempSymbol != NULL){
+            addNodeSymbol(node, tempSymbol);
+
             if((strcmp(tempSymbol->type, "int") == 0) || (strcmp(tempSymbol->type, "float") == 0)){
                 // variável é de um tipo simples
                 NULL;

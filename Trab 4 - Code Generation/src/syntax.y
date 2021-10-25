@@ -10,6 +10,7 @@
 #include "../lib/scope.h"
 #include "../lib/tree.h"
 #include "../lib/semantic.h"
+#include "../lib/codegen.h"
 
 extern int yylex();
 extern int yylex_destroy();
@@ -300,7 +301,7 @@ varDeclaration:
         char* temp;
 
         /* printf("%s %s %s\n", $1.text, $2.text, $3.text); */
-        createSymbol($2.text, $1.text, $2.line, $2.column, $2.scope->scopeValue, $2.scope->parentScope, 1);
+        createSymbol($2.text, $1.text, $2.line, $2.column, $2.scope->scopeValue, $2.scope->parentScope, 1, $1.text);
         /* printf("variable declaration\n"); */
 
         temp = (char*) malloc(strlen($2.text) + strlen("Variable Declaration - ID: ") + 1);
@@ -329,7 +330,7 @@ varDeclaration:
         strcat(temp, " ");
         strcat(temp, $2.text);
         /* printf("%s %s %s %s - %s\n", $1.text, $2.text, $3.text, $4.text, temp); */
-        createSymbol($3.text, temp, $3.line, $3.column, $3.scope->scopeValue, $3.scope->parentScope, 1);
+        createSymbol($3.text, temp, $3.line, $3.column, $3.scope->scopeValue, $3.scope->parentScope, 1, $1.text);
 
 
         temp2 = (char*) malloc(strlen($3.text) + strlen("Variable Declaration - List Type ID: ") + 1);
@@ -365,7 +366,7 @@ varDeclaration:
 funcDeclaration:
     TYPE ID {
         /* printf("%s %s %s %s - escopo %d %d\n", $1.text, $2.text, $3.text, $5.text, $2.scope->scopeValue, $2.scope->parentScope); */
-        createSymbol($2.text, $1.text, $2.line, $2.column, $2.scope->scopeValue, $2.scope->parentScope, 0);
+        createSymbol($2.text, $1.text, $2.line, $2.column, $2.scope->scopeValue, $2.scope->parentScope, 0, $1.text);
         updateLastFunc($2.text);
     } DELIM_PARENT_L parameters DELIM_PARENT_R {
         t_symbol* symbol;
@@ -404,7 +405,7 @@ funcDeclaration:
         strcpy(temp, $1.text);
         strcat(temp, " ");
         strcat(temp, $2.text);
-        createSymbol($3.text, temp, $3.line, $3.column, $3.scope->scopeValue, $3.scope->parentScope, 0);
+        createSymbol($3.text, temp, $3.line, $3.column, $3.scope->scopeValue, $3.scope->parentScope, 0, $1.text);
         updateLastFunc($3.text);
 
         free(temp);
@@ -468,7 +469,7 @@ parameterSimple:
         char* temp;
         t_symbol* symbol;
 
-        symbol = createSymbol($2.text, $1.text, $2.line, $2.column, lastScopeValue+1, $2.scope->scopeValue, 1);
+        symbol = createSymbol($2.text, $1.text, $2.line, $2.column, lastScopeValue+1, $2.scope->scopeValue, 1, $1.text);
         /* $2.scope->scopeValue lastScopeValue+1 $2.scope->parentScope*/
         temp = (char*) malloc(strlen($2.text) + strlen("Parameter Declaration - ID: ") + 3);
 
@@ -496,7 +497,7 @@ parameterSimple:
         strcat(temp, " ");
         strcat(temp, $2.text);
 
-        symbol = createSymbol($3.text, temp, $3.line, $3.column, lastScopeValue+1, $3.scope->scopeValue, 1);
+        symbol = createSymbol($3.text, temp, $3.line, $3.column, lastScopeValue+1, $3.scope->scopeValue, 1, $1.text);
         /* $3.scope->scopeValue lastScopeValue+1 $3.scope->parentScope*/
         temp2 = (char*) malloc(strlen($3.text) + strlen("Parameter Declaration - List Type ID: ") + 3);
 
@@ -690,6 +691,8 @@ logicBinExpression:
 
         verifyOperands($$);
 
+        addNodeValue($$, $2.text);
+
     }
     | logicUnExpression {
         $$ = $1;
@@ -735,6 +738,8 @@ binExpression:
         addNodePosition($$, $$->child[1]->line, $$->child[1]->column);
 
         verifyOperands($$);
+
+        addNodeValue($$, $2.text);
 
     }
     | listExpression {
@@ -856,6 +861,7 @@ constant:
 
         addNodeType($$, "int");
         addNodePosition($$, $1.line, $1.column);
+        addNodeValue($$, $1.text);
     }
     | MINUS_OP INT {
         char* temp;
@@ -872,6 +878,7 @@ constant:
 
         addNodeType($$, "int");
         addNodePosition($$, $2.line, $2.column);
+        addNodeValue($$, $2.text);
     }
     | FLOAT {
         char* temp;
@@ -888,6 +895,7 @@ constant:
 
         addNodeType($$, "float");
         addNodePosition($$, $1.line, $1.column);
+        addNodeValue($$, $1.text);
     }
     | MINUS_OP FLOAT {
         char* temp;
@@ -904,6 +912,7 @@ constant:
 
         addNodeType($$, "float");
         addNodePosition($$, $2.line, $2.column);
+        addNodeValue($$, $2.text);
     }
     | NULL_CONST {
         char* temp;
@@ -919,6 +928,7 @@ constant:
 
         addNodeType($$, "nil");
         addNodePosition($$, $1.line, $1.column);
+        addNodeValue($$, $1.text);
     }
 ;
 
@@ -975,6 +985,7 @@ writeOp:
 write:
     OUTPUT_KEY DELIM_PARENT_L STRING DELIM_PARENT_R {
         $$ = createNode(COLOR_BLUE "Output String" COLOR_RESET, "writeString");
+        addNodeValue($$, $3.text);
     }
     | OUTPUT_KEY DELIM_PARENT_L simpleExpression DELIM_PARENT_R {
         $$ = createNode(COLOR_BLUE "Output Expression" COLOR_RESET, "writeExp");
@@ -990,6 +1001,7 @@ write:
 writeln:
     OUTPUTLN_KEY DELIM_PARENT_L STRING DELIM_PARENT_R {
         $$ = createNode(COLOR_BLUE "OutputLn String" COLOR_RESET, "writelnString");
+        addNodeValue($$, $3.text);
     }
     | OUTPUTLN_KEY DELIM_PARENT_L simpleExpression DELIM_PARENT_R {
         $$ = createNode(COLOR_BLUE "OutputLn Expression" COLOR_RESET, "writelnExp");
@@ -1309,6 +1321,7 @@ int main(int argc, char **argv){
 
     if(argc >= 2) {
         filep = fopen(argv[1], "r");
+        setFileName(argv[1]);
 
         if(filep != NULL){
             /* print_start(); */
@@ -1325,6 +1338,10 @@ int main(int argc, char **argv){
             /* printTable(); */
             printTable2();
             printTree();
+
+            if(lexicalError == 0 && syntaticError == 0 && semanticErrorsTotal == 0){
+                codeGeneration();
+            }
 
             /* printParams(); */
 

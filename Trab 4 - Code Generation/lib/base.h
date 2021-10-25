@@ -24,6 +24,8 @@
 
 // #define DEBUG_SEMANTIC 1
 
+// #define DEBUG_CODEGEN 1
+
 extern int lexicalError;
 extern int syntaticError;
 extern int line;

@@ -1,3 +1,5 @@
+#include "../lib/symbol_table.h"
+
 #ifndef NODETYPE
 #define NODETYPE
 typedef struct Node{
@@ -10,6 +12,10 @@ typedef struct Node{
     int line;
     int column;
     char* id;
+    char* value;
+    t_symbol* symbol;
+    int assignedTemporary;
+    // char* logicOperator;
 } t_node;
 #endif
 
@@ -28,7 +34,7 @@ extern char *lastFuncDeclared;
 
 t_node* createNode(char* name, char* sigla);
 
-void overrideNode(t_node* node, char* name);
+void overrideNode(t_node* node, char* name, char* sigla);
 
 t_node* createEmptyNode();
 
@@ -47,6 +53,14 @@ void updateLastFunc(char* name);
 void addNodePosition(t_node* node, int line, int column);
 
 void addNodeId(t_node* node, char* id);
+
+void addNodeSymbol(t_node* node, t_symbol* symbol);
+
+void addNodeValue(t_node* node, char* value);
+
+// void addNodeOperator(t_node* node, char* logicOperator);
+
+void addNodeTemporary(t_node* node, int temporary);
 
 void initializeTree(t_node* node);
 

@@ -30,6 +30,9 @@ t_node* createNode(char* name, char* sigla){
     node->line = -1;
     node->column = -1;
     node->id = NULL;
+    node->value = NULL;
+    node->symbol = NULL;
+    node->assignedTemporary = -2;
 
     #ifdef DEBUG_TREE
     printf("Node creation - allocated memory\n");
@@ -48,25 +51,30 @@ t_node* createNode(char* name, char* sigla){
 }
 
 
-void overrideNode(t_node* node, char* name){
+void overrideNode(t_node* node, char* name, char* sigla){
     char* temp;
+    char *tempsigla;
 
     #ifdef DEBUG_TREE
     printf("overrideNode - overriding node\n");
     #endif
 
     temp = malloc(strlen(name) + 1);
+    tempsigla = malloc(strlen(sigla) + 1);
 
     #ifdef DEBUG_TREE
     printf("overrideNode - allocated memory\n");
     #endif
 
-    if(temp != NULL){
+    if(temp != NULL && tempsigla != NULL){
         strcpy(temp, name);
+        strcpy(tempsigla, sigla);
         free(node->name);
+        free(node->sigla);
         node->name = temp;
+        node->sigla = tempsigla;
         #ifdef DEBUG_TREE
-        printf("overrideNode - replaced name\n");
+        printf("overrideNode - replaced name and sigla\n");
         #endif
     }
     else{
@@ -386,6 +394,7 @@ void addNodeTypeId(t_node* node, char* id){
 
     if(symbol != NULL){
         addNodeType(node, symbol->type);
+        addNodeSymbol(node, symbol);
     }
     else{
         // printf("Error when adding type from id to node - probably undeclared id\n");
@@ -406,22 +415,22 @@ void addTypeCastNode(t_node* node, int child, int castType){
 
     if(castType == CAST_INT_FLOAT){
         strcpy(tempName, COLOR_B_YELLOW "Type Cast - Int to float" COLOR_RESET);
-        strcpy(tempSigla, "intToFloat");
+        strcpy(tempSigla, "CastIntToFloat");
         strcpy(tempType, "float");
     }
     else if(castType == CAST_FLOAT_INT){
         strcpy(tempName, COLOR_B_YELLOW "Type Cast - Float to int" COLOR_RESET);
-        strcpy(tempSigla, "floatToInt");
+        strcpy(tempSigla, "CastFloatToInt");
         strcpy(tempType, "int");
     }
     else if(castType == CAST_NIL_INTLIST){
         strcpy(tempName, COLOR_B_YELLOW "Type Cast - Nil to int list" COLOR_RESET);
-        strcpy(tempSigla, "nilToIntList");
+        strcpy(tempSigla, "CastNilToIntList");
         strcpy(tempType, "int list");
     }
     else if(castType == CAST_NIL_FLOATLIST){
         strcpy(tempName, COLOR_B_YELLOW "Type Cast - Nil to float list" COLOR_RESET);
-        strcpy(tempSigla, "nilToFloatList");
+        strcpy(tempSigla, "CastNilToFloatList");
         strcpy(tempType, "float list");
     }
     else{
@@ -466,6 +475,26 @@ void addNodeId(t_node* node, char* id){
 }
 
 
+void addNodeSymbol(t_node* node, t_symbol* symbol){
+    node->symbol = symbol;
+}
+
+
+void addNodeValue(t_node* node, char* value){
+    node->value = malloc(strlen(value) + 1);
+    strcpy(node->value, value);
+}
+
+
+// void addNodeOperator(t_node* node, char* logicOperator){
+//     node->operator = malloc(strlen(logicOperator) + 1);
+//     strcpy(node->logicOperator, logicOperator);
+// }
+
+
+void addNodeTemporary(t_node* node, int temporary){
+    node->assignedTemporary = temporary;
+}
 
 
 void initializeTree(t_node* node){
@@ -622,10 +651,10 @@ void printBranch3(t_node* node, int level, char* prevNode){
             }
             if(strncmp(node->name, "\x1B[", 2) == 0){
                 if(
-                    (strcmp(node->sigla, "intToFloat") == 0) ||
-                    (strcmp(node->sigla, "floatToInt") == 0) ||
-                    (strcmp(node->sigla, "nilToIntList") == 0) ||
-                    (strcmp(node->sigla, "nilToFloatList") == 0)
+                    (strcmp(node->sigla, "CastIntToFloat") == 0) ||
+                    (strcmp(node->sigla, "CastFloatToInt") == 0) ||
+                    (strcmp(node->sigla, "CastNilToIntList") == 0) ||
+                    (strcmp(node->sigla, "CastNilToFloatList") == 0)
                 ){
                     aux = 9;
                 }

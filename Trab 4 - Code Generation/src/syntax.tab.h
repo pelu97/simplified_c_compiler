@@ -105,7 +105,7 @@ extern int yydebug;
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 union YYSTYPE
 {
-#line 104 "./src/syntax.y"
+#line 106 "./src/syntax.y"
 
     struct Tokens{
         char text[150];

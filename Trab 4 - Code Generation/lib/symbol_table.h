@@ -2,7 +2,8 @@
 
 // Definições referentes à tabela de símbolos
 
-
+#ifndef SYMBOLTYPE
+#define SYMBOLTYPE
 typedef struct Symbols {
     int line;
     int column;
@@ -15,7 +16,10 @@ typedef struct Symbols {
     //semantic
     int paramNumber;
     struct Symbols **parameters;
+    // codegen
+    char* typeBase;
 } t_symbol;
+#endif
 
 
 extern t_symbol *SymbolTable;
@@ -24,7 +28,7 @@ extern t_symbol **parameterHolder;
 extern int parameterHolderMax;
 
 
-t_symbol* createSymbol(char* symbolName, char* type, int line, int column, int scopeValue, int parentScope, int varFunc);
+t_symbol* createSymbol(char* symbolName, char* type, int line, int column, int scopeValue, int parentScope, int varFunc, char* typeBase);
 
 t_symbol* getSymbol(char* symbolName);
 
