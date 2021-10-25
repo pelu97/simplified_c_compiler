@@ -23,6 +23,18 @@ semantico: ./src/lexical.l ./src/syntax.y ./src/base.c ./src/symbol_table.c ./sr
 	gcc -g ./src/lex.yy.c ./src/syntax.tab.c ./src/base.o ./src/symbol_table.o ./src/scope.o ./src/tree.o ./src/semantic.o -o tradutor -Wall
 
 
+gerador: ./src/lexical.l ./src/syntax.y ./src/base.c ./src/symbol_table.c ./src/scope.c ./src/tree.c ./src/semantic.c ./src/codegen.c
+	bison -o ./src/syntax.tab.c -d ./src/syntax.y
+	flex -o ./src/lex.yy.c ./src/lexical.l
+	gcc -c ./src/base.c -o ./src/base.o
+	gcc -c ./src/symbol_table.c -o ./src/symbol_table.o
+	gcc -c ./src/scope.c -o ./src/scope.o
+	gcc -c ./src/tree.c -o ./src/tree.o
+	gcc -c ./src/semantic.c -o ./src/semantic.o
+	gcc -c ./src/codegen.c -o ./src/codegen.o
+	gcc -g ./src/lex.yy.c ./src/syntax.tab.c ./src/base.o ./src/symbol_table.o ./src/scope.o ./src/tree.o ./src/semantic.o ./src/codegen.o -o tradutor -Wall
+
+
 run_correct1:
 	./tradutor ./tests/test_correct1.c
 
@@ -49,6 +61,9 @@ run_wrong2:
 
 run_tree:
 	./tradutor ./tests/test_tree.c
+
+run_tac_correct1:
+	./tac ./tests/test_correct1.tac
 
 debug_syntax:
 	bison -o ./src/syntax.tab.c -d ./src/syntax.y -Wcounterexamples

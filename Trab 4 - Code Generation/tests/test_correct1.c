@@ -15,6 +15,8 @@ int list list_input(int n, int k, int l, int j, int g){
         mylist = temp : mylist;
     }
 
+    batata = 1 + 2/2 + (3 + 5.1 - 90 * 2);
+
 
     writeln("Lista armazenada");
 
