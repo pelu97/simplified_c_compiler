@@ -24,7 +24,10 @@
 
 // #define DEBUG_SEMANTIC 1
 
-// #define DEBUG_CODEGEN 1
+#define DEBUG_CODEGEN 1
+
+// #define DEBUG_CODEGEN_SIMPLE_WRITE 1
+
 
 extern int lexicalError;
 extern int syntaticError;
