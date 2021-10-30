@@ -14,6 +14,7 @@ typedef struct Context{
 
 extern char* FileName;
 extern int lastContextId;
+extern int labelCounter;
 
 extern t_code* CodeList;
 extern t_code* lastCode;
@@ -41,6 +42,8 @@ t_context* getContext();
 int getNewTemporary();
 
 int getLastTemporary();
+
+int getNewLabelId();
 
 void printCode();
 

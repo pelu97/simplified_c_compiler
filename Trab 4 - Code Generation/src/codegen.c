@@ -12,30 +12,35 @@ NOTES:
 
 Operações para gerar código:
 
-- declaração de variável
-- declaração de função
-- if
-- if else
-- for
-- return
+- declaração de variável - FEITO
+- declaração de função - FEITO
+- if - FEITO
+- if else - FEITO
+- for - FEITO
+- return - FEITO
 - atribuição - FEITO
 - expressões lógicas - FEITO
 - expressões relacionais - FEITO
 - expressões aritméticas - FEITO
 - expressões de lista
 - constantes?
-- chamada de função
-- passagem de parâmetro
+- chamada de função - FEITO
+- passagem de parâmetro - FEITO
+- recebimento de parâmetro - FEITO
 - write e writeln - FEITO
--- corrigir -  as intstruções print e println parecem aceitar apenas um caractere por vez. Talvez seja necessário colocar a string na tabela de símbolos ou
-    criar uma linha de print para cada caractere (mais simples).
+-- corrigir -  as instruções print e println parecem aceitar apenas um caractere por vez. Talvez seja necessário colocar a string na tabela de símbolos ou
+    criar uma linha de print para cada caractere (mais simples). - FEITO
 - read - FEITO
-- conversões de tipo
+- conversões de tipo - FEITO PARA TIPOS BÁSICOS
+
+- necessário adicionar um return padrão em toda função. O mais correto seria adicionar o nó na árvore, mas se for mais fácil pode só procurar um jeito de adicionar um return
+no final do código já gerado de uma função;
 */
 
 
 char* FileName = NULL;
 int lastContextId = -1;
+int labelCounter = -1;
 
 t_code* CodeList = NULL;
 t_code* lastCode = NULL;
@@ -83,6 +88,7 @@ void generateCode(t_node* node){
     char tempOperand1[50];
     char tempOperand2[50];
     int tempInt, i, tempInt2;
+    t_node* tempNode = NULL;
     // t_symbol* tempSymbol = NULL;
 
     if(node != NULL){
@@ -97,13 +103,20 @@ void generateCode(t_node* node){
             printf("generateCode - Node is write string\n");
             #endif
 
+            // se definida essa flag, é gerado um código simples de write e writeln, apenas para facilitar visualização
+            // ao invés de imprimir caractere a caractere no arquivo final, que é o correto aceito pelo tac, imprime a string completa de uma vez
+            // isso não é aceito pelo tac mas ajuda a visualizar outras coisas no codigo final
+            #ifndef DEBUG_CODEGEN_SIMPLE_WRITE
             for(i=1; i<(strlen(node->value)-1); i++){
                 sprintf(tempCode, "print '%c'", node->value[i]);
                 createCode(tempCode);
             }
+            #endif
 
-            // sprintf(tempCode, "print %s", node->value);
-            // createCode(tempCode);
+            #ifdef DEBUG_CODEGEN_SIMPLE_WRITE
+            sprintf(tempCode, "print %s", node->value);
+            createCode(tempCode);
+            #endif
         }
         // writeln string
         else if(strcmp(node->sigla, "writelnString") == 0){
@@ -111,15 +124,46 @@ void generateCode(t_node* node){
             printf("generateCode - Node is writeln string\n");
             #endif
 
+            // se definida essa flag, é gerado um código simples de write e writeln, apenas para facilitar visualização
+            // ao invés de imprimir caractere a caractere no arquivo final, que é o correto aceito pelo tac, imprime a string completa de uma vez
+            // isso não é aceito pelo tac mas ajuda a visualizar outras coisas no codigo final
+            #ifndef DEBUG_CODEGEN_SIMPLE_WRITE
             for(i=1; i<(strlen(node->value)-1); i++){
                 sprintf(tempCode, "print '%c'", node->value[i]);
                 createCode(tempCode);
             }
             sprintf(tempCode, "println");
             createCode(tempCode);
+            #endif
 
-            // sprintf(tempCode, "println %s", node->value);
-            // createCode(tempCode);
+            #ifdef DEBUG_CODEGEN_SIMPLE_WRITE
+            sprintf(tempCode, "println %s", node->value);
+            createCode(tempCode);
+            #endif
+        }
+        // write exp
+        if(strcmp(node->sigla, "writeExp") == 0){
+            #ifdef DEBUG_CODEGEN
+            printf("generateCode - Node is write expression\n");
+            #endif
+
+            setOperand(node->child[0], tempOperand1);
+
+            sprintf(tempCode, "print %s", tempOperand1);
+
+            createCode(tempCode);
+        }
+        // writeln exp
+        else if(strcmp(node->sigla, "writelnExp") == 0){
+            #ifdef DEBUG_CODEGEN
+            printf("generateCode - Node is writeln expression\n");
+            #endif
+
+            setOperand(node->child[0], tempOperand1);
+
+            sprintf(tempCode, "println %s", tempOperand1);
+
+            createCode(tempCode);
         }
         // read
         else if(strcmp(node->sigla, "readOp") == 0){
@@ -505,7 +549,7 @@ void generateCode(t_node* node){
         // conversão de tipo
         else if(strncmp(node->sigla, "Cast", 4) == 0){
             #ifdef DEBUG_CODEGEN
-            printf("generateCode - Node is binExp - relational expression\n");
+            printf("generateCode - Node is type cast - %s\n", node->sigla);
             #endif
 
             tempInt = getNewTemporary();
@@ -521,10 +565,187 @@ void generateCode(t_node* node){
             else if(strcmp(node->sigla, "CastFloatToInt") == 0){
                 sprintf(tempCode, "fltoint %s", tempOperands);
             }
+            // placeholder
+            else{
+                sprintf(tempCode, "inttofl %s", tempOperands);
+            }
 
             addNodeTemporary(node, tempInt);
             createCode(tempCode);
         }
+        // declaração de função e parâmetros recebidos pela pilha
+        else if((strcmp(node->sigla, "funcDec") == 0) || (strcmp(node->sigla, "funcDecList") == 0)){
+            #ifdef DEBUG_CODEGEN
+            printf("generateCode - Node is function declaration\n");
+            #endif
+
+            sprintf(tempCode, "%s:", node->symbol->name);
+            createCode(tempCode);
+
+            pushContext();
+
+            // recebe os parâmetros que serão passados pela pilha
+            for(i=0; i<node->symbol->paramNumber; i++){
+                // percorre cada parâmetro já armazenado na tabela de símbolos
+                // os parâmetros foram empilhados bottom up, do final para o início, então é necessário receber-los do início para o final, desempilhando
+                sprintf(tempCode, "pop %s_%d", node->symbol->parameters[i]->name, node->symbol->parameters[i]->scopeValue);
+                createCode(tempCode);
+            }
+
+        }
+        // chamada de função e parâmetros passados pela pilha
+        else if(strcmp(node->sigla, "funcCall") == 0){
+            #ifdef DEBUG_CODEGEN
+            printf("generateCode - Node is function call\n");
+            #endif
+
+            // gera o código dos parâmetros sendo passados
+            for(tempNode = node->child[0]; tempNode != NULL; tempNode = tempNode->child[0]){
+                if((tempNode->child != NULL) && (strcmp(tempNode->sigla, "paramPass") == 0)){
+                    // é 1 ou mais parâmetros
+                    if(tempNode->child[0]->child != NULL){
+                        // existe uma subárvore no child 0 com mais parâmetros, child 1 é um parâmetro
+                        setOperand(tempNode->child[1], tempOperand1);
+                        sprintf(tempCode, "param %s", tempOperand1);
+                        createCode(tempCode);
+                        // for já move o ponteiro do tempNode, só é preciso não sair do loop
+                    }
+                    else{
+                        // últimos parâmetros, final da "recursão" transformada em loop
+                        setOperand(tempNode->child[1], tempOperand1);
+                        sprintf(tempCode, "param %s", tempOperand1);
+                        createCode(tempCode);
+
+                        setOperand(tempNode->child[0], tempOperand1);
+                        sprintf(tempCode, "param %s", tempOperand1);
+                        createCode(tempCode);
+                        break;
+                    }
+                }
+                else{
+                    // apenas 1 ou nenhum parâmetro
+                    if(tempNode->empty == 0){
+                        // só possui 1 parâmetro, deve analisar o nó inicial da execução
+                        setOperand(tempNode, tempOperand1);
+                        sprintf(tempCode, "param %s", tempOperand1);
+                        createCode(tempCode);
+                    }
+                    // se o nó for vazio, não existem parâmetros, nada precisa ser feito
+                    // sai do loop
+                    break;
+                }
+            }
+
+            // gera código para a chamada da função
+            sprintf(tempCode, "call %s", node->symbol->name);
+            createCode(tempCode);
+
+            // gera código para receber o retorno da função
+            tempInt = getNewTemporary();
+            sprintf(tempCode, "pop $%d", tempInt);
+            addNodeTemporary(node, tempInt);
+            createCode(tempCode);
+
+        }
+        // return
+        else if(strcmp(node->sigla, "return") == 0){
+            #ifdef DEBUG_CODEGEN
+            printf("generateCode - Node is return\n");
+            #endif
+
+            setOperand(node->child[0], tempOperand1);
+            sprintf(tempCode, "return %s", tempOperand1);
+            createCode(tempCode);
+
+
+        }
+        // if
+        else if(strcmp(node->sigla, "if") == 0){
+            #ifdef DEBUG_CODEGEN
+            printf("generateCode - Node is if\n");
+            #endif
+
+            // branch quando for falso. Quando for verdadeiro é só continuar a execução
+            tempInt = getNewLabelId();
+            sprintf(tempOperand1, "if_label_%d", tempInt);
+
+            setOperand(node->child[0], tempOperand2);
+
+            sprintf(tempCode, "brz %s, %s", tempOperand1, tempOperand2);
+
+            createCode(tempCode);
+
+            addNodeLabel(node->child[1], tempOperand1);
+
+        }
+        // if else
+        else if(strcmp(node->sigla, "ifelse") == 0){
+            #ifdef DEBUG_CODEGEN
+            printf("generateCode - Node is if else\n");
+            #endif
+
+            // branch quando for falso. Quando for verdadeiro é só continuar a execução
+            tempInt = getNewLabelId();
+            sprintf(tempOperand1, "if_label_%d", tempInt);
+
+            setOperand(node->child[0], tempOperand2);
+
+            sprintf(tempCode, "brz %s, %s", tempOperand1, tempOperand2);
+
+            createCode(tempCode);
+
+            // label para o final do if, ou começo do else
+            addNodeLabel(node->child[1], tempOperand1);
+
+            tempInt = getNewLabelId();
+            sprintf(tempOperand1, "if_label_%d", tempInt);
+
+            // label para final do else, ou final de todo o if else
+            addNodeLabel(node->child[2], tempOperand1);
+            addNodeLabelJump(node->child[1], tempOperand1);
+
+        }
+        // for
+        else if(strcmp(node->sigla, "for") == 0){
+            #ifdef DEBUG_CODEGEN
+            printf("generateCode - Node is for\n");
+            #endif
+
+
+            tempInt = getNewLabelId();
+            sprintf(tempOperand1, "for_label_%d", tempInt);
+
+            // label para início do for, após a atribuição inicial que já foi gerada
+            sprintf(tempCode, "%s:", tempOperand1);
+            createCode(tempCode);
+
+            addNodeLabelJumpTrue(node->child[1], tempOperand1);
+
+        }
+        // fim do seletor de nós
+
+
+
+        // se tiver uma labelJump, adiciona uma instrução de jump incondicional no final do código gerado
+        if(node->labelJump != NULL){
+            sprintf(tempCode, "jump %s", node->labelJump);
+            createCode(tempCode);
+        }
+
+        // se tiver uma labelJumpTrue, adiciona uma instrução de jump condicional (branch se último temporário é diferente de zero) no final do código gerado
+        if(node->labelJumpTrue != NULL){
+            sprintf(tempCode, "brnz %s, $%d", node->labelJumpTrue, getLastTemporary());
+            createCode(tempCode);
+        }
+
+        // se tiver uma label, adiciona no final do código gerado
+        if(node->label != NULL){
+            sprintf(tempCode, "%s:", node->label);
+            createCode(tempCode);
+        }
+
+
+
     }
 }
 
@@ -562,7 +783,11 @@ void setOperandConstant(t_node* node, char* operand){
 
 
 void assembleCode(t_node* node){
-    int i;
+    int i, pregen, pregen_child[10];
+
+    for(i=0; i<10; i++){
+        pregen_child[i] = 0;
+    }
 
     #ifdef DEBUG_CODEGEN
     printf("assembleCode - Assembling code for node %s\n", node->name);
@@ -573,13 +798,54 @@ void assembleCode(t_node* node){
     }
 
     if(node != NULL){
+        pregen = 0;
+        // casos onde o nó precisa ser gerado antes dos filhos
+        if(
+            (strcmp(node->sigla, "funcDec") == 0) || (strcmp(node->sigla, "funcDecList") == 0) || (strcmp(node->sigla, "if") == 0) ||
+            (strcmp(node->sigla, "ifelse") == 0) || (strcmp(node->sigla, "for") == 0)
+        ){
+            // caso onde o filho 1 precisa ser gerado antes do nó, que precisa ser gerado antes dos outros filhos
+            // if, ifelse, for
+            if((strcmp(node->sigla, "if") == 0) || (strcmp(node->sigla, "ifelse") == 0) || (strcmp(node->sigla, "for") == 0)){
+                assembleCode(node->child[0]);
+                pregen_child[0] = 1;
+            }
+
+            generateCode(node);
+            pregen = 1;
+
+            // casos específiocos do for - tratamento dos filhos possui uma ordem específica a ser seguida
+            // nó do for já foi gerado, então as labels e labelJumps já foram atribuídas aos filhos
+            if((strcmp(node->sigla, "for") == 0)){
+                // gera o código do corpo do for - atribuição e label inicial já foram geradas
+                assembleCode(node->child[3]);
+                pregen_child[3] = 1;
+
+                // gera o código da incrementação do for - corpo já foi gerado
+                assembleCode(node->child[2]);
+                pregen_child[2] = 1;
+
+                // gera o código da verificação do for - incrementação já foi gerada. As labels e labelJumps já foram tratadas pelo nó pai e estão armazenadas no filho
+                assembleCode(node->child[1]);
+                pregen_child[1] = 1;
+            }
+        }
+
 
         if(node->child != NULL){
             for(i=0; node->child[i]!= NULL; i++){
-                assembleCode(node->child[i]);
+                if(pregen_child[i] == 0){
+                    assembleCode(node->child[i]);
+                }
+                else{
+                    pregen_child[i] = 0;
+                }
             }
         }
-        generateCode(node);
+
+        if(pregen == 0){
+            generateCode(node);
+        }
     }
 }
 
@@ -673,6 +939,12 @@ int getLastTemporary(){
     context = getContext();
 
     return context->lastTemporary;
+}
+
+
+int getNewLabelId(){
+    // incrementa e depois retorna o valor
+    return ++labelCounter;
 }
 
 
