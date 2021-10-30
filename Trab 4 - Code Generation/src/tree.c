@@ -33,6 +33,8 @@ t_node* createNode(char* name, char* sigla){
     node->value = NULL;
     node->symbol = NULL;
     node->assignedTemporary = -2;
+    node->label = NULL;
+    node->labelJump = NULL;
 
     #ifdef DEBUG_TREE
     printf("Node creation - allocated memory\n");
@@ -365,8 +367,8 @@ void addNodeTypeChildren(t_node* node){
 
 void addNodeTypeId(t_node* node, char* id){
     t_symbol* symbol = NULL;
-    t_scope* scopePointer = NULL;
-    int found = 0;
+    // t_scope* scopePointer = NULL;
+    // int found = 0;
 
     // symbol = getSymbol(id);
     //
@@ -496,6 +498,21 @@ void addNodeTemporary(t_node* node, int temporary){
     node->assignedTemporary = temporary;
 }
 
+void addNodeLabel(t_node* node, char* label){
+    node->label = malloc(strlen(label) + 1);
+    strcpy(node->label, label);
+}
+
+void addNodeLabelJump(t_node* node, char* labelJump){
+    node->labelJump = malloc(strlen(labelJump) + 1);
+    strcpy(node->labelJump, labelJump);
+}
+
+void addNodeLabelJumpTrue(t_node* node, char* labelJumpTrue){
+    node->labelJumpTrue = malloc(strlen(labelJumpTrue) + 1);
+    strcpy(node->labelJumpTrue, labelJumpTrue);
+}
+
 
 void initializeTree(t_node* node){
 
@@ -508,12 +525,12 @@ void initializeTree(t_node* node){
 
 void addChild(t_node* node, int n){
     t_node** temp;
-    t_node** temp_old;
+    // t_node** temp_old;
 
     temp = (t_node**) realloc(node->child, (sizeof(t_node*) * (n + 1)));
 
     if(temp != NULL){
-        temp_old = node->child;
+        // temp_old = node->child;
         node->child = temp;
 
         // aloca um filho a mais e seta ele para nulo, para saber quando acabaram os filhos
@@ -694,9 +711,17 @@ void printBranch3(t_node* node, int level, char* prevNode){
 }
 
 void freeTree(){
+    #ifdef DEBUG_TREE
     int i;
+    #endif
 
+    #ifdef DEBUG_TREE
     i = freeBranch(TreeRoot);
+    #endif
+
+    #ifndef DEBUG_TREE
+    freeBranch(TreeRoot);
+    #endif
 
     if(lastFuncDeclared != NULL){
         free(lastFuncDeclared);

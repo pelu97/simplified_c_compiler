@@ -15,6 +15,9 @@ typedef struct Node{
     char* value;
     t_symbol* symbol;
     int assignedTemporary;
+    char* label;    //label para ser adicionada após o código do nó
+    char* labelJump;    //label para adicionar um jump incondicional no final do código do nó
+    char* labelJumpTrue;    //label para adicionar um jump condicional (branch se for diferente de zero) no final do código do nó
     // char* logicOperator;
 } t_node;
 #endif
@@ -61,6 +64,12 @@ void addNodeValue(t_node* node, char* value);
 // void addNodeOperator(t_node* node, char* logicOperator);
 
 void addNodeTemporary(t_node* node, int temporary);
+
+void addNodeLabel(t_node* node, char* label);
+
+void addNodeLabelJump(t_node* node, char* labelJump);
+
+void addNodeLabelJumpTrue(t_node* node, char* labelJumpTrue);
 
 void initializeTree(t_node* node);
 
