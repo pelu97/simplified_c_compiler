@@ -377,6 +377,7 @@ funcDeclaration:
     }
     bodyStatement {
         char* temp;
+        t_symbol* symbol;
 
         temp = (char*) malloc(strlen($2.text) + strlen("Function Declaration - ID: ") + 1);
 
@@ -391,6 +392,9 @@ funcDeclaration:
 
         $$->child[0] = $5;
         $$->child[1] = $8;
+
+        symbol = getSymbolValidScopeFunc($2.text);
+        addNodeSymbol($$, symbol);
 
         freeScopeToken($2.scope);
         free(temp);
@@ -419,6 +423,7 @@ funcDeclaration:
     }
     bodyStatement {
         char* temp2;
+        t_symbol* symbol;
 
         temp2 = (char*) malloc(strlen($3.text) + strlen("Function Declaration - List Type ID: ") + 1);
 
@@ -433,6 +438,9 @@ funcDeclaration:
 
         $$->child[0] = $6;
         $$->child[1] = $9;
+
+        symbol = getSymbolValidScopeFunc($3.text);
+        addNodeSymbol($$, symbol);
 
         freeScopeToken($3.scope);
         free(temp2);
