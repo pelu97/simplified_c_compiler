@@ -158,7 +158,8 @@ void checkFunctions(){
 
 
 void checkFunctionCall(t_node* node){
-    int i, paramNumber, j, correct, typeConvert;
+    int i, paramNumber, j, typeConvert;
+    // int correct;
     // char** types = NULL;
     t_typeTemp** types = NULL;
     t_symbol* funcDeclaration;
@@ -198,8 +199,9 @@ void checkFunctionCall(t_node* node){
     funcDeclaration = getSymbolValidScopeFunc(node->functionName);
 
     if(funcDeclaration != NULL){
+        addNodeSymbol(node, funcDeclaration);
         j = paramNumber-1;
-        correct = 1;
+        // correct = 1;
 
         #ifdef DEBUG_SEMANTIC
         printf("Function call check - Comparing paramNumber - passed %d (%s), expected %d (%s)\n", paramNumber, node->functionName, funcDeclaration->paramNumber, funcDeclaration->name);
@@ -213,7 +215,7 @@ void checkFunctionCall(t_node* node){
                 #endif
 
                 if(strcmp(types[j]->type, funcDeclaration->parameters[i]->type) != 0){
-                    correct = 0;
+                    // correct = 0;
                     // printf("Wrong parameter type (%s - %s) in call to function %s\n", types[j]->type, funcDeclaration->parameters[i]->type, funcDeclaration->name);
 
                     typeConvert = checkConversion(types[j]->type, funcDeclaration->parameters[i]->type);
@@ -441,7 +443,7 @@ t_typeTemp** addTempType(t_typeTemp** types, char* type, int index, int line, in
 
 void checkIdDeclaration(t_node* node){
     t_symbol* symbol;
-    int found = 0;
+    // int found = 0;
     char temp[300];
 
     // for(pointer = SymbolTable; pointer != NULL; pointer = pointer->next){
@@ -868,9 +870,10 @@ void verifyOperands(t_node* node){
 
 
 void semanticAnalysis(){
-    int mainFunction;
+    // int mainFunction;
 
-    mainFunction = checkMain();
+    // mainFunction = checkMain();
+    checkMain();
 
     // if(mainFunction == 0){
     //     printf("Não foi encontrada uma definição para a main\n");

@@ -214,6 +214,7 @@ char* add_color(char* string, char* color){
         printf("Fatal error when allocatin memory to add color formatting\n");
     }
 
+    return NULL;
 
 }
 

@@ -108,7 +108,7 @@ t_symbol* getSymbolWithScope(char* symbolName, int scope){
 
 
 t_symbol* getSymbolValidScope(char* symbolName){
-    t_symbol* pointer;
+    // t_symbol* pointer;
     t_symbol* symbol = NULL;
     t_scope* scopePointer = NULL;
 
@@ -125,7 +125,7 @@ t_symbol* getSymbolValidScope(char* symbolName){
 
 
 t_symbol* getSymbolValidScopeVar(char* symbolName){
-    t_symbol* pointer;
+    // t_symbol* pointer;
     t_symbol* symbol = NULL;
     t_scope* scopePointer = NULL;
 
@@ -150,7 +150,7 @@ t_symbol* getSymbolValidScopeVar(char* symbolName){
 
 
 t_symbol* getSymbolValidScopeFunc(char* symbolName){
-    t_symbol* pointer;
+    // t_symbol* pointer;
     t_symbol* symbol = NULL;
     t_scope* scopePointer = NULL;
 
