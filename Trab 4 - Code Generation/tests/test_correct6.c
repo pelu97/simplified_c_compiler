@@ -3,7 +3,7 @@ int batata;
 
 int bake(){
     int temp;
-    int list batata2;
+    // int list batata2;
 
     if((batata < 100) && (batata > 20) || (batata == 10)){
         temp = batata;
@@ -12,15 +12,17 @@ int bake(){
         temp = (batata * 2) + (3 + 5.1 * 9 / 3 - 2);
     }
 
-    if(batata2 > 10){
-        temp = batata;
-    }
-    else if(batata2 && (batata>1)){
-        temp = batata;
-    }
+    // if(batata2 > 10){
+    //     temp = batata;
+    // }
+    // else if(batata2 && (batata>1)){
+    //     temp = batata;
+    // }
 
     write(temp);
     writeln(" batatas assadas");
+
+    // return 0;
 }
 
 

@@ -32,6 +32,8 @@ int check_list(int i){
     else{
         return 0;
     }
+
+    return -1;
 }
 
 int double_list(int i){
@@ -67,7 +69,7 @@ int test_list(int list n){
     writeln(?temp_list);
 
 
-
+    return 0;
 
 }
 

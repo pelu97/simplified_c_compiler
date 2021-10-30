@@ -18,56 +18,23 @@ int temp_list2_7
 int listread_8
 int n_8
 .code
-†Ï
+list_input:
+pop n_1
+pop k_1
+pop l_1
+pop j_1
+pop g_1
+inttofl $0, NIL
 mov mylist_1, $0
 mov i_1, 0
-slt $1, i_1, n_1
-add $2, i_1, 1
-mov i_1, $2
-print 'D'
-print 'i'
-print 'g'
-print 'i'
-print 't'
-print 'e'
-print ' '
-print 'u'
-print 'm'
-print ' '
-print 'i'
-print 'n'
-print 't'
-print 'e'
-print 'i'
-print 'r'
-print 'o'
-print ' '
-print 'p'
-print 'a'
-print 'r'
-print 'a'
-print ' '
-print 'a'
-print 'r'
-print 'm'
-print 'a'
-print 'z'
-print 'e'
-print 'n'
-print 'a'
-print 'r'
-print ' '
-print 'n'
-print 'a'
-print ' '
-print 'l'
-print 'i'
-print 's'
-print 't'
-print 'a'
-println
+for_label_0:
+println "Digite um inteiro para armazenar na lista"
 scani temp_1
-mov mylist_1, $2
+mov mylist_1, $0
+add $1, i_1, 1
+mov i_1, $1
+slt $2, i_1, n_1
+brnz for_label_0, $2
 div $3, 2, 2
 add $4, 1, $3
 inttofl $5, $4
@@ -79,251 +46,51 @@ sub $10, $7, $9
 add $11, $5, $10
 fltoint $12, $11
 mov batata_1, $12
-print 'L'
-print 'i'
-print 's'
-print 't'
-print 'a'
-print ' '
-print 'a'
-print 'r'
-print 'm'
-print 'a'
-print 'z'
-print 'e'
-print 'n'
-print 'a'
-print 'd'
-print 'a'
-println
-sleq $13, list_value_0, i_3
-mul $14, i_6, 2
-print 'P'
-print 'r'
-print 'i'
-print 'm'
-print 'e'
-print 'i'
-print 'r'
-print 'o'
-print ' '
-print 'e'
-print 'l'
-print 'e'
-print 'm'
-print 'e'
-print 'n'
-print 't'
-print 'o'
-print ' '
-print 'd'
-print 'a'
-print ' '
-print 'l'
-print 'i'
-print 's'
-print 't'
-print 'a'
-print ':'
-print ' '
+println "Lista armazenada"
+return mylist_1
+check_list:
+pop i_3
+sleq $0, list_value_0, i_3
+brz if_label_1, $0
+return 1
+jump if_label_2
+if_label_1:
+return 0
+if_label_2:
+return -1
+double_list:
+pop i_6
+mul $0, i_6, 2
+return $0
+test_list:
+pop n_7
+print "Primeiro elemento da lista: "
+println ∞
+B
 mov batata_0, 0
-mov list_value_0, $14
-mov temp_list_7, $14
-mov temp_list2_7, $14
-print 'P'
-print 'r'
-print 'i'
-print 'm'
-print 'e'
-print 'i'
-print 'r'
-print 'o'
-print ' '
-print 'e'
-print 'l'
-print 'e'
-print 'm'
-print 'e'
-print 'n'
-print 't'
-print 'o'
-print ' '
-print 'd'
-print 'a'
-print ' '
-print 'l'
-print 'i'
-print 's'
-print 't'
-print 'a'
-print ' '
-print 'd'
-print 'u'
-print 'p'
-print 'l'
-print 'i'
-print 'c'
-print 'a'
-print 'd'
-print 'a'
-print ':'
-print ' '
-print 'P'
-print 'r'
-print 'i'
-print 'm'
-print 'e'
-print 'i'
-print 'r'
-print 'o'
-print ' '
-print 'e'
-print 'l'
-print 'e'
-print 'm'
-print 'e'
-print 'n'
-print 't'
-print 'o'
-print ' '
-print 'd'
-print 'a'
-print ' '
-print 'l'
-print 'i'
-print 's'
-print 't'
-print 'a'
-print ' '
-print 'f'
-print 'i'
-print 'l'
-print 't'
-print 'r'
-print 'a'
-print 'd'
-print 'a'
-print ' '
-print 'p'
-print 'e'
-print 'l'
-print 'o'
-print ' '
-print 'p'
-print 'r'
-print 'i'
-print 'm'
-print 'e'
-print 'i'
-print 'r'
-print 'o'
-print ' '
-print 'v'
-print 'a'
-print 'l'
-print 'o'
-print 'r'
-print ' '
-print 'd'
-print 'a'
-print ' '
-print 'l'
-print 'i'
-print 's'
-print 't'
-print 'a'
-print ' '
-print 'd'
-print 'e'
-print ' '
-print 'e'
-print 'n'
-print 't'
-print 'r'
-print 'a'
-print 'd'
-print 'a'
-print ':'
-print ' '
-print 'D'
-print 'i'
-print 'g'
-print 'i'
-print 't'
-print 'e'
-print ' '
-print 'u'
-print 'm'
-print ' '
-print 't'
-print 'a'
-print 'm'
-print 'a'
-print 'n'
-print 'h'
-print 'o'
-print ' '
-print 'p'
-print 'a'
-print 'r'
-print 'a'
-print ' '
-print 'a'
-print ' '
-print 'l'
-print 'i'
-print 's'
-print 't'
-print 'a'
-print ':'
-print ' '
+mov list_value_0, $-1
+mov temp_list_7, $-1
+mov temp_list2_7, $-1
+print "Primeiro elemento da lista duplicada: "
+println pB
+print "Primeiro elemento da lista filtrada pelo primeiro valor da lista de entrada: "
+println B
+return 0
+main:
+print "Digite um tamanho para a lista: "
 scani n_8
-print 'O'
-print ' '
-print 'i'
-print 'n'
-print 't'
-print 'e'
-print 'i'
-print 'r'
-print 'o'
-print ' '
-print 'd'
-print 'i'
-print 'g'
-print 'i'
-print 't'
-print 'a'
-print 'd'
-print 'o'
-print ' '
-print 'f'
-print 'o'
-print 'i'
-print ':'
-print ' '
-mov listread_8, $14
-print 'E'
-print 'n'
-print 'c'
-print 'e'
-print 'r'
-print 'r'
-print 'a'
-print 'n'
-print 'd'
-print 'o'
-print ' '
-print 'e'
-print 'x'
-print 'e'
-print 'c'
-print 'u'
-print '√'
-print 'ß'
-print '√'
-print '£'
-print 'o'
-print '.'
-print '.'
-print '.'
+print "O inteiro digitado foi: "
+println n_8
+param 3
+param 2
+param 4
+param 1
+param n_8
+call list_input
+pop $0
+mov listread_8, $0
+param listread_8
+call test_list
+pop $1
+print "Encerrando execu√ß√£o..."
+return 0
