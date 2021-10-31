@@ -48,6 +48,7 @@ fltoint $12, $11
 mov batata_1, $12
 println "Lista armazenada"
 return mylist_1
+return NIL
 check_list:
 pop i_3
 sleq $0, list_value_0, i_3
@@ -58,23 +59,25 @@ if_label_1:
 return 0
 if_label_2:
 return -1
+return 0
 double_list:
 pop i_6
 mul $0, i_6, 2
 return $0
+return 0
 test_list:
 pop n_7
 print "Primeiro elemento da lista: "
-println °
-B
+println `Hvùü
 mov batata_0, 0
 mov list_value_0, $-1
 mov temp_list_7, $-1
 mov temp_list2_7, $-1
 print "Primeiro elemento da lista duplicada: "
-println pB
+println  Evùü
 print "Primeiro elemento da lista filtrada pelo primeiro valor da lista de entrada: "
-println B
+println ÀEvùü
+return 0
 return 0
 main:
 print "Digite um tamanho para a lista: "
@@ -93,4 +96,5 @@ param listread_8
 call test_list
 pop $1
 print "Encerrando execuÃ§Ã£o..."
+return 0
 return 0

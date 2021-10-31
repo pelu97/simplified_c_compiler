@@ -514,6 +514,47 @@ void addNodeLabelJumpTrue(t_node* node, char* labelJumpTrue){
 }
 
 
+void addReturnNode(t_node* node){
+    t_node* statementNode;
+    t_node* returnNode;
+    t_node* constantNode;
+
+    statementNode = createNode("Statement List", "stateList");
+    returnNode = createNode(COLOR_BLUE "Return Statement" COLOR_RESET, "return");
+
+    addChild(statementNode, 2);
+    addChild(returnNode, 1);
+
+    // se retorno da função for float
+    if(strcmp(node->symbol->type, "float") == 0){
+        constantNode = createNode(COLOR_YELLOW "Constant Float: 0.0" COLOR_RESET, "constFloat");
+        addNodeType(constantNode, "float");
+        addNodeValue(constantNode, "0.0");
+    }
+    // se retorno da função for list
+    else if((strcmp(node->symbol->type, "int list") == 0) || (strcmp(node->symbol->type, "float list") == 0)){
+        constantNode = createNode(COLOR_YELLOW "Constant NULL" COLOR_RESET, "constNull");
+        addNodeType(constantNode, "nil");
+        addNodeValue(constantNode, "NIL");
+    }
+    // se retorno da função for int ou algu caso não previsto
+    else{
+        constantNode = createNode(COLOR_YELLOW "Constant Integer: 0" COLOR_RESET, "constInt");
+        addNodeType(constantNode, "int");
+        addNodeValue(constantNode, "0");
+    }
+
+    returnNode->child[0] = constantNode;
+
+    statementNode->child[0] = node->child[1];
+
+    statementNode->child[1] = returnNode;
+
+    node->child[1] = statementNode;
+
+}
+
+
 void initializeTree(t_node* node){
 
     TreeRoot = node;

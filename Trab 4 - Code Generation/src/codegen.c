@@ -22,7 +22,13 @@ Operações para gerar código:
 - expressões lógicas - FEITO
 - expressões relacionais - FEITO
 - expressões aritméticas - FEITO
-- expressões de lista
+- expressões de lista:
+    - construtor
+    - destrutor
+    - tail
+    - header
+    - map
+    - filter
 - constantes?
 - chamada de função - FEITO
 - passagem de parâmetro - FEITO
@@ -34,7 +40,9 @@ Operações para gerar código:
 - conversões de tipo - FEITO PARA TIPOS BÁSICOS
 
 - necessário adicionar um return padrão em toda função. O mais correto seria adicionar o nó na árvore, mas se for mais fácil pode só procurar um jeito de adicionar um return
-no final do código já gerado de uma função;
+no final do código já gerado de uma função; - FEITO
+- verificar se há alguma diferença em informar o número da parâmetros na chamada call ou não - talvez seja melhor só já adicionar o número de parâmetros
+na instrução de call.
 */
 
 

@@ -71,6 +71,8 @@ void addNodeLabelJump(t_node* node, char* labelJump);
 
 void addNodeLabelJumpTrue(t_node* node, char* labelJumpTrue);
 
+void addReturnNode(t_node* node);
+
 void initializeTree(t_node* node);
 
 void addChild(t_node* node, int n);

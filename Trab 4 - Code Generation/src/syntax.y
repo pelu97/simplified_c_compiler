@@ -401,6 +401,8 @@ funcDeclaration:
 
         /* printf("function declaration test\n"); */
 
+        addReturnNode($$);
+
     }
     | TYPE LIST_TYPE ID {
         char* temp;
@@ -444,6 +446,8 @@ funcDeclaration:
 
         freeScopeToken($3.scope);
         free(temp2);
+
+        addReturnNode($$);
     }
 ;
 
