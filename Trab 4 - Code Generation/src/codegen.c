@@ -23,10 +23,10 @@ Operações para gerar código:
 - expressões relacionais - FEITO
 - expressões aritméticas - FEITO
 - expressões de lista:
-    - construtor
+    - construtor - FEITO
     - destrutor
     - tail
-    - header
+    - header - FEITO
     - map
     - filter
 - constantes?
@@ -37,12 +37,17 @@ Operações para gerar código:
 -- corrigir -  as instruções print e println parecem aceitar apenas um caractere por vez. Talvez seja necessário colocar a string na tabela de símbolos ou
     criar uma linha de print para cada caractere (mais simples). - FEITO
 - read - FEITO
-- conversões de tipo - FEITO PARA TIPOS BÁSICOS
+- conversões de tipo - FEITO
 
 - necessário adicionar um return padrão em toda função. O mais correto seria adicionar o nó na árvore, mas se for mais fácil pode só procurar um jeito de adicionar um return
 no final do código já gerado de uma função; - FEITO
 - verificar se há alguma diferença em informar o número da parâmetros na chamada call ou não - talvez seja melhor só já adicionar o número de parâmetros
-na instrução de call.
+na instrução de call. - FEITO
+- remover o return da função main, não é necessário. - FEITO
+- atualizar a forma como parâmetros são recebidos em uma função, verificar o uso de # - NÃO É NECESSÁRIO, DESEMPILHAR FUNCIONA CORRETAMENTE
+- corrigidos problemas sintáticos ao usar expressões de lista dentro de outras expressões e problema semântico ao comparar lista com NIL; - FEITO
+- corrigido localização de erro quando um nó de cast era uilizado; - FEITO
+- problema na passagem de parâmetros, não funciona em recursões. É necessário utilizar o # ou receber em temporários. - FEITO
 */
 
 
@@ -95,9 +100,13 @@ void generateCode(t_node* node){
     char tempOperands[120];
     char tempOperand1[50];
     char tempOperand2[50];
-    int tempInt, i, tempInt2;
+    int tempInt, i, tempInt2, tempInt3, tempInt4, tempInt5, tempInt6, tempInt7;
     t_node* tempNode = NULL;
     // t_symbol* tempSymbol = NULL;
+
+    // as variáveis possuem nomes de temporários, sem nomes mnemônicos, pois são utilizadas para várias coisas diferentes
+    // em cada situação diferente (nó diferente ou if diferente), as variáveis temporárias são utilizadas de alguma forma diferente com significados diferentes
+    // nos casos onde muitos temporários forem utilizados, haverão comentários explicando o que cada um está representando naquela situação
 
     if(node != NULL){
 
@@ -198,20 +207,49 @@ void generateCode(t_node* node){
             printf("generateCode - Node is assignOp\n");
             #endif
 
-            if(strncmp(node->child[0]->sigla, "const", 5) == 0){
-                // se a subexpressão à direita da atribuição for uma constante
-                // sprintf(tempOperand2, "%s", node->child[0]->value);
+            // if(strncmp(node->child[0]->sigla, "const", 5) == 0){
+            //     // se a subexpressão à direita da atribuição for uma constante
+            //     // sprintf(tempOperand2, "%s", node->child[0]->value);
+            //
+            //     setOperandConstant(node->child[0], tempOperand2);
+            // }
+            // else{
+            //     tempInt = getLastTemporary();
+            //     sprintf(tempOperand2, "$%d", tempInt);
+            // }
 
-                setOperandConstant(node->child[0], tempOperand2);
-            }
-            else{
-                tempInt = getLastTemporary();
-                sprintf(tempOperand2, "$%d", tempInt);
-            }
 
-            sprintf(tempCode, "mov %s_%d, %s", node->id, node->symbol->scopeValue, tempOperand2);
 
+            // // se a variável for do tipo lista
+            // if((strcmp(node->symbol->type, "int list") == 0) || (strcmp(node->symbol->type, "float list") == 0)){
+            //     //  verifica se essa variável já possui um temporário que armazena a sua lista
+            //     // if(node->symbol->listTemporary > -1){
+            //     //     tempInt = node->symbol->listTemporary;
+            //     // }
+            //     // // não possui um temporário ainda, cria um
+            //     // else{
+            //     //     tempInt = getNewTemporary();
+            //     //     addSymbolListTemporary(node->symbol, tempInt);
+            //     // }
+            //
+            //     // cria o código movendo para o temporário
+            //     sprintf(tempCode, "mov $%d, %s", tempInt, tempOperand2);
+            //     createCode(tempCode);
+            //
+            // }
+            // // se não for do tipo lista
+            // else{
+            //     sprintf(tempCode, "mov %s_%d, %s", node->id, node->symbol->scopeValue, tempOperand2);
+            //     createCode(tempCode);
+            // }
+
+            setOperand(node, tempOperand1);
+            setOperand(node->child[0], tempOperand2);
+
+            sprintf(tempCode, "mov %s, %s", tempOperand1, tempOperand2);
             createCode(tempCode);
+
+
         }
         // soma ou subtração
         else if(strcmp(node->sigla, "sumExp") == 0){
@@ -219,143 +257,6 @@ void generateCode(t_node* node){
             printf("generateCode - Node is sumExp - children %s %s %s\n", node->child[0]->name, node->child[1]->name, node->child[2]->name);
             #endif
 
-            // if((node->child[0]->assignedTemporary <= -2)){
-            //     // subexpressão à esquerda não possui um temporário, ou seja, deve ser um elemento único (constante, por exemplo)
-            //     if(strcmp(node->child[0]->sigla, "id") == 0){
-            //         // subexpressão da esquerda é um id
-            //         sprintf(tempOperand1, "%s_%d", node->child[0]->id, node->child[0]->symbol->scopeValue);
-            //     }
-            //     else if(strncmp(node->child[0]->sigla, "const", 5) == 0){
-            //         // subexpressão da esquerda é uma constante
-            //         setOperandConstant(node->child[0], tempOperand1);
-            //     }
-            // }
-            // else{
-            //     // subexpressão à esquerda possui temporário, ou seja, é uma subxpressão já calculada
-            //     sprintf(tempOperand1, "$%d", node->child[0]->assignedTemporary);
-            // }
-            //
-            // if((node->child[2]->assignedTemporary <= -2)){
-            //     // subexpressão à direita não possui um temporário, ou seja, deve ser um elemento único (constante, por exemplo)
-            //     if(strcmp(node->child[2]->sigla, "id") == 0){
-            //         // subexpressão da direita é um id
-            //         sprintf(tempOperand2, "%s_%d", node->child[2]->id, node->child[2]->symbol->scopeValue);
-            //     }
-            //     else if(strncmp(node->child[2]->sigla, "const", 5) == 0){
-            //         // subexpressão da direita é uma constante
-            //         setOperandConstant(node->child[2], tempOperand2);
-            //     }
-            // }
-            // else{
-            //     // subexpressão à direita possui temporário, ou seja, é uma subxpressão já calculada
-            //     sprintf(tempOperand2, "$%d", node->child[2]->assignedTemporary);
-            // }
-
-            // if((node->child[0]->assignedTemporary <= -2) && (node->child[2]->assignedTemporary <= -2)){
-            //     // duas subexpressões não possuem temporários, ou seja, devem ser elementos únicos (constantes, por exemplo)
-            //
-            //     #ifdef DEBUG_CODEGEN
-            //     printf("generateCode - sumExp node - no temporaries\n");
-            //     #endif
-            //
-            //     if(strcmp(node->child[0]->sigla, "id") == 0){
-            //         // subexpressão da esquerda é um id
-            //         sprintf(tempOperand1, "%s_%d", node->child[0]->id, node->child[0]->symbol->scopeValue);
-            //     }
-            //     else if(strncmp(node->child[0]->sigla, "const", 5) == 0){
-            //         // subexpressão da esquerda é uma constante
-            //         // if(strncmp(node->child[0]->sigla, "constNeg", 8) == 0){
-            //         //     // negativa
-            //         //     sprintf(tempOperand1, "-%s", node->child[0]->value);
-            //         // }
-            //         // else{
-            //         //     // positiva
-            //         //     sprintf(tempOperand1, "%s", node->child[0]->value);
-            //         // }
-            //
-            //         setOperandConstant(node->child[0], tempOperand1);
-            //     }
-            //
-            //     if(strcmp(node->child[2]->sigla, "id") == 0){
-            //         // subexpressão da direita é um id
-            //         sprintf(tempOperand2, "%s_%d", node->child[2]->id, node->child[2]->symbol->scopeValue);
-            //     }
-            //     else if(strncmp(node->child[2]->sigla, "const", 5) == 0){
-            //         // subexpressão da direita é uma constante
-            //         // if(strncmp(node->child[2]->sigla, "constNeg", 8) == 0){
-            //         //     // negativa
-            //         //     sprintf(tempOperand2, "-%s", node->child[2]->value);
-            //         // }
-            //         // else{
-            //         //     // positiva
-            //         //     sprintf(tempOperand2, "%s", node->child[2]->value);
-            //         // }
-            //
-            //         setOperandConstant(node->child[2], tempOperand2);
-            //     }
-            // }
-            // else if((node->child[0]->assignedTemporary <= -2) && (node->child[2]->assignedTemporary > -2)){
-            //     // subexpressão da direita possui um temporário, ou seja, é uma subexpressão e já teve seu código gerado, temporário é usado aqui
-            //
-            //     #ifdef DEBUG_CODEGEN
-            //     printf("generateCode - sumExp node - right has temporary\n");
-            //     #endif
-            //
-            //     if(strcmp(node->child[0]->sigla, "id") == 0){
-            //         // subexpressão da esquerda é um id
-            //         sprintf(tempOperand1, "%s_%d", node->child[0]->id, node->child[0]->symbol->scopeValue);
-            //     }
-            //     else if(strncmp(node->child[0]->sigla, "const", 5) == 0){
-            //         // subexpressão da esquerda é uma constante
-            //         // if(strncmp(node->child[0]->sigla, "constNeg", 8) == 0){
-            //         //     // negativa
-            //         //     sprintf(tempOperand1, "-%s", node->child[0]->value);
-            //         // }
-            //         // else{
-            //         //     // positiva
-            //         //     sprintf(tempOperand1, "%s", node->child[0]->value);
-            //         // }
-            //         setOperandConstant(node->child[0], tempOperand1);
-            //     }
-            //
-            //     sprintf(tempOperand2, "$%d", node->child[2]->assignedTemporary);
-            // }
-            // else if((node->child[0]->assignedTemporary > -2) && (node->child[2]->assignedTemporary <= -2)){
-            //     // subexpressão da esquerda possui um temporário, ou seja, é uma subexpressão e já teve seu código gerado, temporário é usado aqui
-            //
-            //     #ifdef DEBUG_CODEGEN
-            //     printf("generateCode - sumExp node - left has temporary\n");
-            //     #endif
-            //
-            //     if(strcmp(node->child[2]->sigla, "id") == 0){
-            //         // subexpressão da direita é um id
-            //         sprintf(tempOperand2, "%s_%d", node->child[2]->id, node->child[2]->symbol->scopeValue);
-            //     }
-            //     else if(strncmp(node->child[2]->sigla, "const", 5) == 0){
-            //         // subexpressão da direita é uma constante
-            //         // if(strncmp(node->child[2]->sigla, "constNeg", 8) == 0){
-            //         //     // negativa
-            //         //     sprintf(tempOperand2, "-%s", node->child[2]->value);
-            //         // }
-            //         // else{
-            //         //     // positiva
-            //         //     sprintf(tempOperand2, "%s", node->child[2]->value);
-            //         // }
-            //         setOperandConstant(node->child[2], tempOperand2);
-            //     }
-            //
-            //     sprintf(tempOperand1, "$%d", node->child[0]->assignedTemporary);
-            // }
-            // else{
-            //     // as duas subexpressões possuem temporários e já tiveram seu código gerado, devemos usar os temporários aqui
-            //
-            //     #ifdef DEBUG_CODEGEN
-            //     printf("generateCode - sumExp node - both have temporaries\n");
-            //     #endif
-            //
-            //     sprintf(tempOperand1, "$%d", node->child[0]->assignedTemporary);
-            //     sprintf(tempOperand2, "$%d", node->child[2]->assignedTemporary);
-            // }
 
             setOperand(node->child[0], tempOperand1);
             setOperand(node->child[2], tempOperand2);
@@ -382,38 +283,6 @@ void generateCode(t_node* node){
             printf("generateCode - Node is mulExp - children %s %s %s\n", node->child[0]->name, node->child[1]->name, node->child[2]->name);
             #endif
 
-            // if((node->child[0]->assignedTemporary <= -2)){
-            //     // subexpressão à esquerda não possui um temporário, ou seja, deve ser um elemento único (constante, por exemplo)
-            //     if(strcmp(node->child[0]->sigla, "id") == 0){
-            //         // subexpressão da esquerda é um id
-            //         sprintf(tempOperand1, "%s_%d", node->child[0]->id, node->child[0]->symbol->scopeValue);
-            //     }
-            //     else if(strncmp(node->child[0]->sigla, "const", 5) == 0){
-            //         // subexpressão da esquerda é uma constante
-            //         setOperandConstant(node->child[0], tempOperand1);
-            //     }
-            // }
-            // else{
-            //     // subexpressão à esquerda possui temporário, ou seja, é uma subxpressão já calculada
-            //     sprintf(tempOperand1, "$%d", node->child[0]->assignedTemporary);
-            // }
-            //
-            // if((node->child[2]->assignedTemporary <= -2)){
-            //     // subexpressão à direita não possui um temporário, ou seja, deve ser um elemento único (constante, por exemplo)
-            //     if(strcmp(node->child[2]->sigla, "id") == 0){
-            //         // subexpressão da direita é um id
-            //         sprintf(tempOperand2, "%s_%d", node->child[2]->id, node->child[2]->symbol->scopeValue);
-            //     }
-            //     else if(strncmp(node->child[2]->sigla, "const", 5) == 0){
-            //         // subexpressão da direita é uma constante
-            //         setOperandConstant(node->child[2], tempOperand2);
-            //     }
-            // }
-            // else{
-            //     // subexpressão à direita possui temporário, ou seja, é uma subxpressão já calculada
-            //     sprintf(tempOperand2, "$%d", node->child[2]->assignedTemporary);
-            // }
-
             setOperand(node->child[0], tempOperand1);
             setOperand(node->child[2], tempOperand2);
 
@@ -438,38 +307,6 @@ void generateCode(t_node* node){
             #ifdef DEBUG_CODEGEN
             printf("generateCode - Node is logicBin\n");
             #endif
-
-            // if((node->child[0]->assignedTemporary <= -2)){
-            //     // subexpressão à esquerda não possui um temporário, ou seja, deve ser um elemento único (constante, por exemplo)
-            //     if(strcmp(node->child[0]->sigla, "id") == 0){
-            //         // subexpressão da esquerda é um id
-            //         sprintf(tempOperand1, "%s_%d", node->child[0]->id, node->child[0]->symbol->scopeValue);
-            //     }
-            //     else if(strncmp(node->child[0]->sigla, "const", 5) == 0){
-            //         // subexpressão da esquerda é uma constante
-            //         setOperandConstant(node->child[0], tempOperand1);
-            //     }
-            // }
-            // else{
-            //     // subexpressão à esquerda possui temporário, ou seja, é uma subxpressão já calculada
-            //     sprintf(tempOperand1, "$%d", node->child[0]->assignedTemporary);
-            // }
-            //
-            // if((node->child[1]->assignedTemporary <= -2)){
-            //     // subexpressão à direita não possui um temporário, ou seja, deve ser um elemento único (constante, por exemplo)
-            //     if(strcmp(node->child[1]->sigla, "id") == 0){
-            //         // subexpressão da direita é um id
-            //         sprintf(tempOperand2, "%s_%d", node->child[1]->id, node->child[1]->symbol->scopeValue);
-            //     }
-            //     else if(strncmp(node->child[1]->sigla, "const", 5) == 0){
-            //         // subexpressão da direita é uma constante
-            //         setOperandConstant(node->child[1], tempOperand2);
-            //     }
-            // }
-            // else{
-            //     // subexpressão à direita possui temporário, ou seja, é uma subxpressão já calculada
-            //     sprintf(tempOperand2, "$%d", node->child[1]->assignedTemporary);
-            // }
 
             setOperand(node->child[0], tempOperand1);
             setOperand(node->child[1], tempOperand2);
@@ -575,7 +412,8 @@ void generateCode(t_node* node){
             }
             // placeholder
             else{
-                sprintf(tempCode, "inttofl %s", tempOperands);
+                // sprintf(tempCode, "inttofl %s", tempOperands);
+                sprintf(tempCode, "mov %s", tempOperands);
             }
 
             addNodeTemporary(node, tempInt);
@@ -592,13 +430,22 @@ void generateCode(t_node* node){
 
             pushContext();
 
+            tempInt = node->symbol->paramNumber-1;
             // recebe os parâmetros que serão passados pela pilha
             for(i=0; i<node->symbol->paramNumber; i++){
                 // percorre cada parâmetro já armazenado na tabela de símbolos
                 // os parâmetros foram empilhados bottom up, do final para o início, então é necessário receber-los do início para o final, desempilhando
-                sprintf(tempCode, "pop %s_%d", node->symbol->parameters[i]->name, node->symbol->parameters[i]->scopeValue);
-                createCode(tempCode);
+
+                // sprintf(tempCode, "pop %s_%d", node->symbol->parameters[i]->name, node->symbol->parameters[i]->scopeValue);
+                // createCode(tempCode);
+
+                // não é necessário desempilhar os parâmetros, mas é necessário definir qual o número de cada um para que sejam acessados com #
+                // os parâmetros foram empilhados do final para o início, então o #0 é o último parâmetro da declaração, os números são definidos de forma decrescente
+                addSymbolParamTemporary(node->symbol->parameters[i], tempInt);
+                tempInt--;
+
             }
+
 
         }
         // chamada de função e parâmetros passados pela pilha
@@ -607,6 +454,7 @@ void generateCode(t_node* node){
             printf("generateCode - Node is function call\n");
             #endif
 
+            tempInt = 0;
             // gera o código dos parâmetros sendo passados
             for(tempNode = node->child[0]; tempNode != NULL; tempNode = tempNode->child[0]){
                 if((tempNode->child != NULL) && (strcmp(tempNode->sigla, "paramPass") == 0)){
@@ -616,6 +464,7 @@ void generateCode(t_node* node){
                         setOperand(tempNode->child[1], tempOperand1);
                         sprintf(tempCode, "param %s", tempOperand1);
                         createCode(tempCode);
+                        tempInt++;
                         // for já move o ponteiro do tempNode, só é preciso não sair do loop
                     }
                     else{
@@ -623,10 +472,12 @@ void generateCode(t_node* node){
                         setOperand(tempNode->child[1], tempOperand1);
                         sprintf(tempCode, "param %s", tempOperand1);
                         createCode(tempCode);
+                        tempInt++;
 
                         setOperand(tempNode->child[0], tempOperand1);
                         sprintf(tempCode, "param %s", tempOperand1);
                         createCode(tempCode);
+                        tempInt++;
                         break;
                     }
                 }
@@ -637,6 +488,7 @@ void generateCode(t_node* node){
                         setOperand(tempNode, tempOperand1);
                         sprintf(tempCode, "param %s", tempOperand1);
                         createCode(tempCode);
+                        tempInt++;
                     }
                     // se o nó for vazio, não existem parâmetros, nada precisa ser feito
                     // sai do loop
@@ -645,7 +497,8 @@ void generateCode(t_node* node){
             }
 
             // gera código para a chamada da função
-            sprintf(tempCode, "call %s", node->symbol->name);
+            // tempInt guarda o número de parâmetros que foram passados pela pilha
+            sprintf(tempCode, "call %s, %d", node->symbol->name, tempInt);
             createCode(tempCode);
 
             // gera código para receber o retorno da função
@@ -658,13 +511,20 @@ void generateCode(t_node* node){
         // return
         else if(strcmp(node->sigla, "return") == 0){
             #ifdef DEBUG_CODEGEN
-            printf("generateCode - Node is return\n");
+            printf("generateCode - Node is return - function: %s\n", node->functionName);
             #endif
 
-            setOperand(node->child[0], tempOperand1);
-            sprintf(tempCode, "return %s", tempOperand1);
-            createCode(tempCode);
+            // a main não deve ter return
+            if(strcmp(node->functionName, "main") != 0){
+                setOperand(node->child[0], tempOperand1);
+                sprintf(tempCode, "return %s", tempOperand1);
+                createCode(tempCode);
 
+            }
+            else{
+                sprintf(tempCode, "println");
+                createCode(tempCode);
+            }
 
         }
         // if
@@ -730,6 +590,177 @@ void generateCode(t_node* node){
             addNodeLabelJumpTrue(node->child[1], tempOperand1);
 
         }
+        // list header
+        else if(strcmp(node->sigla, "listHeader") == 0){
+            #ifdef DEBUG_CODEGEN
+            printf("generateCode - Node is list header\n");
+            #endif
+
+            tempInt = getNewTemporary();
+
+            setOperand(node->child[0], tempOperand1);
+
+            sprintf(tempCode, "mov $%d, %s[0]", tempInt, tempOperand1);
+
+            createCode(tempCode);
+
+            addNodeTemporary(node, tempInt);
+        }
+        // list tail
+        else if(strcmp(node->sigla, "listTail") == 0){
+            #ifdef DEBUG_CODEGEN
+            printf("generateCode - Node is list tail\n");
+            #endif
+
+            // setOperand(node->child[0], tempOperand1);
+            // setOperandSize(node->child[0], tempOperand2);
+            //
+            // sprintf(tempCode, "%s[%s-1]", tempOperand1, tempOperand2);
+            //
+            // createCode(tempCode);
+        }
+        // construtor de lista
+        else if(strcmp(node->sigla, "listAssign") == 0){
+            #ifdef DEBUG_CODEGEN
+            printf("generateCode - Node is list assign - constructor\n");
+            #endif
+
+            // nó da direita, que é uma lista, ainda não possui temporário
+            // significa que ainda não foi gerada uma lista dinâmica para essa lista
+            if(node->child[1]->sizeTemporary <= -1){
+                tempInt = getNewTemporary();
+                tempInt2 = getNewTemporary();
+
+                setOperandSize(node->child[1], tempOperand1);
+
+                // move o tamanho da lista para o temporário - em teoria, nesse caso é para sempre ser 0
+                sprintf(tempCode, "mov $%d, %s", tempInt2, tempOperand1);
+                createCode(tempCode);
+
+                // incrementa o tamanho da lista
+                sprintf(tempCode, "add $%d, $%d, 1", tempInt2, tempInt2);
+                createCode(tempCode);
+
+                // aloca memória dinamicamente para a lista (lista = tempInt, tamanho = tempInt2)
+                sprintf(tempCode, "mema $%d, $%d", tempInt, tempInt2);
+                createCode(tempCode);
+
+
+            }
+            // nó da direita, que é uma lista, já possui temporário
+            // isso quer dizer que já existe uma lista dinâmica alocada para essa lista
+            // deve alocar uma nova com o novo tamanho, transferir todo o conteúdo da anterior e desalocar a anterior
+            else{
+
+                // incrementa o tamanho da lista anterior
+                setOperandSize(node->child[1], tempOperand1);
+                // temporário novo para o tamanho novo
+                tempInt2 = getNewTemporary();
+
+                sprintf(tempCode, "add $%d, %s, 1", tempInt2, tempOperand1);
+                createCode(tempCode);
+
+                // aloca uma nova lista com o novo tamanho
+                tempInt = getNewTemporary();
+
+                sprintf(tempCode, "mema $%d, $%d", tempInt, tempInt2);
+                createCode(tempCode);
+
+                // monta o loop para trasnferir os elementos da lista antiga para a lista nova
+
+                // tempInt3 = índice da lista antiga
+                tempInt3 = getNewTemporary();
+                // tempInt4 = flag para determinar se é necessário continuar o loop ou não
+                tempInt4 = getNewTemporary();
+                // tempInt5 = id da label gerada para o loop
+                tempInt5 = getNewLabelId();
+                // tempInt6 = temporário para mover os valores entre listas, pois é impossível mover diretamente
+                // a instrução mov $0[$1], $2[$1] tem 4 operandos e não é suportada
+                tempInt6 = getNewTemporary();
+                // tempInt7 = índice da lista nova - não é possível usar o índice tempInt3 pois o índice da lista nova deve ser um elemento para a frente
+                // após copiar a lista antiga, a posição 0 deve ser vazia para receber o novo elemento que está sendo inserido
+                tempInt7 = getNewTemporary();
+
+                // inicializa o índice da lista antiga
+                sprintf(tempCode, "mov $%d, 0", tempInt3);
+                createCode(tempCode);
+
+                // inicializa o índice da lista nova
+                sprintf(tempCode, "mov $%d, 1", tempInt7);
+                createCode(tempCode);
+
+                // gera o label do loop
+                sprintf(tempCode, "list_loop_%d:", tempInt5);
+                createCode(tempCode);
+
+                // move o item da lista antiga para o temporário
+                sprintf(tempCode, "mov $%d, $%d[$%d]", tempInt6, node->child[1]->assignedTemporary, tempInt3);
+                createCode(tempCode);
+
+                // move o item do temporário para a nova lista
+                sprintf(tempCode, "mov $%d[$%d], $%d", tempInt, tempInt7, tempInt6);
+                createCode(tempCode);
+
+                // incrementa o índice da lista antiga
+                sprintf(tempCode, "add $%d, $%d, 1", tempInt3, tempInt3);
+                createCode(tempCode);
+
+                // incrementa o índice da lista nova
+                sprintf(tempCode, "add $%d, $%d, 1", tempInt7, tempInt7);
+                createCode(tempCode);
+
+                // verifica se deve parar o loop ou continuar - se o índice já passou do tamanho da lista antiga
+                sprintf(tempCode, "slt $%d, $%d, $%d", tempInt4, tempInt3, node->child[1]->sizeTemporary);
+                createCode(tempCode);
+
+                // jump para continuar o loop
+                sprintf(tempCode, "brnz list_loop_%d, $%d", tempInt5, tempInt4);
+                createCode(tempCode);
+
+                // libera a memória alocada para a lista antiga
+
+                // finalizou o loop, pode atribuir o valor para a lista nova
+
+            }
+
+
+            // insere o valor novo na lista
+
+            // decrementa de volta o tamanho da lista para acessar a última posição
+            // sprintf(tempCode, "sub $%d, $%d, 1", tempInt2, tempInt2);
+            // createCode(tempCode);
+
+            // pega o valor que deve ser inserido dentro da lista
+            setOperand(node->child[0], tempOperand2);
+
+            // coloca o valor dentro da lista na última posição
+            // sprintf(tempCode, "mov $%d[$%d], %s", tempInt, tempInt2, tempOperand2);
+            // createCode(tempCode);
+
+            // coloca o valor dentro da lista na primeira posição
+            sprintf(tempCode, "mov $%d[0], %s", tempInt, tempOperand2);
+            createCode(tempCode);
+
+            // incrementa novamente o tamanho da lista que foi decrementado para acessar a última posição
+            // sprintf(tempCode, "add $%d, $%d, 1", tempInt2, tempInt2);
+            // createCode(tempCode);
+
+            // adiciona os temporários da lista e do tamanho no nó
+            addNodeTemporary(node, tempInt);
+            addNodeSizeTemporary(node, tempInt2);
+
+
+
+        }
+        // map
+        // else if(strcmp(node->sigla, "listMap") == 0){
+        //     #ifdef DEBUG_CODEGEN
+        //     printf("generateCode - Node is list map\n");
+        //     #endif
+        //
+        //
+        //
+        // }
         // fim do seletor de nós
 
 
@@ -759,11 +790,35 @@ void generateCode(t_node* node){
 
 
 void setOperand(t_node* node, char* operand){
+    int tempInt;
+
     if(node->assignedTemporary <= -2){
         // subexpressão não possui um temporário, ou seja, deve ser um elemento único (constante, por exemplo)
-        if(strcmp(node->sigla, "id") == 0){
-            // subexpressão é um id
-            sprintf(operand, "%s_%d", node->symbol->name, node->symbol->scopeValue);
+        if((strcmp(node->sigla, "id") == 0) || (strcmp(node->sigla, "assignOp") == 0)){
+            // subexpressão é um id ou é uma atribuição (contém um símbolo)
+            if(node->symbol->paramTemporary > -1){
+                // o símbolo é um parâmetro sendo recebido, utilizar #
+                sprintf(operand, "#%d", node->symbol->paramTemporary);
+            }
+            else{
+                if((strcmp(node->symbol->type, "int list") == 0) || (strcmp(node->symbol->type, "float list") == 0)){
+                    //  é um id do tipo lista, precisa verificar se já há um temporário que armazena essa lista
+                    if(node->symbol->listTemporary > -1){
+                        sprintf(operand, "$%d", node->symbol->listTemporary);
+                    }
+                    // não possui um temporário ainda, cria um
+                    else{
+                        tempInt = getNewTemporary();
+                        addSymbolListTemporary(node->symbol, tempInt);
+                        sprintf(operand, "$%d", node->symbol->listTemporary);
+                    }
+
+                }
+                // não é uma lista
+                else{
+                    sprintf(operand, "%s_%d", node->symbol->name, node->symbol->scopeValue);
+                }
+            }
         }
         else if(strncmp(node->sigla, "const", 5) == 0){
             // subexpressão é uma constante
@@ -778,13 +833,41 @@ void setOperand(t_node* node, char* operand){
 }
 
 
+void setOperandSize(t_node* node, char* operand){
+    if(node->sizeTemporary <= -2){
+        // subexpressão não possui um tamanho temporário
+        if(strcmp(node->sigla, "id") == 0){
+            // subexpressão é um id
+            sprintf(operand, "%s_size_%d", node->symbol->name, node->symbol->scopeValue);
+        }
+        // não possui temporário e não é id, coloca um tamanho inicial 0
+        else{
+            sprintf(operand, "0");
+        }
+        // else if(strncmp(node->sigla, "const", 5) == 0){
+        //     // subexpressão é uma constante
+        //     setOperandConstant(node, operand);
+        // }
+    }
+    else{
+        // subexpressão possui tamanho temporário, ou seja, é uma subxpressão já calculada
+        sprintf(operand, "$%d", node->sizeTemporary);
+    }
+
+}
+
+
 void setOperandConstant(t_node* node, char* operand){
     if(strncmp(node->sigla, "constNeg", 8) == 0){
         // negativa
         sprintf(operand, "-%s", node->value);
     }
+    else if(strcmp(node->sigla, "constNull") == 0){
+        // constante null
+        sprintf(operand, "0");
+    }
     else{
-        // positiva ou constante null
+        // positiva
         sprintf(operand, "%s", node->value);
     }
 }
@@ -984,8 +1067,14 @@ void assembleTable(){
 
         if(symbol->varFunc == 1){
             sprintf(temp, "%s %s_%d", symbol->typeBase, symbol->name, symbol->scopeValue);
-
             createCode(temp);
+
+            // se for uma lista, cria uma símbolo para o tamanho da lista também
+            if((strcmp(symbol->type, "int list") == 0) || (strcmp(symbol->type, "float list") == 0)){
+                sprintf(temp, "int %s_size_%d = 0", symbol->name, symbol->scopeValue);
+                createCode(temp);
+            }
+
         }
     }
 }

@@ -35,6 +35,8 @@ t_node* createNode(char* name, char* sigla){
     node->assignedTemporary = -2;
     node->label = NULL;
     node->labelJump = NULL;
+    node->labelJumpTrue = NULL;
+    node->sizeTemporary = -2;
 
     #ifdef DEBUG_TREE
     printf("Node creation - allocated memory\n");
@@ -442,6 +444,7 @@ void addTypeCastNode(t_node* node, int child, int castType){
     newNode = createNode(tempName, tempSigla);
 
     addNodeType(newNode, tempType);
+    addNodePosition(newNode, node->child[child]->line, node->child[child]->column);
 
     addChild(newNode, 1);
     newNode->child[0] = node->child[child];
@@ -537,7 +540,7 @@ void addReturnNode(t_node* node){
         addNodeType(constantNode, "nil");
         addNodeValue(constantNode, "NIL");
     }
-    // se retorno da função for int ou algu caso não previsto
+    // se retorno da função for int ou algum caso não previsto
     else{
         constantNode = createNode(COLOR_YELLOW "Constant Integer: 0" COLOR_RESET, "constInt");
         addNodeType(constantNode, "int");
@@ -552,6 +555,12 @@ void addReturnNode(t_node* node){
 
     node->child[1] = statementNode;
 
+    addFunctionName(returnNode, lastFuncDeclared);
+}
+
+
+void addNodeSizeTemporary(t_node* node, int sizeTemporary){
+    node->sizeTemporary = sizeTemporary;
 }
 
 

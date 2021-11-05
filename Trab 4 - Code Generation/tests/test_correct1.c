@@ -56,17 +56,7 @@ int test_list(int list n){
     // writeln(!n);
 
     list_value = ?n;
-    temp_list = check_list << n;
-    temp_list2 = double_list >> n;
 
-    // write("Último elemento da lista - removendo um: ");
-    // writeln(%n);
-
-    write("Primeiro elemento da lista duplicada: ");
-    writeln(?temp_list2);
-
-    write("Primeiro elemento da lista filtrada pelo primeiro valor da lista de entrada: ");
-    writeln(?temp_list);
 
 
     return 0;

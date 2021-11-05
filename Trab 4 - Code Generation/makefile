@@ -24,7 +24,7 @@ semantico: ./src/lexical.l ./src/syntax.y ./src/base.c ./src/symbol_table.c ./sr
 
 
 gerador: ./src/lexical.l ./src/syntax.y ./src/base.c ./src/symbol_table.c ./src/scope.c ./src/tree.c ./src/semantic.c ./src/codegen.c
-	bison -o ./src/syntax.tab.c -d ./src/syntax.y
+	bison -o ./src/syntax.tab.c -d ./src/syntax.y -v
 	flex -o ./src/lex.yy.c ./src/lexical.l
 	gcc -c ./src/base.c -o ./src/base.o -g -Wall
 	gcc -c ./src/symbol_table.c -o ./src/symbol_table.o -g -Wall

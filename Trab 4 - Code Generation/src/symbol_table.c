@@ -33,6 +33,8 @@ t_symbol* createSymbol(char* symbolName, char* type, int line, int column, int s
     symbol->varFunc = varFunc;
     symbol->paramNumber = 0;
     symbol->parameters = NULL;
+    symbol->listTemporary = -1;
+    symbol->paramTemporary = -1;
 
     // lastSymbol->next = symbol;
 
@@ -195,6 +197,15 @@ void installParam(t_symbol* function){
     parameterHolderMax = 0;
 }
 
+
+void addSymbolListTemporary(t_symbol* symbol, int listTemporary){
+    symbol->listTemporary = listTemporary;
+}
+
+
+void addSymbolParamTemporary(t_symbol* symbol, int paramTemporary){
+    symbol->paramTemporary = paramTemporary;
+}
 
 
 void printTable(){

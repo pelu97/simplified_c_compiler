@@ -1,42 +1,28 @@
-int batata;
+// int i;
+//
+// int fib(int i){
+//   if (i == 1) return 1;
+//   else if (i == 2) return 1;
+//   else return fib(i-1) + fib(i-2);
+// }
+//
+// int main() {
+//   int i; i = 0;
+//
+//   read(i);
+//   if (i >0) write(fib(i));
+// }
 
 
-int bake(){
-    int temp;
-    // int list batata2;
-
-    if((batata < 100) && (batata > 20) || (batata == 10)){
-        temp = batata;
-    }
-    else{
-        temp = (batata * 2) + (3 + 5.1 * 9 / 3 - 2);
-    }
-
-    // if(batata2 > 10){
-    //     temp = batata;
-    // }
-    // else if(batata2 && (batata>1)){
-    //     temp = batata;
-    // }
-
-    write(temp);
-    writeln(" batatas assadas");
-
-    // return 0;
+int test(int a, int b, int c){
+    writeln(a);
+    writeln(b);
+    writeln(c);
+    return 0;
 }
 
-
 int main(){
-
-    write("Digite um inteiro: ");
-    read(batata);
-
-    write("O inteiro digitado foi: ");
-    writeln(batata);
-
-    bake();
-
-    write("Encerrando execução...");
+    test(1, 2, 3);
 
     return 0;
 }

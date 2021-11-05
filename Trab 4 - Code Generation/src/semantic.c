@@ -723,10 +723,37 @@ void verifyOperands(t_node* node){
             }
         }
         else{
-            // addError("operandType", "Tipo de operando inválido", "", node->child[0]->line, node->child[0]->column);
-            // addOperandError(node->child[0]->line, node->child[0]->column);
-            addError("operandType", "Invalid operand - Expecting operands of type int or float", "", node->child[0]->line, node->child[0]->column);
-            // addNodeType(node, "Error");
+            if(
+                ((strcmp(node->child[0]->type, "int list") == 0) || (strcmp(node->child[0]->type, "float list") == 0)) &&
+                (strcmp(node->child[1]->type, "nil") == 0)
+            ){
+                // lado esquerdo é uma lista e lado direito é nil, deve adicionar uma conversão do lado direito
+                if((strcmp(node->child[0]->type, "int list") == 0)){
+                    addTypeCastNode(node, 1, CAST_NIL_INTLIST);
+                }
+                else if((strcmp(node->child[0]->type, "float list") == 0)){
+                    addTypeCastNode(node, 1, CAST_NIL_FLOATLIST);
+                }
+            }
+            // mesma comparação, mas invertendo lados direito e esquerdo - comparando nil com lista
+            else if(
+                ((strcmp(node->child[1]->type, "int list") == 0) || (strcmp(node->child[1]->type, "float list") == 0)) &&
+                (strcmp(node->child[0]->type, "nil") == 0)
+            ){
+                // lado direito é uma lista e lado esquerdo é nil, deve adicionar uma conversão do lado esquerdo
+                if((strcmp(node->child[1]->type, "int list") == 0)){
+                    addTypeCastNode(node, 0, CAST_NIL_INTLIST);
+                }
+                else if((strcmp(node->child[1]->type, "float list") == 0)){
+                    addTypeCastNode(node, 0, CAST_NIL_FLOATLIST);
+                }
+            }
+            else{
+                // addError("operandType", "Tipo de operando inválido", "", node->child[0]->line, node->child[0]->column);
+                // addOperandError(node->child[0]->line, node->child[0]->column);
+                addError("operandType", "Invalid operand - Expecting operands of type int or float", "", node->child[0]->line, node->child[0]->column);
+                // addNodeType(node, "Error");
+            }
         }
     }
 

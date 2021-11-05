@@ -18,6 +18,8 @@ typedef struct Symbols {
     struct Symbols **parameters;
     // codegen
     char* typeBase;
+    int listTemporary;
+    int paramTemporary;
 } t_symbol;
 #endif
 
@@ -47,6 +49,10 @@ void addParam(t_symbol* parameter);
 
 // moves all parameters on temporary holder to the function
 void installParam(t_symbol* function);
+
+void addSymbolListTemporary(t_symbol* symbol, int listTemporary);
+
+void addSymbolParamTemporary(t_symbol* symbol, int paramTemporary);
 
 void printTable();
 

@@ -18,6 +18,7 @@ typedef struct Node{
     char* label;    //label para ser adicionada após o código do nó
     char* labelJump;    //label para adicionar um jump incondicional no final do código do nó
     char* labelJumpTrue;    //label para adicionar um jump condicional (branch se for diferente de zero) no final do código do nó
+    int sizeTemporary;  //armazena um temporário criado para armazenar o tamanho da lista - só usado com listas
     // char* logicOperator;
 } t_node;
 #endif
@@ -72,6 +73,8 @@ void addNodeLabelJump(t_node* node, char* labelJump);
 void addNodeLabelJumpTrue(t_node* node, char* labelJumpTrue);
 
 void addReturnNode(t_node* node);
+
+void addNodeSizeTemporary(t_node* node, int sizeTemporary);
 
 void initializeTree(t_node* node);
 

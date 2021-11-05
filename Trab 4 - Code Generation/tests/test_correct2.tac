@@ -3,6 +3,7 @@ int batata_0
 int temp_1
 float tempfloat_1
 .code
+bake:
 mov tempfloat_1, 3.4
 slt $0, batata_0, 100
 slt $1, 20, batata_0
@@ -10,7 +11,10 @@ and $2, $0, $1
 inttofl $3, batata_0
 seq $4, $3, tempfloat_1
 or $5, $2, $4
-mov temp_1, $5
+brz if_label_0, $5
+mov temp_1, batata_0
+jump if_label_1
+if_label_0:
 mul $6, batata_0, 2
 inttofl $7, $6
 inttofl $8, 3
@@ -24,6 +28,8 @@ sub $15, $13, $14
 add $16, $7, $15
 fltoint $17, $16
 mov temp_1, $17
+if_label_1:
+print temp_1
 print ' '
 print 'b'
 print 'a'
@@ -41,6 +47,8 @@ print 'd'
 print 'a'
 print 's'
 println
+return 0
+main:
 print 'D'
 print 'i'
 print 'g'
@@ -85,6 +93,9 @@ print 'o'
 print 'i'
 print ':'
 print ' '
+println batata_0
+call bake, 0
+pop $0
 print 'E'
 print 'n'
 print 'c'
@@ -109,3 +120,5 @@ print 'o'
 print '.'
 print '.'
 print '.'
+println
+println

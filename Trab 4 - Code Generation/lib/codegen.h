@@ -27,6 +27,8 @@ void generateCode(t_node* node);
 
 void setOperand(t_node* node, char* operand);
 
+void setOperandSize(t_node* node, char* operand);
+
 void setOperandConstant(t_node* node, char* operand);
 
 void assembleCode(t_node* node);

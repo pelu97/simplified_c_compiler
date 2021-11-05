@@ -178,11 +178,11 @@ que faz a busca na tabela seja a melhor forma; - FEITO
 
 /* Operadores de lista */
 /* %token LIST_OP */
-%right <t_token> ASSIGN_LISTOP
-%right <t_token> HEADER_LISTOP
-%right <t_token> TAILDES_LISTOP
-%right <t_token> MAP_LISTOP
-%right <t_token> FILTER_LISTOP
+%token <t_token> ASSIGN_LISTOP
+%token <t_token> HEADER_LISTOP
+%token <t_token> TAILDES_LISTOP
+%token <t_token> MAP_LISTOP
+%token <t_token> FILTER_LISTOP
 
 /* %token DELIM_PARENT */
 %token <t_token> DELIM_PARENT_L
@@ -1100,7 +1100,7 @@ listExpression:
 ;
 
 listAssign:
-     listMap ASSIGN_LISTOP listAssign {
+     listHeader ASSIGN_LISTOP listAssign {
         char* temp;
 
         /* temp = (char*) malloc(strlen($1.text) + strlen($3.text) + strlen($5.text) + strlen("List Assignment - ID1: ") + strlen(" - ID2: ") + strlen(" - ID3: ") + 3); */
@@ -1142,7 +1142,7 @@ listAssign:
         freeScopeToken($5.scope); */
         free(temp);
     }
-    | listMap{
+    | listHeader {
         $$ = $1;
     }
 ;
@@ -1223,7 +1223,7 @@ listTailDestructor:
         /* freeScopeToken($2.scope); */
         free(temp);
     }
-    | factor {
+    | listMap {
         $$ = $1;
     }
 ;
@@ -1270,7 +1270,7 @@ listMap:
 ;
 
 listFilter:
-    listFilter FILTER_LISTOP listHeader {
+    listFilter FILTER_LISTOP factor {
         char* temp;
 
         /* temp = (char*) malloc(strlen($1.text) + strlen($3.text) + strlen($5.text) + strlen("List Filter - IDs: ") + 6); */
@@ -1305,7 +1305,7 @@ listFilter:
         freeScopeToken($5.scope); */
         free(temp);
     }
-    | listHeader {
+    | factor {
         $$ = $1;
     }
     /* | listExpression {
