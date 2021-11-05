@@ -54,3 +54,7 @@ void assembleTable();
 void writeFile();
 
 void codeGeneration();
+
+void freeContext();
+
+void freeCode();

@@ -824,10 +824,26 @@ int freeBranch(t_node* node){
         free(node->id);   //libera memória alocada para o id
     }
 
+    if(node->value != NULL){
+        free(node->value);   //libera memória alocada para o value
+    }
+
+    if(node->label != NULL){
+        free(node->label);   //libera memória alocada para o label
+    }
+
+    if(node->labelJump != NULL){
+        free(node->labelJump);   //libera memória alocada para o labelJump
+    }
+
+    if(node->labelJumpTrue != NULL){
+        free(node->labelJumpTrue);   //libera memória alocada para o labelJumpTrue
+    }
 
     if(node != NULL){
         free(node);     //libera memória alocada para o nó
     }
+
 
     return freed + 1;
 }

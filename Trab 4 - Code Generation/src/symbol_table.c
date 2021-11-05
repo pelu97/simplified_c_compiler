@@ -451,6 +451,10 @@ void freeTable(){
             free(temp->parameters); //libera a memória alocada para os parâmetros
         }
 
+        if(temp->typeBase != NULL){
+            free(temp->typeBase); //libera a memória alocada para os parâmetros
+        }
+
         free(temp);      //libera o atual
 
         i++;

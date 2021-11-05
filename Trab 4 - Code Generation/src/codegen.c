@@ -1091,6 +1091,8 @@ void writeFile(){
 
     fp = fopen(tempFileName, "w");
 
+    free(tempFileName);
+
     if(fp != NULL){
 
         for(codePointer = CodeList; codePointer != NULL; codePointer = codePointer->next){
@@ -1128,5 +1130,47 @@ void codeGeneration(){
     #endif
 
     writeFile();
+
+    if(FileName != NULL){
+        free(FileName);
+    }
+
+    freeContext();
+    freeCode();
+
+}
+
+void freeContext(){
+    t_context* context;
+    t_context* temp = NULL;
+
+    context = TopContext;
+
+    while(context != NULL){
+        temp = context;
+        context = context->next;
+        if(temp != NULL){
+            free(temp);
+        }
+    }
+}
+
+void freeCode(){
+    t_code* codepointer;
+    t_code* temp = NULL;
+
+    codepointer = CodeList;
+
+    while(codepointer != NULL){
+        temp = codepointer;
+        codepointer = codepointer->next;
+        if(temp->code != NULL){
+            free(temp->code);
+        }
+        if(temp != NULL){
+            free(temp);
+        }
+    }
+
 
 }
