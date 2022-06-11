@@ -46,7 +46,7 @@ To use the compiled translator, type `./tradutor FILENAME`, replacing FILENAME w
 
 Each stage of the translator contains a `tests` folder with a few C-IPL test files. They can be used to test the translator
 
-## Warning
+# :warning: Warning
 
 Although simplified, the C-IPL language is still reasonably complex to create a translator for, without any previous knowledge on how to implement a translator. There are bugs that could not be fixed in time. The translator might crash or the translated file might not have the desired functionality.
 
