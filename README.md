@@ -19,6 +19,8 @@ Example:
 
 The same follows for the other folders.
 
+Each of the analysis modules identifies errors in the input code related to its type. The lexical analysis identifies lexical erros and so on.
+
 
 ### Lexical
 The lexical analysis parses the source file and breaks it into tokens. It was built using `flex`.
